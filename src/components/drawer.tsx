@@ -22,8 +22,6 @@ import IconButton from '@mui/material/IconButton';
 
 export default function MenuLateralSession() {
 
-    const [derniereAnnee, setDerniereAnnee] = React.useState<number>(2025);
-    const [premiereAnnee, setPremiereAnnee] = React.useState<number>(2020);
     const [annees, setAnnees] = React.useState<number[]>([]);
     const [textFieldVisible, setTextFieldVisible] = React.useState<boolean>(false);
 
@@ -42,15 +40,6 @@ export default function MenuLateralSession() {
         pl: 2
     }
 
-
-
-    React.useEffect(() => {
-        const newAnnees: number[] = [];
-        for (let year = derniereAnnee; year >= premiereAnnee; year--) {
-            newAnnees.push(year);
-        }
-        setAnnees(newAnnees);
-    }, [premiereAnnee, derniereAnnee]);
 
 
     type SessionStatus = 1 | 2 | 3;
@@ -104,6 +93,15 @@ export default function MenuLateralSession() {
     function toggleTextField() {
         setTextFieldVisible(!textFieldVisible);
     }
+
+
+    React.useEffect(() => {
+        const newAnnees: number[] = [];
+        for (let year = sessionsList.anneeMax; year >= sessionsList.anneeMin; year--) {
+            newAnnees.push(year);
+        }
+        setAnnees(newAnnees);
+    }, [sessionsList.anneeMax, sessionsList.anneeMin]);
 
 
 
