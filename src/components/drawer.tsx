@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { TextField, Typography, Badge, Stack, Chip } from '@mui/material';
+import { TextField, Typography, Badge, Stack, Chip, Grow } from '@mui/material';
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -19,6 +19,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
+import { grey } from '@mui/material/colors';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import { SearchOff } from '@mui/icons-material';
 
 export default function MenuLateralSession() {
 
@@ -34,7 +37,8 @@ export default function MenuLateralSession() {
         padding: 1,
         borderRadius: 2,
         cursor: "pointer",
-        "&:hover": { backgroundColor: "action.hover" },
+        transition: "background-color 0.3s ease, transform 0.3s ease",
+        "&:hover": { backgroundColor: "grey.200" },
         pb: 2,
         pt: 2,
         pl: 2
@@ -120,7 +124,7 @@ export default function MenuLateralSession() {
                     "& .MuiDrawer-paper": {
 
                         boxSizing: "border-box",
-                        backgroundColor: "#F7F2FA",
+                        backgroundColor: grey[100],
 
                     },
                 }}
@@ -137,35 +141,61 @@ export default function MenuLateralSession() {
 
 
                     <List>
-                        <Stack spacing={2} sx={{ pb: 2 }}>
+                        <Stack spacing={1} sx={{ pb: 2 }}>
 
-                            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pl: 2, pr: 2 }}>
+                            <Stack direction="row" alignItems="center" sx={{ pl: 2, pr: 2, height:50 }}>
 
                                 {!textFieldVisible && (
-
-                                    <Typography variant="subtitle1" >
-                                        Anonymex
-                                    </Typography>
+                                    <Grow in = {!textFieldVisible} timeout={500}>
+                                        <Typography variant="subtitle1" >
+                                            Anonymex
+                                        </Typography>
+                                    </Grow>
                                 )}
 
                                 <Stack
                                     direction="row"
                                     alignItems="center"
+                                    justifyContent={"space-between"} 
+                                    width={"100%"}
+                                    spacing={2} 
+                                    
+                                    
                                 >
-                                    {textFieldVisible && (
-                                        <Stack alignItems="center">
-                                            <TextField
-                                                variant="standard"
-                                                placeholder="Rechercher..."
-                                                InputProps={{ disableUnderline: true }}
-                                                sx={{ width: '100%', '&:hover': { bgcolor: 'grey.200' } }}
-                                            />
-                                        </Stack>
-                                    )}
+                                   
+                                        {textFieldVisible && (
+                                            <Grow in={textFieldVisible} timeout={500} >
+                                                <Stack alignItems="center" width={"100%"}>
+                                                    <TextField
+                                                        
+                                                        variant="standard"
+                                                        placeholder="Rechercher..."
+                                                        InputProps={{ disableUnderline: true }}
+                                                        sx={{ 
+                                                            width: "100%", 
+                                                            
+                                                            bgcolor: 'grey.200',
+                                                            borderRadius: 10,
+                                                            p:1,
+                                                            pr: 2,
+                                                            pl: 2,
+
+                                                            transition: "background-color 0.3s ease, transform 0.3s ease",
+                                                            '&:hover': { bgcolor: 'grey.300' } }}
+                                                    />
+                                                </Stack>
+                                            </Grow>
+                                        )}
+                               
+
+                                        {!textFieldVisible && (
+                                            <Stack width={"100%"}>
+                                            </Stack>    
+                                        )}
 
                                     <Stack >
                                         <IconButton edge="end" aria-label="search" onClick={() => { toggleTextField(); }}>
-                                            <SearchIcon />
+                                            {textFieldVisible ? (<SearchOffIcon />) : (<SearchIcon/>)}
                                         </IconButton>
                                     </Stack>
                                 </Stack>
@@ -175,7 +205,7 @@ export default function MenuLateralSession() {
                             <Stack
                                 direction="row"
                                 alignItems="center"
-                                sx={{ ...buttonSx, bgcolor: "grey.300", borderRadius: 15, ":hover": { bgcolor: "grey.400" } }}
+                                sx={{ ...buttonSx, bgcolor: "grey.300", borderRadius: 15, pt: 2, transition: "background-color 0.3s ease, transform 0.3s ease", ":hover": { bgcolor: "grey.400" } }}
 
                             >
                                 <AddIcon sx={{ color: iconColor }} />
@@ -187,7 +217,7 @@ export default function MenuLateralSession() {
                             <Stack
                                 direction="row"
                                 alignItems="center"
-                                sx={buttonSx}
+                                sx={{...buttonSx, borderRadius: 10}}
                             >
                                 <SettingsIcon sx={{ color: iconColor }} />
                                 <Typography sx={{ marginLeft: 2 }}>Configurer</Typography>
