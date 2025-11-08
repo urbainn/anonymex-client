@@ -23,7 +23,7 @@ export async function apiRequest<B /* type body */, R /* type réponse */>(
         body = parseResult.data;
     }
 
-    const url = new URL(endpoint, URL_API_BASE);
+    const url = new URL(URL_API_BASE + endpoint);
 
     // Si requête GET, ajouter les paramètres du body à l'URL
     if (methode === 'GET' && body) {
@@ -31,6 +31,8 @@ export async function apiRequest<B /* type body */, R /* type réponse */>(
             url.searchParams.append(key, String(value));
         });
     }
+
+    console.log(url.toString())
 
     const response = await fetch(url.toString(), {
         method: methode,

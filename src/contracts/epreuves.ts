@@ -38,7 +38,7 @@ export type APIUpdateEpreuve = z.infer<typeof UpdateEpreuveSchema>;
 export type APIListEpreuves = z.infer<typeof ListEpreuvesSchema>;
 
 // --- Endpoints API ---
-export const GetEpreuves = (sessionId: number) => {
+export const getEpreuves = (sessionId: number) => {
     return apiRequest<null, APIListEpreuves>('GET', `/sessions/${sessionId}/epreuves`);
 }
 

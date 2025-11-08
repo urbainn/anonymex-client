@@ -4,9 +4,9 @@ import { apiRequest } from "../utils/api";
 export type SessionsStatut = 1 | 2 | 3 | 4;
 
 export const SessionsStatusNom: Record<SessionsStatut, string> = {
-    1: "Planifiée",
-    2: "En cours",
-    3: "Terminée",
+    1: "Active",
+    2: "Terminée",
+    3: "Archivée",
     4: "En suppression"
 };
 
@@ -40,18 +40,18 @@ export type APIListSessions = z.infer<typeof ListSessionsSchema>;
 export type APIDeleteSession = z.infer<typeof DeleteSessionSchema>;
 
 // --- Endpoints API ---
-export const GetSessions = () => {
+export const getSessions = () => {
     return apiRequest<null, APIListSessions>('GET', '/sessions');
 }
 
-export const CreateSession = (newSession: APINewSession) => {
+export const createSession = (newSession: APINewSession) => {
     return apiRequest<APINewSession, APISession>('POST', '/sessions', newSession, NewSessionSchema);
 }
 
-export const UpdateSession = (id: number, updateData: APIUpdateSession) => {
+export const updateSession = (id: number, updateData: APIUpdateSession) => {
     return apiRequest<APIUpdateSession, APISession>('PUT', `/sessions/${id}`, updateData, UpdateSessionSchema);
 }
 
-export const DeleteSession = (id: number) => {
+export const deleteSession = (id: number) => {
     return apiRequest<null, { message: string }>('DELETE', `/sessions/${id}`);
 }
