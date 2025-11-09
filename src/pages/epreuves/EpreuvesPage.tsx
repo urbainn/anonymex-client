@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default function ListeUE() {
+export default function EpreuvesPage() {
 
     interface Epreuve {
         id_session: number;

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-
 import { Container, Box } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';
-import appColors from '../theme/colors';
-
-import generateIconNodes from './IconGeneration';
+import generateIconNodes from './genererIconesFond';
+import { blue } from '@mui/material/colors';
 
 type BackgroundIconProps = {
     children?: React.ReactNode;
@@ -12,9 +10,9 @@ type BackgroundIconProps = {
     className?: string;
 };
 
-export default function BackgroundIcon({ children, sx, className }: BackgroundIconProps) {
+export default function IconsBackgroundWrapper({ children, sx, className }: BackgroundIconProps) {
     const styleContainer: SxProps<Theme> = {
-        backgroundColor: appColors.background.default,
+        backgroundColor: blue['A400'],
         height: '100vh',
         minWidth: '100%',
         display: 'flex',
@@ -29,7 +27,7 @@ export default function BackgroundIcon({ children, sx, className }: BackgroundIc
     const [iconNodes, setIconNodes] = useState<React.ReactNode[]>([]);
 
     function compute() {
-            const { nodes } = generateIconNodes(80, 125);
+            const { nodes } = generateIconNodes(67, 100);
             setIconNodes(nodes);
     }
 

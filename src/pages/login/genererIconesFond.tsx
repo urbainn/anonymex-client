@@ -10,8 +10,13 @@ import ScienceIcon from '@mui/icons-material/Science';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import BiotechIcon from '@mui/icons-material/Biotech';
 import BalanceIcon from '@mui/icons-material/Balance';
-import BuildIcon from '@mui/icons-material/Build';
 import GroupsIcon from '@mui/icons-material/Groups';
+import ArtTrackIcon from '@mui/icons-material/ArtTrack';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import CheckIcon from '@mui/icons-material/Check';
+import CoPresentIcon from '@mui/icons-material/CoPresent';
+import SettingsIcon from '@mui/icons-material/Settings';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const defaultIconList = [
     BackupIcon,
@@ -24,8 +29,13 @@ const defaultIconList = [
     TerminalIcon,
     BiotechIcon,
     BalanceIcon,
-    BuildIcon,
     GroupsIcon,
+    ArtTrackIcon,
+    BusinessCenterIcon,
+    CheckIcon,
+    CoPresentIcon,
+    SettingsIcon,
+    EmojiEventsIcon
 ];
 
 /**
@@ -51,8 +61,12 @@ export function newRandomNumber(prevNumber: number | null, max: number) {
  */
 export function generateIconNodes(gap: number = 80, iconSize: number = 125) {
     const step = iconSize + gap; // distance entre chaque icone
-    const cols = Math.ceil(window.innerWidth / step) + 1;
-    const rows = Math.ceil(window.innerHeight / step) + 1;
+    const cols = Math.floor(window.innerWidth / step) + 1;
+    const rows = Math.floor(window.innerHeight / step) + 1;
+
+    // Calculer la différence x et y pour centrer la grille
+    const diffX = (window.innerWidth - cols * step + gap) / 2;
+    const diffY = (window.innerHeight - rows * step + gap) / 2;
 
     const nodes: React.ReactNode[] = []; // création de la liste des noeuds
 
@@ -65,18 +79,18 @@ export function generateIconNodes(gap: number = 80, iconSize: number = 125) {
 
             const IconComp = defaultIconList[idx]; // création du composant icône
 
-            const left = c * step - Math.floor(iconSize / 2);
-            const top = r * step - Math.floor(iconSize / 2);
+            const left = c * step + diffX;
+            const top = r * step + diffY;
 
             const node = (
                 <IconComp
                     sx={{
                         fontSize: `${iconSize}px`,
-                        color: 'rgba(255,255,255,0.6)',
+                        color: 'rgba(255,255,255,0.5)',
                         position: 'absolute',
                         left: `${left}px`,
                         top: `${top}px`,
-                        transform: 'rotate(-45deg)',
+                        transform: 'rotate(-30deg)',
                         pointerEvents: 'none',
                     }}
                 />
