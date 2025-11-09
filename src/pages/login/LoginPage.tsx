@@ -1,12 +1,15 @@
 import React from 'react';
 import { useState } from "react";
 import { ThemeProvider } from '@mui/material/styles';
-import { FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Typography, Button, Paper, Stack } from '@mui/material';
+import { FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Typography, Button, Paper, Stack, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import theme from '../../theme/theme';
 import IconsBackgroundWrapper from './IconsBackgroundWrapper';
+import { loginUtilisateur } from '../../contracts/utilisateurs';
+import appColors from '../../theme/colors';
+
 
 export default function LoginPage() {
 
@@ -24,15 +27,33 @@ export default function LoginPage() {
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [loginError, setLoginError] = useState<string | null>(null);
+    
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+    
+        const response = await loginUtilisateur({email: email, motDePasse:password});
+        if (response.status === 200) {
+            const estCorrect = response.data?.success;
+            if (!estCorrect) {
+                setLoginError('Email ou mot de passe incorrect');
+            } else {
+                setLoginError(null);
+            }
+        } else {
+            const errorMsg = response.error || 'Erreur inconnue';
+            setLoginError('Erreur inattendue : ' + errorMsg);
+        }
+    };
 
     return (
         <>
             <ThemeProvider theme={theme}>
                 <IconsBackgroundWrapper>
                     <Stack>
-                        <Paper component="div" sx={{ borderRadius: '30px', padding: '2rem', minWidth: '25vw' }}>
+                        <Paper component="form" onSubmit={handleSubmit} sx={{ borderRadius: '30px', padding: '2rem', minWidth: '25vw' }}>
 
-                            <Typography variant="h3" sx={{ color: theme.couleurs.text.primary, margin: '0 2rem 2rem 2rem', fontWeight: 800 }}>Anonymex</Typography>
+                            <Typography variant="h3" sx={{ color: appColors.text.primary, margin: '0 2rem 2rem 2rem', fontWeight: 800 }}>Anonymex</Typography>
 
                             <Stack spacing={3} direction={"column"} alignItems={"center"}>
 
@@ -73,6 +94,10 @@ export default function LoginPage() {
                                         label="Mot de passe"
                                     />
                                 </FormControl>
+
+                                <Alert severity="error" id="login-error" sx={{width: '80%', display: loginError ? 'flex' : 'none'}}>
+                                    {loginError}
+                                </Alert>
 
                                 <Button
                                     variant="contained"
