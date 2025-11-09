@@ -22,7 +22,7 @@ export const EpreuveSchema = z.object({
     date: z.date(),
     duree: z.number().int().positive(), // durée en minutes
     copies: z.number().int().nonnegative().optional(), // nombre de copies déposées
-    copiesTotal: z.number().int().positive().optional(), // nombre total de copies attendues
+    inscrits: z.number().int().positive().optional(), // nombre total de copies attendues
     incidents: z.number().int().nonnegative().optional() // nombre d'incidents de lecture
 });
 
@@ -42,10 +42,10 @@ export const getEpreuves = (sessionId: number) => {
     return apiRequest<null, APIListEpreuves>('GET', `/sessions/${sessionId}/epreuves`);
 }
 
-export const UpdateEpreuve = (sessionId: number, epreuveCode: string, updateData: APIUpdateEpreuve) => {
-    return apiRequest<APIUpdateEpreuve, APIBoolResponse>('PUT', `/sessions/${sessionId}/epreuves/${epreuveCode}`, updateData, UpdateEpreuveSchema);
+export const updateEpreuve = (sessionId: number, epreuveCode: string, updateData: APIUpdateEpreuve) => {
+    return apiRequest<APIUpdateEpreuve, APIBoolResponse>('PATCH', `/sessions/${sessionId}/epreuves/${epreuveCode}`, updateData, UpdateEpreuveSchema);
 }
 
-export const GetEpreuve = (sessionId: number, epreuveCode: string) => {
+export const getEpreuve = (sessionId: number, epreuveCode: string) => {
     return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}`);
 }

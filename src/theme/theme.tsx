@@ -11,7 +11,20 @@ declare module '@mui/material/styles' {
 }
 
 const theme = createTheme({
-  couleurs: appColors,
+  palette: {
+    primary: {
+      main: appColors.primary.main,
+      light: appColors.primary.light,
+      dark: appColors.primary.dark,
+    },
+    background: {
+      default: appColors.background.default,
+    },
+    text: {
+      primary: appColors.text.primary,
+      secondary: appColors.text.secondary,
+    },
+  }
 });
 
 export default theme;

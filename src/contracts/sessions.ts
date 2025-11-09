@@ -28,16 +28,11 @@ export const ListSessionsSchema = z.object({
     sessions: z.array(SessionSchema)
 });
 
-export const DeleteSessionSchema = z.object({
-    id: z.number().int().positive()
-});
-
 // --- Types ---
 export type APISession = z.infer<typeof SessionSchema>;
 export type APINewSession = z.infer<typeof NewSessionSchema>;
 export type APIUpdateSession = z.infer<typeof UpdateSessionSchema>;
 export type APIListSessions = z.infer<typeof ListSessionsSchema>;
-export type APIDeleteSession = z.infer<typeof DeleteSessionSchema>;
 
 // --- Endpoints API ---
 export const getSessions = () => {
@@ -49,7 +44,7 @@ export const createSession = (newSession: APINewSession) => {
 }
 
 export const updateSession = (id: number, updateData: APIUpdateSession) => {
-    return apiRequest<APIUpdateSession, APISession>('PUT', `/sessions/${id}`, updateData, UpdateSessionSchema);
+    return apiRequest<APIUpdateSession, APISession>('PATCH', `/sessions/${id}`, updateData, UpdateSessionSchema);
 }
 
 export const deleteSession = (id: number) => {
