@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from "react";
+import React, {useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Typography, Button, Paper, Stack, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -9,9 +8,12 @@ import theme from '../../theme/theme';
 import IconsBackgroundWrapper from './IconsBackgroundWrapper';
 import { loginUtilisateur } from '../../contracts/utilisateurs';
 import appColors from '../../theme/colors';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function LoginPage() {
+
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -24,6 +26,8 @@ export default function LoginPage() {
     const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -39,6 +43,10 @@ export default function LoginPage() {
                 setLoginError('Email ou mot de passe incorrect');
             } else {
                 setLoginError(null);
+                setIsLoading(true);
+                window.setTimeout(() => {
+                    navigate('/accueil');
+                }, 5000);
             }
         } else {
             const errorMsg = response.error || 'Erreur inconnue';
@@ -53,9 +61,9 @@ export default function LoginPage() {
                     <Stack>
                         <Paper component="form" onSubmit={handleSubmit} sx={{ borderRadius: '30px', padding: '2rem', minWidth: '25vw' }}>
 
-                            <Typography variant="h3" sx={{ color: appColors.text.primary, margin: '0 2rem 2rem 2rem', fontWeight: 800 }}>Anonymex</Typography>
-
                             <Stack spacing={3} direction={"column"} alignItems={"center"}>
+
+                                <Typography variant="h3" sx={{ color: appColors.text.primary, margin: '0 2rem 2rem 2rem', fontWeight: 800}}>Anonymex</Typography>
 
                                 <FormControl sx={{ width: '80%' }} variant="outlined">
                                     <InputLabel htmlFor="outlined-adornment-email">E-mail</InputLabel>
@@ -101,11 +109,16 @@ export default function LoginPage() {
 
                                 <Button
                                     variant="contained"
+                                    type="submit"
                                     endIcon={<ArrowForwardIcon />}
-                                    sx={{ borderRadius: '20px' }}
-                                    disabled={!/^\S+@\S+\.\S+$/.test(email) || password.trim().length < 5}
+                                    sx={{display: isLoading ? 'none' : 'flex', borderRadius: '20px' }}
+                                    disabled={isLoading || !/^\S+@\S+\.\S+$/.test(email) || password.trim().length < 5}
                                 >
                                     Connexion
+                                </Button>
+
+                                <Button loading variant="outlined" sx={{display: isLoading ? 'flex' : 'none', borderRadius: '20px' }} loadingPosition="end">
+                                    Chargement
                                 </Button>
                             </Stack>
                         </Paper>
