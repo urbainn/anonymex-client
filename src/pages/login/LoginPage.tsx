@@ -35,7 +35,10 @@ export default function LoginPage() {
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
+        setIsLoading(true);
+        setLoginError(null);
+        
         const response = await loginUtilisateur({email: email, motDePasse:password});
         if (response.status === 200) {
             const estCorrect = response.data?.success;
@@ -43,15 +46,13 @@ export default function LoginPage() {
                 setLoginError('Email ou mot de passe incorrect');
             } else {
                 setLoginError(null);
-                setIsLoading(true);
-                window.setTimeout(() => {
-                    navigate('/accueil');
-                }, 5000);
+                navigate('/accueil');
             }
         } else {
             const errorMsg = response.error || 'Erreur inconnue';
             setLoginError('Erreur inattendue : ' + errorMsg);
         }
+        setIsLoading(false);
     };
 
     return (
