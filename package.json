@@ -1,4 +1,4 @@
-  {
+{
   "name": "anonymex--",
   "private": true,
   "version": "0.0.0",
@@ -14,7 +14,9 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
     "@mui/icons-material": "^7.3.5",
+    "@mui/lab": "^7.0.1-beta.19",
     "@mui/material": "^7.3.5",
+    "@mui/x-tree-view": "^8.17.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",
