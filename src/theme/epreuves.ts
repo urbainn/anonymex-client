@@ -2,6 +2,7 @@ import { amber, cyan, deepPurple, grey, pink, purple, red, teal, indigo, blue, g
 
 export const themeEpreuves = {
     status: {
+        0: grey[200],
         1: grey[500],
         2: green[500],
         3: blue[300], 

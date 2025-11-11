@@ -4,6 +4,9 @@ import { themeEpreuves } from "../../theme/epreuves";
 import { deepPurple, grey, purple } from "@mui/material/colors";
 import theme from "../../theme/theme";
 
+import Icons from "../../components/Icons";
+
+
 import CloseIcon from '@mui/icons-material/Close';
 import PrintIcon from '@mui/icons-material/Print';
 import PrintDisabledIcon from '@mui/icons-material/PrintDisabled';
@@ -26,11 +29,11 @@ const epreuveStatutTextes: Record<EpreuveStatut, string> = {
 const colorIcons = "grey.800";
 
 const epreuveStatutIcons: Record<EpreuveStatut, JSX.Element> = {
-    1: <PrintDisabledIcon sx={{ color: colorIcons }} />,
-    2: <PrintIcon sx={{ color: colorIcons }} />,
-    3: <CloseIcon sx={{ color: colorIcons }} />,
-    4: <DoneIcon sx={{ color: colorIcons }} />,
-    5: <DoneAllIcon sx={{ color: colorIcons }} />,
+    1: <PrintDisabledIcon/>,
+    2: <PrintIcon />,
+    3: <CloseIcon  />,
+    4: <DoneIcon />,
+    5: <DoneAllIcon />,
 }
 
 
@@ -44,9 +47,7 @@ export function EpreuveCard(props: EpreuveCardProps) {
                 <Stack direction="row"  alignItems="center" >
 
                     <Stack padding={2} direction="row" alignItems="center" spacing={2}>
-                        <Stack direction="row" sx={{ bgcolor: themeEpreuves.status[props.statut] + '4F', borderRadius: 5, padding: 1 }}>
-                            {epreuveStatutIcons[props.statut]}
-                        </Stack>
+                        <Icons icon={epreuveStatutIcons[props.statut]} bgcolor={themeEpreuves.status[props.statut]} />
                         <Stack direction="column">
                             <Typography variant="h6">{props.nom}</Typography>
                             <Stack direction="row" spacing={2}>
