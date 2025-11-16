@@ -1,207 +1,103 @@
-import { type ReactElement, useState, useEffect, useRef, use } from "react";
-import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  Stack,
-  Typography,
-  Box,
-  Divider,
-} from "@mui/material";
-import {
-  type APIEpreuve,
-  getEpreuves
-} from "../../contracts/epreuves";
+import { useCallback, useEffect, useMemo, useState, useTransition, type ReactElement } from "react";
+import { getEpreuves, type APIEpreuve, type APIListEpreuves } from "../../contracts/epreuves";
+import { Box, Divider, Stack, Typography } from "@mui/material";
+import { useParams } from "react-router-dom";
+import { useSnackbarGlobal } from "../../contexts/snackbar";
+import { EpreuveCard } from "./EpreuveCard";
+import EpreuvesFiltre from "./EpreuvesFiltre";
+import { formatterDateEntiere } from "../../utils/dateUtils";
 
-import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+export type SortOption = "chronologique" | "inverse-chronologique";
 
+export default function EpreuvesPage(): ReactElement {
 
-import { EpreuveCard } from "../epreuves/EpreuveCard";
-import EpreuvesFiltres from "../epreuves/EpreuvesFiltres";
+    const [listeEpreuves, setListeEpreuves] = useState<APIListEpreuves>({ epreuvesAvenir: [], epreuvesPassees: [] });
+    const [estChargement, setEstChargement] = useState(false);
 
-function formatDate(value: Date | string): string {
-  const dateValue = typeof value === "string" ? new Date(value) : value;
-  return dateValue.toLocaleString();
-}
+    // Filtres et tri
+    const [typeEpreuve, setTypeEpreuve] = useState<'passees' | 'aVenir'>('passees');
+    const [filtreStatut, setFiltreStatut] = useState<number | null>(null); // null => tout afficher
+    const [optionTri, setOptionTri] = useState<SortOption>("chronologique");
 
+    // Transitions afin de fluidifier les mises à jour d'état
+    const [enAttente, demarrerTransition] = useTransition();
 
-function EpreuvesPage(): ReactElement {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [epreuves, setEpreuves] = useState<APIEpreuve[]>([]);
-  const [listeDateEpreuves, setListeDateEpreuves] = useState<Date[]>([]);
-  const [selected, setSelected] = useState<Record<number, boolean>>({ 0: true, 1: false, 2: false, 3: false, 4: false, 5: false });
-  const [numbers, setNumbers] = useState<NumbersValue[]>([0, 1, 2, 3, 4, 5]);
+    // Contexte de snackbar pour afficher les erreurs
+    const { afficherErreur } = useSnackbarGlobal();
 
+    // Récupérer l'id de la session depuis l'URL
+    const { idSession } = useParams();
 
-  function selectedValue(): NumbersValue {
-    for (const key in selected) {
-      if (selected[key as unknown as number]) {
-        console.log("Valeur sélectionnée :", key);
-        return Number(key) as NumbersValue;
-      }
-    }
-    return 0 as NumbersValue;
-  }
+    // Charger les épreuves depuis l'API
+    useEffect(() => {
+        setEstChargement(true);
+        async function chargerEpreuves() {
+            const reponse = await getEpreuves(1);
+            if (reponse.data && reponse.status === 200) {
+                // Chargement réussi
+                setListeEpreuves(reponse.data);
+            } else {
+                // Erreur lors du chargement
+                afficherErreur("Impossible de charger les épreuves : " + (reponse.error ?? "Erreur inconnue"));
+                setListeEpreuves({ epreuvesAvenir: [], epreuvesPassees: [] });
+            }
+            setEstChargement(false);
+        }
+        chargerEpreuves();
+    }, [afficherErreur]);
 
-  // 0 : Selection de toutes les épreuves
-  type NumbersValue = 0 | 1 | 2 | 3 | 4 | 5;
+    // lorsque le filtre de statut change
+    const handleFiltreChange = (newStatut: number | null) => {
+    };
 
+    // calculer les épreuves à afficher selon les filtres et le tri
+    const epreuvesAffichees = useMemo(() => {
+        const epreuves = typeEpreuve === 'aVenir' ? listeEpreuves.epreuvesAvenir : listeEpreuves.epreuvesPassees;
+        const resultat: (APIEpreuve | number)[] = [];
 
-  useEffect(() => {
-    console.log("Valeur sélectionnée (useEffect) :", selectedValue());
-  }, [selected]);
+        let derniereDateGroupe: number = 0;
+        for (let i = 0; i < epreuves.length; i++) {
+            const epreuve = epreuves[i];
+            const dateEntiere = Math.floor(epreuve.date / 86400000);
+            if (derniereDateGroupe !== dateEntiere) {
+                resultat.push(dateEntiere);
+                derniereDateGroupe = dateEntiere;
+            }
+            if (filtreStatut === null || epreuve.statut === filtreStatut) {
+                resultat.push(epreuve);
+            }
+        }
 
-  
+        // A FAIRE: gerer tri
+        return resultat;
+    }, [listeEpreuves, typeEpreuve, filtreStatut, /*optionTri*/]);
 
-  useEffect(() => {
-    // Trier les épreuves par date croissante
-    epreuves.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    console.log("Épreuves triées :", epreuves);
-
-    // Créer la liste des dates d'épreuves uniques
-    const listeDates: Date[] = [];
-    epreuves.forEach((epreuve) => {
-      const epreuveDate = new Date(epreuve.date);
-      const existeDeja = listeDates.some((date) => memeDate(date, epreuveDate)); // ✅ ici
-
-      if (!existeDeja) {
-        listeDates.push(epreuveDate);
-      }
-    });
-
-    setListeDateEpreuves(listeDates);
-    console.log("Liste des dates d'épreuves :", listeDates);
-
-  }, [epreuves]);
-
-
-  // Charger et afficher les épreuves
-  const handleChargerEpreuves = async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-
-    // attendre 2 secondes (voir le chargement)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // requête à l'API
-    const response = await getEpreuves(1);
-
-    if (response.data && response.status === 200) {
-      setEpreuves(response.data.epreuves);
-    } else {
-      setEpreuves([]);
-      setError(response.error ?? "Impossible de récupérer les épreuves.");
-    }
-
-    setLoading(false);
-  };
-
-  function memeDate(date1: Date, date2: Date): boolean {
     return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
+        <Stack direction={"row"} justifyContent={"center"}>
+            <Stack sx={{ width: '75vw', paddingTop: 4 }} spacing={4} direction={"row"}
+            justifyContent={"space-between"} alignItems={"flex-start"} divider={<Divider orientation="vertical" flexItem />}>
+                    <Box sx={{ width: '70%'}}>
+                        { /* LISTE DES ÉPREUVES */ }
+                        { estChargement ? (
+                            <Typography>Chargement des épreuves...</Typography>
+                        ) : (
+                            <Stack spacing={2}>
+                                {epreuvesAffichees.map((epreuve) => (
+                                    typeof epreuve === "number" ? (
+                                        <Typography key={epreuve} variant="h5" paddingTop={3} fontWeight={700}>{formatterDateEntiere(epreuve)}</Typography>
+                                    ) : (
+                                        <EpreuveCard key={epreuve.code + epreuve.date} epreuve={epreuve} />
+                                    )
+                                ))}
+                            </Stack>
+                        )}
+                    </Box>
+                    <Box sx={{ width: '30%' }}>
+                        { /* FILTRES ET OPTIONS DE TRI */ }
+                        <EpreuvesFiltre value={0} nombreEpreuves={epreuvesAffichees.length} selected={true} onClick={() => {}}></EpreuvesFiltre>
+                    </Box>
+                </Stack>
+        </Stack>
     );
-  }
 
-  return (
-    <Stack spacing={3} padding={3} alignItems={"center"} margin="0 auto">
-
-      <Button
-        variant="contained"
-        onClick={handleChargerEpreuves}
-        disabled={loading}
-      >
-        {loading ? <CircularProgress size={20} /> : "Charger les épreuves"}
-      </Button>
-
-      {error ? (
-        // Afficher l'erreur
-        <Alert severity="error">{error}</Alert>
-      ) : (
-
-        <>
-
-          {!loading && epreuves.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
-              Aucune épreuve à afficher.
-            </Typography>
-          )}
-
-          <Stack >
-            {!loading && epreuves.length > 0 && (
-
-              <Stack direction="row" alignItems="center" spacing={5}>
-                <Stack height="100dvh" overflow="auto">
-                  <Stack spacing={1} minWidth={800} flexGrow={1} p={2}>
-
-                    {listeDateEpreuves.map((dateEpreuve) => (
-                      <Stack>
-                        <Typography variant="h5" fontWeight={500}>
-                          {formatDate(dateEpreuve).split(" ")[0]}
-                        </Typography>
-
-
-                        <Stack spacing={2} sx={{ pt: 2 }}>
-                          {epreuves
-
-                            .filter((epreuve) =>
-                              memeDate(new Date(epreuve.date), dateEpreuve) &&
-                              (selectedValue() === 0 || epreuve.statut === selectedValue())
-                            )
-
-                            .map((epreuve) => (
-                              <EpreuveCard key={epreuve.code} {...epreuve} />
-                            ))}
-                        </Stack>
-                      </Stack>
-                    ))}
-                  </Stack>
-                </Stack>
-
-                <Divider orientation="vertical" flexItem />
-                <Stack p={2} flexGrow={1} minWidth={800} spacing={2}>
-
-
-                  {/* Map apres de 1 a 5 */}
-
-                  {numbers.map((value) => (
-                    <EpreuvesFiltres key={value} value={value} nombreEpreuves={epreuves.filter(epreuve => epreuve.statut === value).length} selected={selected[value]} onClick={() => {
-                      setSelected({
-                        0: false,
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false,
-                        [value]: !selected[value], // active/désactive la Card cliquée
-                      });
-                    }}
-                    />
-                  ))}
-                </Stack>
-              </Stack>
-            )}
-          </Stack>
-        </>
-      )}
-    </Stack>
-  );
 }
-
-export default EpreuvesPage;
-
-/*
-  <Typography variant="subtitle2" color="text.secondary">
-                  Code : {epreuve.code}<br />
-                  Status : {EpreuveStatutNom[epreuve.statut]}<br />
-                  Date : {formatDate(epreuve.date)}<br />
-                  Durée : {epreuve.duree} minutes<br />
-                  Salles : {epreuve.salles.join(', ')}
-                </Typography>
-
-            */

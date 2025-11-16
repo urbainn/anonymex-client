@@ -1,18 +1,10 @@
 import theme from "../../theme/theme";
-import { Card, CardActionArea, Stack, Typography, Chip, Zoom } from "@mui/material";
-import { blue, grey, indigo, red } from '@mui/material/colors';
-import type { APIEpreuve, EpreuveStatut } from "../../contracts/epreuves";
+import { Card, CardActionArea, Stack, Typography, Zoom } from "@mui/material";
+import { grey, indigo } from '@mui/material/colors';
 import type { JSX } from "react";
 import { themeEpreuves } from "../../theme/epreuves";
 
-import Icons from "../../components/Icons";
-
-
-import CloseIcon from '@mui/icons-material/Close';
-import PrintIcon from '@mui/icons-material/Print';
-import PrintDisabledIcon from '@mui/icons-material/PrintDisabled';
-import DoneIcon from '@mui/icons-material/Done';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import IconeRond from "../../components/IconeRond";
 import CheckIcon from '@mui/icons-material/Check';
 
 type ValueStatut = 0 | 1 | 2 | 3 | 4 | 5;
@@ -35,10 +27,6 @@ const epreuveStatutSubtextes: Record<ValueStatut, string> = {
     5: 'Afficher les examens pour lesquels les notes ont été exportées.',
 }
 
-
-const colorIcons = "grey.800";
-
-
 interface EpreuvesFiltresProps {
     value: ValueStatut;
     nombreEpreuves: number;
@@ -53,7 +41,6 @@ function EpreuvesFiltres({ value, nombreEpreuves, selected, onClick }: EpreuvesF
                 bgcolor: selected ? grey[300] : grey[50],
                 '&:hover': { backgroundColor: selected ? grey[400] : grey[50] },
                 'transition': 'background-color 0.3s',
-              
             }}>
 
                 <Stack direction="row" alignItems="center" justifyContent={"space-between"}>
@@ -80,7 +67,7 @@ function EpreuvesFiltres({ value, nombreEpreuves, selected, onClick }: EpreuvesF
                     {selected && (
                         <Zoom in={selected} timeout={300}>
                             <Stack padding={2}>
-                                <Icons icon={<CheckIcon />} bgcolor={indigo[500]} />
+                                <IconeRond icon={<CheckIcon />} bgcolor={indigo[500] + '4F'} />
                             </Stack>
                         </Zoom>
                     )}

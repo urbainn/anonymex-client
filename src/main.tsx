@@ -11,14 +11,17 @@ import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import theme from './theme/theme'
+import { SnackbarProvider } from './contexts/snackbar.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <SnackbarProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   </StrictMode>,
 )
