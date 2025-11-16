@@ -9,12 +9,19 @@ import SignUpPage from './pages/signup/SignUpPage'
 function App() {
   return (
     <Routes>
+      { /* Authentification */ }
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/tests" element={<TestsAPI />} />
-      <Route path="/examens" element={<EpreuvesPage />} />
+      <Route path="/invitation/:jeton" element={<SignUpPage />} />
+
+      { /* Sessions*/ }
       <Route path="/accueil" element={<TestsAccueil />} />
-      <Route path="/signup" element={<SignUpPage />} />
+
+      { /* Examens/épreuves */ }
+      <Route path="/examens" element={<EpreuvesPage />} />
+    
+      { /* Autre */ }
+      <Route path="/tests" element={<TestsAPI />} />
     </Routes>
   )
 }
