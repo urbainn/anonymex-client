@@ -3,6 +3,7 @@ import React from 'react';
 import IconsBackgroundWrapper from '../login/IconsBackgroundWrapper';
 import theme from '../../theme/theme';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { getInvitationInfo } from '../../contracts/utilisateurs';
 
 
 export default function SignUpPage() {
@@ -31,25 +32,32 @@ export default function SignUpPage() {
     const [error, setError] = React.useState<string | null>(null);
 
 
-    const emailSubmitting = (e: React.FormEvent<HTMLFormElement>) => {
+    const emailSubmitting = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const emailRegex = /^\S+@\S+\.\S+$/;
 
         const emailRegexValid = emailRegex.test(email);
 
-        setEmailValid(emailRegexValid);
+        const response = await getInvitationInfo("jetonTemporaire", email);
 
         if (emailRegexValid) {
-            const emailFromInvitation = "test@gmail.com";
-
-            if (email !== emailFromInvitation) {
-                setError("L'adresse e-mail ne correspond pas à celle de l'invitation.");
-                setEmailValid(false);
+            if (response.status === 200) {
+                const estCorrect = response.data?.success;
+                if (!estCorrect) {
+                    setError("L'adresse e-mail ne correspond pas à celle de l'invitation.");
+                    setEmailValid(false);
+                } else {
+                    setError(null);
+                    setEmailValid(true);
+                }
+            } else {
+                const errorMsg = response.error || 'Erreur inconnue';
+                setError('Erreur inattendue : ' + errorMsg);
             }
-            else {
-                setError(null);
-            }
+        } else {
+            setError("L'adresse e-mail n'est pas valide.");
+            setEmailValid(false);
         }
     }
 
@@ -93,8 +101,7 @@ export default function SignUpPage() {
                 <IconsBackgroundWrapper>
 
                     {/* Étape 1 : confirmation de l'email */}
-                    <Stack display={emailValid ? 'none' : 'flex'}>
-                        <Paper component="form" onSubmit={emailSubmitting} elevation={3} sx={{ padding: 4, borderRadius: 5, maxWidth: 600 }}>
+                        <Paper component="form" onSubmit={emailSubmitting} elevation={3} sx={{ display: emailValid ? 'none' : 'flex', padding: 4, borderRadius: 5, maxWidth: 600 }}>
                             <Stack spacing={2}>
                                 <Typography variant="h4" component="h1" gutterBottom textAlign="justify">
                                     Inscription
@@ -128,11 +135,9 @@ export default function SignUpPage() {
                                 </Alert>
                             </Stack>
                         </Paper>
-                    </Stack>
 
                     {/* Étape 2 : finalisation de l'inscription */}
-                    <Stack display={emailValid ? 'flex' : 'none'}>
-                        <Paper component="form" onSubmit={finalSubmit} elevation={3} sx={{ padding: 4, borderRadius: 5, maxWidth: 600 }}>
+                        <Paper component="form" onSubmit={finalSubmit} elevation={3} sx={{display: emailValid ? 'flex' : 'none', padding: 4, borderRadius: 5, maxWidth: 600 }}>
                             <Stack spacing={2}>
                                 <Typography variant="h4" component="h1" gutterBottom textAlign="justify">
                                     Finalisez votre inscription
@@ -213,7 +218,6 @@ export default function SignUpPage() {
                                 </Stack>
                             </Stack>
                         </Paper>
-                    </Stack>
                 </IconsBackgroundWrapper>
             </ThemeProvider>
         </>

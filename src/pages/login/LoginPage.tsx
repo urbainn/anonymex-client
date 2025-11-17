@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Typography, Button, Paper, Stack, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -6,7 +6,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import theme from '../../theme/theme';
 import IconsBackgroundWrapper from './IconsBackgroundWrapper';
-import { loginUtilisateur } from '../../contracts/utilisateurs';
+import { getAuthInfo, loginUtilisateur } from '../../contracts/utilisateurs';
 import appColors from '../../theme/colors';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,19 @@ import { useNavigate } from 'react-router-dom';
 export default function LoginPage() {
 
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+        (async () => {
+            const infoAuth = await getAuthInfo();
+            if (infoAuth.data && infoAuth.data.premiereConnexion === true) {
+              navigate("/invitation/setup");
+            }
+        })();
+
+    }, [navigate]);
+
+
+
 
     const [showPassword, setShowPassword] = React.useState(false);
 
@@ -49,8 +62,8 @@ export default function LoginPage() {
                 navigate('/accueil');
             }
         } else {
-            const errorMsg = response.error || 'Erreur inconnue';
-            setLoginError('Erreur inattendue : ' + errorMsg);
+            const errorMsg = JSON.parse(response.error) || 'Erreur inconnue';
+            setLoginError('Erreur inattendue : ' + errorMsg.error);
         }
         setIsLoading(false);
     };

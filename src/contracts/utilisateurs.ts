@@ -62,7 +62,7 @@ export const getAuthInfo = () => {
 }
 
 export const getInvitationInfo = (jetonInvitation: string, email: string) => {
-    return apiRequest<APIInvitationInfo, APIBoolResponse>('POST', '/utilisateurs/invitations/info', { jetonInvitation, email }, PostInvitationSchema);
+    return apiRequest<APIInvitationInfo, APIBoolResponse>('POST', '/utilisateurs/auth/invitation/', { jetonInvitation, email }, PostInvitationSchema);
 }
 
 export const creerUtilisateur = (createData: APICreateUtilisateur) => {
