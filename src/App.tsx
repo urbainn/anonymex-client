@@ -5,6 +5,8 @@ import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
 import TestsAccueil from './pages/TestsAccueil'
 import SignUpPage from './pages/signup/SignUpPage'
+import TestsComponents from './pages/TestsComponents'
+
 
 function App() {
   return (
@@ -22,6 +24,10 @@ function App() {
     
       { /* Autre */ }
       <Route path="/tests" element={<TestsAPI />} />
+
+      { /* Tests Composants */ }
+      <Route path="/tests2" element={<TestsComponents />} />
+
     </Routes>
   )
 }
