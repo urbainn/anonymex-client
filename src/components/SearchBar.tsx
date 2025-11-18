@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { TextField, Typography, Badge, Stack, Chip, Grow, Paper, InputBase, Button } from '@mui/material';
+import { TextField, Typography, Badge, Stack, Chip, Grow, Paper, InputBase, Button, Tooltip } from '@mui/material';
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -20,6 +20,7 @@ import LeftArrow from '@mui/icons-material/ArrowBackIosNew';
 
 import IconeRond from './IconeRond';
 import { de } from 'zod/v4/locales';
+import { FormatListBulleted } from '@mui/icons-material';
 
 interface SearchBarProps {
     setNewSearchTerm: (value: string) => void;
@@ -54,77 +55,31 @@ function SearchBar(props: SearchBarProps) {
     }, [clickedSearch]);
 
     return (
-        <Stack spacing={2} alignItems="center" direction={"row"}>
+        <Stack spacing={2} alignItems="center" justifyContent={"center"} direction={"row"} width={'100%'}>
 
-            {props.backToSessions && (
-                <Paper sx={{ borderRadius: 10, height: defaultHeight }}>
-                    <Button variant="contained"
-                        sx={{
-                            backgroundColor: theme.palette.primary.main,
-                            height: defaultHeight,
-                            borderRadius: 10,
-                            boxShadow: 'none',
-                            '&:hover': { backgroundColor: theme.palette.primary.dark, boxShadow: 'none', cursor: 'pointer', transform: 'scaleX(1.05)' },
-                            transition: 'background-color 0.3s ease , transform 0.5s ease',
-                            maxWidth: 500,
-                            textTransform: 'none',
-                        
-                        }}
-                        startIcon={<LeftArrow />}
-                        TouchRippleProps={{ color: theme.palette.primary.dark }}
-                        onClick={handleBackToSessions}
+            <Tooltip title="Changer de session">
+                <Button startIcon={<LeftArrow />}
+                    onClick={handleBackToSessions}
+                    variant='outlined'
+                    sx={{ alignSelf: 'stretch'}}
+                >Session 1 pair 2025</Button>
+            </Tooltip>
 
-                    >
-                        <Typography noWrap fontWeight={500}>
-                            {props.sessionName ? props.sessionName : 'Retour aux sessions'}
-                        </Typography>
-                    </Button>
-                </Paper>
+            <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600, minWidth: '30vw', borderColor: '#c4c4c4' }} variant='outlined'>
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Rechercher une épreuve, une date, une salle..."
+                />
+                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                    <SearchIcon />
+                </IconButton>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
 
-            )
-            }
-
-            <Paper
-                sx={{
-                    display: 'flex', alignItems: 'center', width: 600, borderRadius: 10, height: defaultHeight,
-                    '&:hover': { bgcolor: grey[100], transform: 'scale(1.01)' },
-                    transition: 'background-color 0.3s ease, transform 0.3s ease',
-
-                }}
-            >
-                <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"} sx={{ width: '100%' }}>
-                    <InputBase
-                        sx={{ ml: 2, flex: 1 }}
-                        placeholder="Rechercher un examen, une date, une salle..."
-                        inputProps={{ 'aria-label': 'Rechercher un examen, une date, une salle...' }}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onFocus={() => setClickedSearch(true)}
-                        onBlur={() => setClickedSearch(false)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') { handleSearch(); } }}
-                    />
-
-                    <Stack sx={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: defaultHeight,
-                        bgcolor: grey[300],
-                        borderTopRightRadius: 20,
-                        borderBottomRightRadius: 20,
-                        width: defaultWidth,
-                        '&:hover': { bgcolor: grey[400], width: defaultWidth + 20 },
-                        '&:active': { bgcolor: grey[500] },
-                        cursor: 'pointer',
-                        transition: 'background-color 0.3s ease, width 0.3s ease',
-                    }}
-                        onClick={handleSearch}
-
-                        aria-label="search"
-                    >
-                        <SearchIcon sx={{ mr: 2, ml: 2, color: grey[700] }} />
-                    </Stack>
-
-                </Stack>
+                <Tooltip title="Voir toutes les épreuves">
+                    <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
+                        <FormatListBulleted />
+                    </IconButton>
+                </Tooltip>
             </Paper>
 
 

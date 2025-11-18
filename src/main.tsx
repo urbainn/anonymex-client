@@ -14,7 +14,6 @@ import theme from './theme/theme'
 import { SnackbarProvider } from './contexts/snackbar.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SnackbarProvider>
@@ -23,5 +22,4 @@ createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </SnackbarProvider>
     </ThemeProvider>
-  </StrictMode>,
 )
