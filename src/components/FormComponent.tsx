@@ -30,17 +30,32 @@ export interface Field {
     required?: boolean;
 }
 
-interface FormComponentProps {
-    title: string;
-    description?: string;
+export interface Title {
+    text: string;
+    variant?: "h3" |"h4" | "h5" | "h6";
+    align?: "left" | "center" | "right" | "justify";
+    style?: React.CSSProperties;
+}
+
+export interface Button {
+    label: string;
+    endIcon?: React.ReactNode;
+    disabled?: boolean;
     display?: React.CSSProperties["display"];
+}
+
+interface FormComponentProps {
+    title: Title;
+    description?: string;
+    displayForm?: React.CSSProperties["display"];
     fields: Field[];
     error?: string | null;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-    submitLabel?: string;
+    submitButton: Button;
+    children?: React.ReactNode;
 }
 
-export default function FormComponent({title,description, display,fields,error,onSubmit,submitLabel = "Valider"}: FormComponentProps) {
+export default function FormComponent({title,description, displayForm ,fields,error,onSubmit,submitButton, children}: FormComponentProps) {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((s) => !s);
@@ -54,19 +69,10 @@ export default function FormComponent({title,description, display,fields,error,o
         lastname: "Nom"
     };
 
-    const defaultPlaceholders: Record<FieldType, string> = {
-        email: "prenom.nom@etablissement.fr",
-        password: "",
-        "password-confirm": "",
-        text: "",
-        firstname: "",
-        lastname: ""
-    };
-
     return (
-        <Paper component="form" onSubmit={onSubmit} sx={{ display, padding: 4, borderRadius: 5, maxWidth: 600 }}>
-            <Stack spacing={2}>
-                <Typography variant="h4" gutterBottom textAlign="justify">{title}</Typography>
+        <Paper component="form" onSubmit={onSubmit} sx={{ display: displayForm, padding: 4, borderRadius: 5, maxWidth: 600 }}>
+            <Stack spacing={3}>
+                <Typography variant={title.variant || "h4"} gutterBottom textAlign={title.align || "justify"}>{title.text}</Typography>
 
                 {description && (
                     <Typography variant="body1" gutterBottom textAlign="justify">{description}</Typography>
@@ -75,7 +81,7 @@ export default function FormComponent({title,description, display,fields,error,o
                 {fields.map((f, index) => {
                     const label = labels[f.type];
                     const placeholder =
-                        f.placeholder || defaultPlaceholders[f.type];
+                        f.placeholder || "";
 
                     return (
                         <FormControl key={index} fullWidth variant="outlined">
@@ -116,10 +122,14 @@ export default function FormComponent({title,description, display,fields,error,o
                     type="submit"
                     variant="contained"
                     color="primary"
-                    sx={{ borderRadius: "20px", marginTop: 2, alignSelf: "center" }}
+                    sx={{ display: submitButton.display || 'flex', borderRadius: "20px", marginTop: 2, alignSelf: "center" }}
+                    endIcon={submitButton.endIcon}
+                    disabled={submitButton.disabled}
+                    
                 >
-                    {submitLabel}
+                    {submitButton.label}
                 </Button>
+                {children}
             </Stack>
         </Paper>
     );

@@ -111,8 +111,8 @@ export default function SignUpPage() {
                 <IconsBackgroundWrapper>
                     {/* Formulaire de première inscription */}
                     <FormComponent
-                        display={jeton === 'setup' ? 'flex' : 'none'}
-                        title="Bienvenue"
+                        displayForm={jeton === 'setup' ? 'flex' : 'none'}
+                        title={{ text: "Bienvenue", variant: "h4", align: "justify" }}
                         description="Veuillez renseigner votre nom, prénom, email et un mot de passe pour finaliser votre inscription."
                         error={error}
                         onSubmit={finalSubmit}
@@ -122,25 +122,29 @@ export default function SignUpPage() {
                             { name: "email", type: "email", value: email, onChange: setEmail, required: true },
                             { name: "password", type: "password", value: password, onChange: setPassword, required: true },
                             { name: "passwordConfirm", type: "password-confirm", value: passwordConfirm, onChange: setPasswordConfirm, required: true }
-                        ]}
+                        ]} submitButton={{
+                            label: "S'inscrire"
+                        }}                    
                     />
 
                     {/* Formulaire d'invitation confirmation email*/}
                     <FormComponent
-                        display={jeton === 'setup' ? 'none' : emailValid ? 'none' : 'flex'}
-                        title="Inscription"
+                        displayForm={jeton === 'setup' ? 'none' : emailValid ? 'none' : 'flex'}
+                        title={{ text: "Inscription", variant: "h4", align: "justify" }}
                         description="Saisissez l'adresse e-mail indiquée par l'administrateur lors de la création de votre lien d'invitation. Elle doit correspondre exactement."
                         error={error}
                         onSubmit={emailSubmitting}
                         fields={[
-                            { name: "email", type: "email", value: email, onChange: setEmail, placeholder: "prenom.nom@etablissement.fr"},
-                        ]}
+                            { name: "email", type: "email", value: email, onChange: setEmail, placeholder: "prenom.nom@etablissement.fr" },
+                        ]} submitButton={{
+                            label: "Valider"
+                        }}                    
                     />
 
                     {/* Formulaire final d'inscription après validation de l'email */}
                     <FormComponent
-                        display={jeton === 'setup' ? 'none' : emailValid ? 'flex' : 'none'}
-                        title="Finalisez votre inscription"
+                        displayForm={jeton === 'setup' ? 'none' : emailValid ? 'flex' : 'none'}
+                        title={{ text: "Finalisez votre inscription", variant: "h4", align: "justify" }}
                         description="Veuillez renseigner votre nom, prénom et un mot de passe afin d'activer votre compte. Le mot de passe doit contenir au moins 8 caractères."
                         error={error}
                         onSubmit={finalSubmit}
@@ -149,7 +153,9 @@ export default function SignUpPage() {
                             { name: "firstname", type: "firstname", value: firstName, onChange: setFirstName },
                             { name: "password", type: "password", value: password, onChange: setPassword },
                             { name: "passwordConfirm", type: "password-confirm", value: passwordConfirm, onChange: setPasswordConfirm }
-                        ]}
+                        ]} submitButton={{
+                            label: "S'inscrire",
+                        }}                    
                     />
                 </IconsBackgroundWrapper>
             </ThemeProvider>
