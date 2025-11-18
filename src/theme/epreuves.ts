@@ -1,8 +1,8 @@
-import { amber, cyan, deepPurple, grey, pink, purple, red, teal, indigo, blue, green } from '@mui/material/colors';
+import { cyan, deepPurple, grey, purple, indigo, blue, green } from '@mui/material/colors';
 
 export const themeEpreuves = {
     status: {
-        0: grey[200],
+        0: deepPurple[200],
         1: grey[500],
         2: green[500],
         3: blue[300], 

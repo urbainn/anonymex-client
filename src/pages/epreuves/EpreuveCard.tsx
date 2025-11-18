@@ -4,11 +4,11 @@ import { themeEpreuves } from "../../theme/epreuves";
 import { grey } from "@mui/material/colors";
 
 import IconeRond from "../../components/IconeRond";
-import CloseIcon from '@mui/icons-material/Close';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import PrintIcon from '@mui/icons-material/Print';
 import PrintDisabledIcon from '@mui/icons-material/PrintDisabled';
 import DoneIcon from '@mui/icons-material/Done';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import type { JSX } from "react";
 
 
@@ -26,9 +26,9 @@ const epreuveStatutTextes: Record<EpreuveStatut, string> = {
 const epreuveStatutIcons: Record<EpreuveStatut, JSX.Element> = {
     1: <PrintDisabledIcon/>,
     2: <PrintIcon />,
-    3: <CloseIcon  />,
-    4: <DoneIcon />,
-    5: <DoneAllIcon />,
+    3: <HourglassTopIcon />,
+    4: <DocumentScannerIcon />,
+    5: <DoneIcon />,
 }
 
 
