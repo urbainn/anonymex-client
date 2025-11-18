@@ -1,9 +1,10 @@
-import {Alert, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Stack, ThemeProvider, Typography } from '@mui/material';
+import { ThemeProvider} from '@mui/material';
 import React from 'react';
 import IconsBackgroundWrapper from '../login/IconsBackgroundWrapper';
 import theme from '../../theme/theme';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { getInvitationInfo } from '../../contracts/utilisateurs';
+import { creerUtilisateur, getInvitationInfo } from '../../contracts/utilisateurs';
+import { useParams } from 'react-router-dom';
+import FormComponent from '../../components/FormComponent';
 
 
 export default function SignUpPage() {
@@ -17,19 +18,10 @@ export default function SignUpPage() {
     const [password, setPassword] = React.useState<string>('');
     const [passwordConfirm, setPasswordConfirm] = React.useState<string>('');
 
-    const [showPassword, setShowPassword] = React.useState(false);
-    
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-    
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-            event.preventDefault();
-        };
-    
-    const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-            event.preventDefault();
-    };
-
     const [error, setError] = React.useState<string | null>(null);
+
+    const jetonInvitation = useParams();
+    const jeton = jetonInvitation.jeton || '';
 
 
     const emailSubmitting = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,25 +31,26 @@ export default function SignUpPage() {
 
         const emailRegexValid = emailRegex.test(email);
 
-        const response = await getInvitationInfo("jetonTemporaire", email);
-
-        if (emailRegexValid) {
-            if (response.status === 200) {
-                const estCorrect = response.data?.success;
-                if (!estCorrect) {
-                    setError("L'adresse e-mail ne correspond pas à celle de l'invitation.");
-                    setEmailValid(false);
-                } else {
-                    setError(null);
-                    setEmailValid(true);
-                }
-            } else {
-                const errorMsg = response.error || 'Erreur inconnue';
-                setError('Erreur inattendue : ' + errorMsg);
-            }
-        } else {
+        if (!emailRegexValid) {
             setError("L'adresse e-mail n'est pas valide.");
             setEmailValid(false);
+            return;
+        }
+
+        const response = await getInvitationInfo(jeton, email);
+
+        if (response.status === 200) {
+            const estCorrect = response.data?.success;
+            if (!estCorrect) {
+                setError("L'adresse e-mail ne correspond pas à celle de l'invitation.");
+                setEmailValid(false);
+            } else {
+                setError(null);
+                setEmailValid(true);
+            }
+        } else {
+            const errorMsg = response.error || 'Erreur inconnue';
+            setError('Erreur inattendue : ' + errorMsg);
         }
     }
 
@@ -74,6 +67,17 @@ export default function SignUpPage() {
 
         setError(null);
 
+        if (jeton === 'setup') {
+            const emailSetupValid = email.trim() !== '' && /^\S+@\S+\.\S+$/.test(email);
+            if (!emailSetupValid) {
+                setError("L'adresse e-mail n'est pas valide.");
+                return;
+            }
+            else {
+                setEmailValid(true);
+            }
+        }
+
         if (!passwordsAreMatching) {
             setError("Les mots de passe ne correspondent pas.");
             return;
@@ -89,9 +93,15 @@ export default function SignUpPage() {
             return;
         }
 
-        if (emailValid && passwordsAreMatching && passwordLengthValid && nameFilled && firstNameFilled) {
-            console.log("Inscription réussie !");
-            setError(null);
+        if (emailValid) {
+            creerUtilisateur({
+                jetonInvitation: jeton,
+                email: email,
+                nom: name,
+                prenom: firstName,
+                motDePasse: password
+            });
+            console.log("Utilisateur créé avec succès !");
         }
     }
 
@@ -99,125 +109,48 @@ export default function SignUpPage() {
         <>
             <ThemeProvider theme={theme}>
                 <IconsBackgroundWrapper>
+                    {/* Formulaire de première inscription */}
+                    <FormComponent
+                        display={jeton === 'setup' ? 'flex' : 'none'}
+                        title="Bienvenue"
+                        description="Veuillez renseigner votre nom, prénom, email et un mot de passe pour finaliser votre inscription."
+                        error={error}
+                        onSubmit={finalSubmit}
+                        fields={[
+                            { name: "lastname", type: "lastname", value: name, onChange: setName, required: true },
+                            { name: "firstname", type: "firstname", value: firstName, onChange: setFirstName, required: true },
+                            { name: "email", type: "email", value: email, onChange: setEmail, required: true },
+                            { name: "password", type: "password", value: password, onChange: setPassword, required: true },
+                            { name: "passwordConfirm", type: "password-confirm", value: passwordConfirm, onChange: setPasswordConfirm, required: true }
+                        ]}
+                    />
 
-                    {/* Étape 1 : confirmation de l'email */}
-                        <Paper component="form" onSubmit={emailSubmitting} elevation={3} sx={{ display: emailValid ? 'none' : 'flex', padding: 4, borderRadius: 5, maxWidth: 600 }}>
-                            <Stack spacing={2}>
-                                <Typography variant="h4" component="h1" gutterBottom textAlign="justify">
-                                    Inscription
-                                </Typography>
+                    {/* Formulaire d'invitation confirmation email*/}
+                    <FormComponent
+                        display={jeton === 'setup' ? 'none' : emailValid ? 'none' : 'flex'}
+                        title="Inscription"
+                        description="Saisissez l'adresse e-mail indiquée par l'administrateur lors de la création de votre lien d'invitation. Elle doit correspondre exactement."
+                        error={error}
+                        onSubmit={emailSubmitting}
+                        fields={[
+                            { name: "email", type: "email", value: email, onChange: setEmail, placeholder: "prenom.nom@etablissement.fr"},
+                        ]}
+                    />
 
-                                <Typography variant="body1" gutterBottom textAlign="justify">
-                                    Saisissez l'adresse e-mail indiquée par l'administrateur lors de la création de votre lien d'invitation. 
-                                    Elle doit correspondre exactement.
-                                </Typography>
-                                <Stack direction={'row'} alignItems={"center"} spacing={2} justifyContent={"space-between"}>
-                                    <FormControl sx={{ width: '75%' }} variant="outlined">
-                                        <InputLabel htmlFor="outlined-adornment-email">E-mail</InputLabel>
-                                        <OutlinedInput
-                                            id="outlined-adornment-email"
-                                            type='email'
-                                            label="E-mail"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder='prenom.nom@etablissement.fr'
-                                            required
-                                        />
-                                    </FormControl>
-
-                                    <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '20px', marginTop: 2, alignSelf: 'center' }} disabled={!/^\S+@\S+\.\S+$/.test(email)}>
-                                        Valider 
-                                    </Button>
-                                </Stack>
-
-                                <Alert severity="error" id="login-error" sx={{width: '100%', display: error ? 'flex' : 'none'}}>
-                                    {error}
-                                </Alert>
-                            </Stack>
-                        </Paper>
-
-                    {/* Étape 2 : finalisation de l'inscription */}
-                        <Paper component="form" onSubmit={finalSubmit} elevation={3} sx={{display: emailValid ? 'flex' : 'none', padding: 4, borderRadius: 5, maxWidth: 600 }}>
-                            <Stack spacing={2}>
-                                <Typography variant="h4" component="h1" gutterBottom textAlign="justify">
-                                    Finalisez votre inscription
-                                </Typography>
-
-                                <Typography variant="body1" gutterBottom textAlign="justify">
-                                    Veuillez renseigner votre nom, prénom et un mot de passe afin d'activer votre compte. 
-                                    Le mot de passe doit contenir au moins 8 caractères.
-                                </Typography>
-                                <Stack direction={'column'} alignItems={"center"} gap={2} justifyContent={"space-between"}>
-
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel htmlFor="outlined-adornment-name">Nom</InputLabel>
-                                        <OutlinedInput
-                                            id="outlined-adornment-name"
-                                            type='text'
-                                            label='Nom'
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                        />
-                                    </FormControl>
-
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel htmlFor="outlined-adornment-firstname">Prénom</InputLabel>
-                                        <OutlinedInput
-                                            id="outlined-adornment-firstname"
-                                            type='text'
-                                            label='Prénom'
-                                            value={firstName}
-                                            onChange={(e) => setFirstName(e.target.value)}
-
-                                        />
-                                    </FormControl>
-                                    
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel htmlFor="outlined-adornment-password">Mot de passe</InputLabel>
-                                        <OutlinedInput
-                                            type={showPassword ? 'text' : 'password'}
-                                            endAdornment={
-                                                // Afficher/cacher le mot de passe
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        aria-label={showPassword ? 'cacher le mot de passe' : 'afficher le mot de passe'}
-                                                        onClick={handleClickShowPassword}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        onMouseUp={handleMouseUpPassword}
-                                                        edge="end"
-                                                    >
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
-                                            required
-                                            value={password}
-                                            label="Mot de passe"
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                    </FormControl>
-                                    <FormControl fullWidth variant="outlined">
-                                        <InputLabel htmlFor="outlined-adornment-password-confirm">Confirmez votre mot de passe</InputLabel>
-                                        <OutlinedInput
-                                            id="outlined-adornment-password-confirm"
-                                            type='password'
-                                            label="Confirmez votre mot de passe"
-                                            value={passwordConfirm}
-                                            onChange={(e) => setPasswordConfirm(e.target.value)}
-                                            required
-                                        />
-                                    </FormControl>
-
-                                    <Alert severity="error" id="login-error" sx={{width: '100%', display: error ? 'flex' : 'none'}}>
-                                        {error}
-                                    </Alert>
-
-                                    <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '20px', marginTop: 2, alignSelf: 'center' }}>
-                                        Valider 
-                                    </Button>
-                                </Stack>
-                            </Stack>
-                        </Paper>
+                    {/* Formulaire final d'inscription après validation de l'email */}
+                    <FormComponent
+                        display={jeton === 'setup' ? 'none' : emailValid ? 'flex' : 'none'}
+                        title="Finalisez votre inscription"
+                        description="Veuillez renseigner votre nom, prénom et un mot de passe afin d'activer votre compte. Le mot de passe doit contenir au moins 8 caractères."
+                        error={error}
+                        onSubmit={finalSubmit}
+                        fields={[
+                            { name: "lastname", type: "lastname", value: name, onChange: setName },
+                            { name: "firstname", type: "firstname", value: firstName, onChange: setFirstName },
+                            { name: "password", type: "password", value: password, onChange: setPassword },
+                            { name: "passwordConfirm", type: "password-confirm", value: passwordConfirm, onChange: setPasswordConfirm }
+                        ]}
+                    />
                 </IconsBackgroundWrapper>
             </ThemeProvider>
         </>
