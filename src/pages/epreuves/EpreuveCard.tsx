@@ -32,12 +32,12 @@ const epreuveStatutIcons: Record<EpreuveStatut, JSX.Element> = {
 }
 
 
-export function EpreuveCard(props: { epreuve: APIEpreuve }): JSX.Element {
+export function EpreuveCard(props: { epreuve: APIEpreuve, onClick: () => void }): JSX.Element {
     const date = new Date(props.epreuve.date);
     const epreuve = props.epreuve;
     return (
         <Card variant="outlined" sx={{ backgroundColor: grey[50], borderRadius: 2 }}>
-            <CardActionArea sx={{ '&:hover': { backgroundColor: grey[100] } }}>
+            <CardActionArea sx={{ '&:hover': { backgroundColor: grey[100] } }} onClick={props.onClick}>
                 <Stack direction="row"  alignItems="center">
                     <Stack padding={2} direction="row" alignItems="center" spacing={2}>
                         <IconeRond icon={epreuveStatutIcons[epreuve.statut]} bgcolor={themeEpreuves.status[epreuve.statut] + '4F'} />

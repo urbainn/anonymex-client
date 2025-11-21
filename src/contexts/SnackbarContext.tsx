@@ -65,11 +65,11 @@ export function SnackbarProvider ({ children }: { children: ReactNode }) {
 }
 
 export function useSnackbarGlobal () {
-  const contexte = useContext(SnackbarContext)
+  const contexte = useContext(SnackbarContext);
 
   if (!contexte) {
-    throw new Error('useSnackbarGlobal doit être utilisé dans un SnackbarProvider')
+    throw new Error('useSnackbarGlobal doit être utilisé dans un SnackbarProvider');
   }
 
-  return contexte
+  return contexte;
 }

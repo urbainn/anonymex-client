@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useTransition, type ReactElement } from "react";
 import { getEpreuves, type APIEpreuve, type APIListEpreuves } from "../../contracts/epreuves";
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import { useSnackbarGlobal } from "../../contexts/snackbar";
+import { useSnackbarGlobal } from "../../contexts/SnackbarContext";
 import { EpreuveCard } from "./EpreuveCard";
 import { formatterDateEntiere } from "../../utils/dateUtils";
 import SearchBar from "../../components/SearchBar";
@@ -9,10 +9,14 @@ import EpreuvesFiltreCard from "./EpreuvesFiltreCard";
 import { blue, grey, purple } from "@mui/material/colors";
 import { themeEpreuves } from "../../theme/epreuves";
 import { Folder } from "@mui/icons-material";
+import { useModal } from "../../contexts/ModalContext";
+import { EpreuveModal } from "./epreuve-modal/EpreuveModal";
 
 export type SortOption = "chronologique" | "inverse-chronologique";
 
 export default function EpreuvesPage(): ReactElement {
+
+    console.log("Rendu de EpreuvesPage");
 
     const [listeEpreuves, setListeEpreuves] = useState<APIListEpreuves>({ epreuvesAvenir: [], epreuvesPassees: [] });
     const [estChargement, setEstChargement] = useState(false);
@@ -30,6 +34,9 @@ export default function EpreuvesPage(): ReactElement {
 
     // Contexte de snackbar pour afficher les erreurs
     const { afficherErreur } = useSnackbarGlobal();
+
+    // Modal
+    const { ouvrir } = useModal();
 
     // Charger les épreuves depuis l'API
     useEffect(() => {
@@ -56,12 +63,18 @@ export default function EpreuvesPage(): ReactElement {
         chargerEpreuves();
     }, [afficherErreur]);
 
+    // lorsqu'une épreuve est cliquée : afficher modal
+    const handleEpreuveClick = (epreuve: APIEpreuve) => {
+        ouvrir(<EpreuveModal />);
+    }
 
     // lorsque le filtre de type d'épreuve change
     const handleTypeEpreuveChange = (newType: 'passees' | 'aVenir') => {
         if (typeEpreuve === newType) return;
-        if (filtreStatut !== null) setFiltreStatut(null);
-        demarrerTransition(() => setTypeEpreuve(newType));
+        demarrerTransition(() => {
+            setTypeEpreuve(newType);
+            if (filtreStatut !== null) setFiltreStatut(null);
+        });
     };
 
     // lorsque le filtre de statut change
@@ -121,7 +134,7 @@ export default function EpreuvesPage(): ReactElement {
                                         typeof epreuve === "number" ? (
                                             <Typography key={epreuve} variant="h5" paddingTop={3} fontWeight={700}>{formatterDateEntiere(epreuve)}</Typography>
                                         ) : (
-                                            <EpreuveCard key={epreuve.code + epreuve.date} epreuve={epreuve} />
+                                            <EpreuveCard key={epreuve.code + epreuve.date} epreuve={epreuve} onClick={() => handleEpreuveClick(epreuve)} />
                                         )
                                     ))}
                                 </Stack>
