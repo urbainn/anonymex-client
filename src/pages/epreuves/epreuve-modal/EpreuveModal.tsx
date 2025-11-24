@@ -6,15 +6,8 @@ import { type APIEpreuve } from "../../../contracts/epreuves";
 
 import { Typography, Stack, Divider, colors } from "@mui/material";
 
-import IconeRond from "../../../components/IconeRond";
-import { TypoTitre } from "./TypoTitre";
-import { TypoSousTitre } from "./TypoSousTitre";
-
-
-import EditIcon from '@mui/icons-material/Edit';
-
-
-
+import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
+import { set } from "zod";
 
 export interface EpreuveModalProps {
     epreuve: APIEpreuve;
@@ -43,59 +36,54 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
     const [modifHoraire, setModifHoraire] = React.useState<boolean>(false);
     const [modifNbInscrits, setModifNbInscrits] = React.useState<boolean>(false);
 
-    const [nouvelleValeur, setNouvelleValeur] = React.useState<string>("");
+    const [nomEpreuve, setNomEpreuve] = React.useState<string>(epreuve.nom ? epreuve.nom : "Épreuve sans nom");
+    const [dateEpreuve, setDateEpreuve] = React.useState<string>(epreuve.date ? formatDate(epreuve.date) : "Date non définie");
+    const [horaireEpreuve, setHoraireEpreuve] = React.useState<string>((epreuve.date && epreuve.duree) ? calcHoraires(epreuve.date, epreuve.duree) : "Horaire non défini");
+    const [nbInscritsEpreuve, setNbInscritsEpreuve] = React.useState<string>(epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : "Aucun inscrit");
 
-    React.useEffect(() => {
-        console.log("EpreuveModal monté avec epreuve :", epreuve);
-    }, [epreuve]);
+    const handleModifEpreuve = () => {
+        setModifEpreuve(true);
+    };
+    const handleModifDate = () => {
+        setModifDate(true);
+    };
+    const handleModifHoraire = () => {
+        setModifHoraire(true);
+    };
+    const handleModifNbInscrits = () => {
+        setModifNbInscrits(true);
+    };
+    
 
-
-    const handleModifEpreuve = () => { console.log("Modifier épreuve"); };
-    const handleModifDate = () => { console.log("Modifier date"); };
-    const handleModifHoraire = () => { console.log("Modifier horaire"); };
-    const handleModifNbInscrits = () => { console.log("Modifier nombre inscrits"); };
-
-    type TitreLigne = [string, string | null, () => void];
-
-    const titres: TitreLigne[] = [
-        ["Épreuve à venir", epreuve.nom && epreuve.code ? `${epreuve.nom} (${epreuve.code})` : null, handleModifEpreuve],
-        ["Date", epreuve.date ? formatDate(epreuve.date) : null, handleModifDate],
-        ["Horaires", epreuve.duree ? calcHoraires(epreuve.date, epreuve.duree) : null, handleModifHoraire],
-        ["Nombre inscrits", epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : null, handleModifNbInscrits]
-    ];
-
-
-
-
+    const handleSaveEpreuve = (newVal: string) => {
+        setNomEpreuve(newVal);
+        setModifEpreuve(false);
+    };
+    const handleSaveDate = (newVal: string) => {
+        setDateEpreuve(newVal);
+        setModifDate(false);
+    };
+    const handleSaveHoraire = (newVal: string) => {
+        setHoraireEpreuve(newVal);
+        setModifHoraire(false);
+    };
+    const handleSaveNbInscrits = (newVal: string) => {
+        setNbInscritsEpreuve(newVal);
+        setModifNbInscrits(false);
+    };
 
     return (
-        <Modal titre="Mise en situation" onClose={fermer} >
+        <Modal titre={epreuve.code} onClose={fermer} >
 
             {/* Faudra mettre ce code dans un composant car 3 pages */}
 
-            <Stack spacing={2} direction="row">
+            <Stack spacing={2} direction="row" p={2}>
                 <Stack direction="row" alignItems="center" spacing={1}>
                     <Stack spacing={3}  >
-                        {titres.map(([titre, sousTitre, fonction], index) => (
-                            <Stack direction="column" key={index}>
-
-                                <TypoTitre>{titre}</TypoTitre>
-
-                                <Stack direction="row" spacing={3} alignItems="center">
-                                    {sousTitre ? <TypoSousTitre>{sousTitre}</TypoSousTitre> : <TypoSousTitre sx={{ color: "red" }} > Pas de données </TypoSousTitre>}
-
-                                    <Stack
-                                        sx={{ bgcolor: colors.blue[100], borderRadius: 100, padding: 0.75, cursor: 'pointer', '&:hover': { bgcolor: colors.blue[200] } }}
-
-                                        onClick={fonction}
-                                    >
-                                        <EditIcon fontSize="small"  sx={{ color: "grey.700" }} />
-                                    </Stack>
-
-                                </Stack>
-                            </Stack>
-
-                        ))}
+                        <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonction={handleModifEpreuve} fonctionSave={handleSaveEpreuve} modif={modifEpreuve} type="text" />
+                        <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonction={handleModifDate} fonctionSave={handleSaveDate} modif={modifDate} type="date" />
+                        <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonction={handleModifHoraire} fonctionSave={handleSaveHoraire} modif={modifHoraire} type="time" />
+                        <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonction={handleModifNbInscrits} fonctionSave={handleSaveNbInscrits} modif={modifNbInscrits} type="number" />
                     </Stack>
                 </Stack>
 

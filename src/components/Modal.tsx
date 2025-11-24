@@ -51,7 +51,7 @@ export function Modal({ children, onClose, titre }: { children: React.ReactNode;
             transition: `opacity ${ANIMATION_DUREE}ms ease`
         }}>
             <Box borderRadius={2} bgcolor="background.paper" boxShadow={5}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" px={1} py={1} gap={4} borderBottom="1px solid #ccc">
+                <Stack direction="row" justifyContent="space-between" alignItems="center" px={1} py={1} gap={4} borderBottom="1px solid #ccc" sx={{ width: 600 }}>
                     <Typography variant="h6" ml={2}>{titre}</Typography>
                     <IconButton onClick={handleClose} size="large"><Close /></IconButton>
                 </Stack>
