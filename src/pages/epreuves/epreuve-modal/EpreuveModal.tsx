@@ -22,10 +22,10 @@ export interface EpreuveModalProps {
 export function EpreuveModal({ epreuve }: EpreuveModalProps) {
     const { fermer } = useModal();
 
-    const [value, setValue] = useState<0 | 1 | 2>(0);
+    const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2>(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
-        setValue(newValue);
+        setNumeroOnglet(newValue);
     };
 
     return (
@@ -33,16 +33,16 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
         <Modal titre={epreuve.code} onClose={fermer}>
             <Stack>
                 <Stack>
-                    <Tabs value={value} onChange={handleChange} sx={{ width: '100%' }}>
+                    <Tabs value={numeroOnglet} onChange={handleChange} sx={{ width: '100%' }}>
                         <Tab label="Details" />
                         <Tab label="Liste étudiants" />
                         <Tab label="Générer matériel d'examen" />
                     </Tabs>
                 </Stack>
                 <Stack>
-                    {value === 0 && <DetailsEpreuve epreuve={epreuve} />}
-                    {value === 1 && <MenuListeEtudiants />}
-                    {value === 2 && <MenuGenererMatExam />}
+                    {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
+                    {numeroOnglet === 1 && <MenuListeEtudiants />}
+                    {numeroOnglet === 2 && <MenuGenererMatExam />}
                 </Stack>
             </Stack>
         </Modal>
