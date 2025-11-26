@@ -47,7 +47,7 @@ export default function LoginPage() {
                 navigate('/accueil');
             }
         } else {
-            const errorMsg = JSON.parse(response.error) || 'Erreur inconnue';
+            const errorMsg = response.error ? JSON.parse(response.error) : 'Erreur inconnue';
             setLoginError('Erreur inattendue : ' + errorMsg.error);
         }
         setIsLoading(false);

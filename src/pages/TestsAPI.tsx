@@ -47,7 +47,7 @@ function TestsAPI(): ReactElement {
 		const response = await getEpreuves(1);
 
 		if (response.data && response.status === 200) {
-			setEpreuves(response.data.epreuves);
+			setEpreuves(response.data.epreuvesPassees);
 		} else {
 			setEpreuves([]);
 			setError(response.error ?? "Impossible de récupérer les épreuves.");
@@ -76,7 +76,7 @@ function TestsAPI(): ReactElement {
 
 						<Stack spacing={1} width={600}>
 							{epreuves.map((epreuve) => (
-								<EpreuveCard key={epreuve.code + '-' + epreuve.nom} {...epreuve} />
+								<></>// <EpreuveCard key={epreuve.code + '-' + epreuve.nom} {...epreuve} />
 							))}
 							{!loading && epreuves.length === 0 && (
 								<Typography variant="body2" color="text.secondary">
