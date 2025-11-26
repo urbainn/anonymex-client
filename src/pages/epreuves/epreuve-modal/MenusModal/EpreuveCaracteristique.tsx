@@ -2,8 +2,8 @@
 
 import { Stack, TextField } from "@mui/material";
 import React from "react";
-import { TypoSousTitre } from "./TypoSousTitre";
-import { TypoTitre } from "./TypoTitre";
+import { TypoSousTitre } from "../TypoSousTitre";
+import { TypoTitre } from "../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
 import { colors } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';

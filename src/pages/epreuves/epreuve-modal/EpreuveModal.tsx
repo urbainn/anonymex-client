@@ -4,94 +4,48 @@ import { Modal } from "../../../components/Modal";
 import { useModal } from "../../../contexts/ModalContext";
 import { type APIEpreuve } from "../../../contracts/epreuves";
 
-import { Typography, Stack, Divider, colors } from "@mui/material";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
 
-import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
-import { set } from "zod";
+import DetailsEpreuve from "./MenusModal/MenuDetailsEpreuve";
+import MenuListeEtudiants from "./MenusModal/MenuListeEtudiants";
+import MenuGenererMatExam from "./MenusModal/MenuGenererMatExam";
+
+import { useState } from "react";
+import { Stack } from "@mui/material";
 
 export interface EpreuveModalProps {
     epreuve: APIEpreuve;
 }
 
-
-function calcHoraires(date: number, dureeMinutes: number): string {
-    const dateConvert = new Date(date);
-
-    const dateDebut = new Date(dateConvert.setHours(dateConvert.getHours(), dateConvert.getMinutes()));
-    const dateFin = new Date(dateConvert.setHours(dateConvert.getHours(), dateConvert.getMinutes() + dureeMinutes));
-
-    return dateDebut.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " - " + dateFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDate(date: number): string {
-    const dateConvert = new Date(date);
-    return dateConvert.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
 export function EpreuveModal({ epreuve }: EpreuveModalProps) {
     const { fermer } = useModal();
 
-    const [modifEpreuve, setModifEpreuve] = React.useState<boolean>(false);
-    const [modifDate, setModifDate] = React.useState<boolean>(false);
-    const [modifHoraire, setModifHoraire] = React.useState<boolean>(false);
-    const [modifNbInscrits, setModifNbInscrits] = React.useState<boolean>(false);
+    const [value, setValue] = useState<0 | 1 | 2>(0);
 
-    const [nomEpreuve, setNomEpreuve] = React.useState<string>(epreuve.nom ? epreuve.nom : "Épreuve sans nom");
-    const [dateEpreuve, setDateEpreuve] = React.useState<string>(epreuve.date ? formatDate(epreuve.date) : "Date non définie");
-    const [horaireEpreuve, setHoraireEpreuve] = React.useState<string>((epreuve.date && epreuve.duree) ? calcHoraires(epreuve.date, epreuve.duree) : "Horaire non défini");
-    const [nbInscritsEpreuve, setNbInscritsEpreuve] = React.useState<string>(epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : "Aucun inscrit");
-
-    const handleModifEpreuve = () => {
-        setModifEpreuve(true);
-    };
-    const handleModifDate = () => {
-        setModifDate(true);
-    };
-    const handleModifHoraire = () => {
-        setModifHoraire(true);
-    };
-    const handleModifNbInscrits = () => {
-        setModifNbInscrits(true);
-    };
-    
-
-    const handleSaveEpreuve = (newVal: string) => {
-        setNomEpreuve(newVal);
-        setModifEpreuve(false);
-    };
-    const handleSaveDate = (newVal: string) => {
-        setDateEpreuve(newVal);
-        setModifDate(false);
-    };
-    const handleSaveHoraire = (newVal: string) => {
-        setHoraireEpreuve(newVal);
-        setModifHoraire(false);
-    };
-    const handleSaveNbInscrits = (newVal: string) => {
-        setNbInscritsEpreuve(newVal);
-        setModifNbInscrits(false);
+    const handleChange = (event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
+        setValue(newValue);
     };
 
     return (
-        <Modal titre={epreuve.code} onClose={fermer} >
 
-            {/* Faudra mettre ce code dans un composant car 3 pages */}
-
-            <Stack spacing={2} direction="row" p={2}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                    <Stack spacing={3}  >
-                        <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonction={handleModifEpreuve} fonctionSave={handleSaveEpreuve} modif={modifEpreuve} type="text" />
-                        <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonction={handleModifDate} fonctionSave={handleSaveDate} modif={modifDate} type="date" />
-                        <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonction={handleModifHoraire} fonctionSave={handleSaveHoraire} modif={modifHoraire} type="time" />
-                        <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonction={handleModifNbInscrits} fonctionSave={handleSaveNbInscrits} modif={modifNbInscrits} type="number" />
-                    </Stack>
+        <Modal titre={epreuve.code} onClose={fermer}>
+            <Stack>
+                <Stack>
+                    <Tabs value={value} onChange={handleChange} sx={{ width: '100%' }}>
+                        <Tab label="Details" />
+                        <Tab label="Liste étudiants" />
+                        <Tab label="Générer matériel d'examen" />
+                    </Tabs>
                 </Stack>
-
-                <Divider sx={{ my: 2 }} />
-
-                <Stack spacing={2}>
+                <Stack>
+                    {value === 0 && <DetailsEpreuve epreuve={epreuve} />}
+                    {value === 1 && <MenuListeEtudiants />}
+                    {value === 2 && <MenuGenererMatExam />}
                 </Stack>
             </Stack>
         </Modal>
+
     );
 }
