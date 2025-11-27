@@ -1,10 +1,10 @@
 import { ThemeProvider} from '@mui/material';
 import React from 'react';
 import IconsBackgroundWrapper from '../login/IconsBackgroundWrapper';
-import theme from '../../theme/theme';
-import { creerUtilisateur, getInvitationInfo } from '../../contracts/utilisateurs';
+import theme from '../../../theme/theme';
+import { creerUtilisateur, getInvitationInfo } from '../../../contracts/utilisateurs';
 import { useParams } from 'react-router-dom';
-import FormComponent from '../../components/FormComponent';
+import FormComponent from '../../../components/FormComponent';
 
 
 export default function SignUpPage() {
@@ -20,9 +20,7 @@ export default function SignUpPage() {
 
     const [error, setError] = React.useState<string | null>(null);
 
-    const jetonInvitation = useParams();
-    const jeton = jetonInvitation.jeton || '';
-
+    const { jeton } = useParams();
 
     const emailSubmitting = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -37,7 +35,7 @@ export default function SignUpPage() {
             return;
         }
 
-        const response = await getInvitationInfo(jeton, email);
+        const response = await getInvitationInfo(jeton!, email);
 
         if (response.status === 200) {
             const estCorrect = response.data?.success;
@@ -95,7 +93,7 @@ export default function SignUpPage() {
 
         if (emailValid) {
             creerUtilisateur({
-                jetonInvitation: jeton,
+                jetonInvitation: jeton!,
                 email: email,
                 nom: name,
                 prenom: firstName,
@@ -103,6 +101,10 @@ export default function SignUpPage() {
             });
             console.log("Utilisateur créé avec succès !");
         }
+    }
+
+    if (!jeton) {
+        return <div>Jeton manquant dans l'URL. Veuillez vérifier la validité du lien d'inscription.</div>;
     }
 
     return (

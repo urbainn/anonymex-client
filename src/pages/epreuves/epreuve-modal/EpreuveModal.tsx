@@ -6,11 +6,10 @@ import { type APIEpreuve } from "../../../contracts/epreuves";
 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
 
-import DetailsEpreuve from "./MenusModal/MenuDetailsEpreuve";
-import MenuListeEtudiants from "./MenusModal/MenuListeEtudiants";
-import MenuGenererMatExam from "./MenusModal/MenuGenererMatExam";
+import DetailsEpreuve from "./menu-modal/MenuDetailsEpreuve";
+import MenuListeEtudiants from "./menu-modal/MenuListeEtudiants";
+import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
 
 import { useState } from "react";
 import { Stack } from "@mui/material";
@@ -24,7 +23,7 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
 
     const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2>(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
         setNumeroOnglet(newValue);
     };
 

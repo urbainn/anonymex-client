@@ -3,12 +3,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import { Button } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import theme from '../../theme/theme';
+import theme from '../../../theme/theme';
 import IconsBackgroundWrapper from './IconsBackgroundWrapper';
-import { getAuthInfo, loginUtilisateur } from '../../contracts/utilisateurs';
-import appColors from '../../theme/colors';
+import { getAuthInfo, loginUtilisateur } from '../../../contracts/utilisateurs';
+import appColors from '../../../theme/colors';
 import { useNavigate } from 'react-router-dom';
-import FormComponent from '../../components/FormComponent';
+import FormComponent from '../../../components/FormComponent';
 
 
 export default function LoginPage() {
@@ -59,7 +59,7 @@ export default function LoginPage() {
                 <IconsBackgroundWrapper>
 
                     <FormComponent
-                        title={{ text: "Anonymex", variant: "h3",  align: "center", style: { color: appColors.text.primary, margin: '0 2rem 2rem 2rem', fontWeight: 800 } }}
+                        title={{ text: "Anonymex", variant: "h3",  align: "center", style: { color: appColors.text.primary, margin: '0.1em 2rem 0rem 2rem', fontWeight: 800 } }}
                         onSubmit={handleSubmit}
                         displayForm="flex"
                         fields={[
