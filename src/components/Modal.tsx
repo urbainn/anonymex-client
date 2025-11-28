@@ -55,7 +55,7 @@ export function Modal({ children, onClose, titre }: { children: React.ReactNode;
                     <Typography variant="h6" ml={2}>{titre}</Typography>
                     <IconButton onClick={handleClose} size="large"><Close /></IconButton>
                 </Stack>
-                <Box padding={2} width="700px" height="100%" >
+                <Box padding={2} width="1000px" height="600px" >
                     {children}
                 </Box>
             </Box>

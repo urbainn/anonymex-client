@@ -6,7 +6,6 @@ import { type APIEpreuve } from "../../../contracts/epreuves";
 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
 
 import DetailsEpreuve from "./MenusModal/MenuDetailsEpreuve";
 import MenuListeEtudiants from "./MenusModal/MenuListeEtudiants";
@@ -24,7 +23,7 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
 
     const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2>(0);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
         setNumeroOnglet(newValue);
     };
 
@@ -32,14 +31,14 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
 
         <Modal titre={epreuve.code} onClose={fermer}>
             <Stack>
-                <Stack>
-                    <Tabs value={numeroOnglet} onChange={handleChange} sx={{ width: '100%' }}>
+                <Stack >
+                    <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} sx={{ width: '100%' }}>
                         <Tab label="Details" />
                         <Tab label="Liste étudiants" />
                         <Tab label="Générer matériel d'examen" />
                     </Tabs>
                 </Stack>
-                <Stack>
+                <Stack width={"100%"}>
                     {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
                     {numeroOnglet === 1 && <MenuListeEtudiants />}
                     {numeroOnglet === 2 && <MenuGenererMatExam />}

@@ -1,31 +1,27 @@
 
 
-import { Stack, TextField } from "@mui/material";
-import React from "react";
+import { Stack } from "@mui/material";
+import { type JSX } from "react";
 import { TypoSousTitre } from "../TypoSousTitre";
 import { TypoTitre } from "../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
 import { colors } from "@mui/material";
-import CheckIcon from '@mui/icons-material/Check';
 
 interface EpreuveCaracteristiqueProps {
     titre: string;
     sousTitre?: string;
-    fonction: () => void;
-    fonctionSave: (newVal: string) => void;
+    fonctionModif: () => void;
     modif: boolean;
-    type: string;
+    AdaptedTextField?: (props: any) => JSX.Element;
 }
 
-export const EpreuveCaracteristique = ({ titre, sousTitre, fonction, fonctionSave, modif, type }: EpreuveCaracteristiqueProps) => {
-
-    const [tempValeur, setTempValeur] = React.useState<string>(sousTitre ? sousTitre : "");
+export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField }: EpreuveCaracteristiqueProps) => {
 
     return (
         <Stack direction="column" >
             <TypoTitre>{titre}</TypoTitre>
 
-            <Stack direction="row" spacing={3} alignItems="center" justifyContent={"space-between"} width={"100%"}>
+            <Stack direction="row" spacing={3} alignItems="center" justifyContent={"space-between"} width={"100%"} height={40}>
                 {modif == false && (
                     <>
                         {sousTitre ? (
@@ -36,48 +32,34 @@ export const EpreuveCaracteristique = ({ titre, sousTitre, fonction, fonctionSav
                             </TypoSousTitre>
                         )}
 
-                        <Stack
-                            sx={{
-                                bgcolor: colors.blue[100],
-                                borderRadius: 100,
-                                padding: 0.75,
-                                cursor: 'pointer',
-                                '&:hover': { bgcolor: colors.blue[200] }
-                            }}
-                            onClick={fonction}
-                        >
-                            <EditIcon fontSize="small" sx={{ color: "grey.700" }} />
-                        </Stack>
+                        {/* Si le composant ne reçoit pas de TextField alors pas de modifs possible*/}
+
+                        {AdaptedTextField && (
+                            <Stack
+                                sx={{
+                                    bgcolor: colors.blue[100],
+                                    borderRadius: 100,
+                                    padding: 0.75,
+                                    cursor: 'pointer',
+                                    '&:hover': { bgcolor: colors.blue[200] }
+                                }}
+                                onClick={fonctionModif}
+                            >
+                                <EditIcon fontSize="small" sx={{ color: "grey.700" }} />
+                            </Stack>
+                        )}
                     </>
                 )}
-                {modif == true && (
-                    <Stack direction="row" spacing={2} alignItems="center" justifyContent={"space-between"}>
-                        <TextField
-                            type={type}
-                            value={tempValeur}
-                            onChange={(e) => setTempValeur(e.target.value)}
-                            size="small"
-                            variant="outlined"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    fonctionSave(tempValeur);
-                                }
-                            }}
-                        />
-                        <Stack
-                            sx={{
-                                bgcolor: colors.green[100],
-                                borderRadius: 100,
-                                padding: 0.75,
-                                cursor: 'pointer',
-                                '&:hover': { bgcolor: colors.green[200] }
-                            }}
-                            onClick={() => { fonctionSave(tempValeur); }}
 
-                        >
-                            <CheckIcon fontSize="small" sx={{ color: "grey.700" }} />
-                        </Stack>
-                    </Stack>
+                {/* Quand bouton modif activé, affichage du composant TextField adapté*/}
+
+                {modif == true && (
+                    <>
+                        {AdaptedTextField && (
+                            <AdaptedTextField />
+                        )}
+                    </>
+
                 )}
 
 

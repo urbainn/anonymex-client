@@ -61,7 +61,7 @@ function SearchBar(props: SearchBarProps) {
                 <Button startIcon={<LeftArrow />}
                     onClick={handleBackToSessions}
                     variant='outlined'
-                    sx={{ alignSelf: 'stretch'}}
+                    sx={{ alignSelf: 'stretch' }}
                 >Session 1 pair 2025</Button>
             </Tooltip>
 
