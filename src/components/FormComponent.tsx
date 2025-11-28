@@ -80,8 +80,7 @@ export default function FormComponent({title,description, displayForm ,fields,er
 
                 {fields.map((f, index) => {
                     const label = labels[f.type];
-                    const placeholder =
-                        f.placeholder || "";
+                    const placeholder = f.placeholder || "";
 
                     return (
                         <FormControl key={index} fullWidth variant="outlined">

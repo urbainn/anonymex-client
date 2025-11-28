@@ -45,7 +45,7 @@ export default function IconsBackgroundWrapper({ children, sx, className }: Back
                 {iconNodes}
             </Box>
 
-            <Box sx={{ zIndex: 1, position: 'relative', pointerEvents: 'auto' }}>
+            <Box sx={{ zIndex: 1, pointerEvents: 'auto' }}>
                 {children}
             </Box>
         </Container>

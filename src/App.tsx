@@ -4,8 +4,8 @@ import LoginPage from './pages/authentification/login/LoginPage'
 import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
 import TestsAccueil from './pages/TestsAccueil'
-import SignUpPage from './pages/authentification/signup/SignUpPage'
 import TestsComponents from './pages/TestsComponents'
+import PageInscription from './pages/authentification/signup/PageInscription'
 
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
       { /* Authentification */ }
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/invitation/:jeton" element={<SignUpPage />} />
+      <Route path="/invitation/:jeton" element={<PageInscription />} />
 
       { /* Sessions*/ }
       <Route path="/accueil" element={<TestsAccueil />} />
