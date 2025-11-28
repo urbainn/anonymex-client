@@ -11,21 +11,21 @@ import SessionPage from './pages/sessions/SessionPage'
 function App() {
   return (
     <Routes>
-      { /* Authentification */ }
+      { /* Authentification */}
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/invitation/:jeton" element={<PageInscription />} />
 
-      { /* Sessions*/ }
+      { /* Sessions*/}
       <Route path="/accueil" element={<SessionPage />} />
 
-      { /* Examens/épreuves */ }
+      { /* Examens/épreuves */}
       <Route path="/sessions/:sessionId/epreuves" element={<EpreuvesPage />} />
-    
-      { /* Autre */ }
+
+      { /* Autre */}
       <Route path="/tests" element={<TestsAPI />} />
 
-      { /* Tests Composants */ }
+      { /* Tests Composants */}
       <Route path="/tests2" element={<TestsComponents />} />
 
     </Routes>
