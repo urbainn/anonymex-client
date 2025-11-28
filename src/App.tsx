@@ -3,9 +3,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './pages/authentification/login/LoginPage'
 import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
-import TestsAccueil from './pages/TestsAccueil'
 import TestsComponents from './pages/TestsComponents'
 import PageInscription from './pages/authentification/signup/PageInscription'
+import SessionPage from './pages/sessions/SessionPage'
 
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
       <Route path="/invitation/:jeton" element={<PageInscription />} />
 
       { /* Sessions*/ }
-      <Route path="/accueil" element={<TestsAccueil />} />
+      <Route path="/accueil" element={<SessionPage />} />
 
       { /* Examens/épreuves */ }
       <Route path="/sessions/:sessionId/epreuves" element={<EpreuvesPage />} />
