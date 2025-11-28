@@ -2,8 +2,8 @@ import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React from "react";
 import { Stack, Divider } from "@mui/material";
 import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
-import DateTextField from "./textfields/DateTextField";
-import HorairesTextField from "./textfields/HorairesTextField";
+import DateTextField from "../menu-modal/textfields/DateTextField";
+import HorairesTextField from "../menu-modal/textfields/HorairesTextField";
 
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
