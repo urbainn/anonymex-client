@@ -21,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       'typescript-eslint/no-empty-object-type': 'off',
+      'unused-imports/no-unused-imports': 'warn',
     },
   },
 ])

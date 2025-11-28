@@ -72,7 +72,7 @@ export default function FormComponent({title,description, displayForm ,fields,er
     return (
         <Paper component="form" onSubmit={onSubmit} sx={{ display: displayForm, padding: 4, borderRadius: 5, maxWidth: 600 }}>
             <Stack spacing={3}>
-                <Typography variant={title.variant || "h4"} gutterBottom textAlign={title.align || "justify"}>{title.text}</Typography>
+                <Typography variant={title.variant || "h4"} gutterBottom textAlign={title.align || "justify"} style={title.style}>{title.text}</Typography>
 
                 {description && (
                     <Typography variant="body1" gutterBottom textAlign="justify">{description}</Typography>
@@ -80,8 +80,7 @@ export default function FormComponent({title,description, displayForm ,fields,er
 
                 {fields.map((f, index) => {
                     const label = labels[f.type];
-                    const placeholder =
-                        f.placeholder || "";
+                    const placeholder = f.placeholder || "";
 
                     return (
                         <FormControl key={index} fullWidth variant="outlined">

@@ -7,9 +7,9 @@ import { type APIEpreuve } from "../../../contracts/epreuves";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-import DetailsEpreuve from "./MenusModal/MenuDetailsEpreuve";
-import MenuListeEtudiants from "./MenusModal/MenuListeEtudiants";
-import MenuGenererMatExam from "./MenusModal/MenuGenererMatExam";
+import DetailsEpreuve from "./menu-modal/MenuDetailsEpreuve";
+import MenuListeEtudiants from "./menu-modal/MenuListeEtudiants";
+import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
 
 import { useState } from "react";
 import { Stack } from "@mui/material";

@@ -32,15 +32,24 @@ export async function apiRequest<B /* type body */, R /* type réponse */>(
         });
     }
 
-    console.log(url.toString())
-
     const response = await fetch(url.toString(), {
         method: methode,
         headers: {
             'Content-Type': 'application/json'
         },
         body: methode !== 'GET' && body ? JSON.stringify(body) : undefined
+    }).catch((error) => {
+        console.error('Erreur lors de la requête API:', error);
+        return null;
     });
+
+    if (!response) {
+        return {
+            status: 500,
+            data: null,
+            error: 'Erreur réseau lors de la requête API'
+        };
+    }
 
     const status = response.status;
     let data: R | null = null;
