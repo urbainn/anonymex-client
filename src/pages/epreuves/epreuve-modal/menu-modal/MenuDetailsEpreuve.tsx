@@ -10,6 +10,7 @@ import EpreuveSallesCompo from "./EpreuveSallesCompo";
 
 import FolderIcon from '@mui/icons-material/Folder';
 
+import ModalConfirmationChangements from "./ModalConfirmationChangements";
 
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
@@ -43,6 +44,10 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     const [horaireEpreuve, setHoraireEpreuve] = React.useState<string>((epreuve.date && epreuve.duree) ? calcHoraires(epreuve.date, epreuve.duree) : "Horaire non défini");
     const [nbInscritsEpreuve] = React.useState<string>(epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : "Aucun inscrit");
 
+    const [ouvrirModal, setOuvrirModal] = React.useState<boolean>(false);
+
+    const [valIntermerdiaireDate, setValIntermediaireDate] = React.useState<string>("");
+
     const handleModifEpreuve = () => {
         setModifEpreuve(true);
     };
@@ -57,6 +62,13 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     };
 
 
+
+    const confirmSaveDate = (newVal: string) => {
+        const date = new Date(newVal);
+        setValIntermediaireDate(date.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
+        setModifDate(false);
+        setOuvrirModal(true);
+    }
 
     const handleSaveDate = (newVal: string) => {
         const date = new Date(newVal);
@@ -82,13 +94,18 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     */}
 
+
+
     return (
+
         <>
+            <ModalConfirmationChangements ouvert={ouvrirModal} setOuvert={setOuvrirModal} handleSaveDate={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermerdiaireDate} />
+
 
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
                     <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} />
-                    <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={handleSaveDate} />)} />
+                    <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} />
                     <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField debut={horaireEpreuve.split(" - ")[0]} fin={horaireEpreuve.split(" - ")[1]} fonctionSave={handleSaveHoraire} />)} />
                     <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} />
                     <Stack>
@@ -113,8 +130,8 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
                     </Stack>
                 </Stack>
             </Stack>
-
-        </>);
+        </>
+    );
 }
 
 export default DetailsEpreuve;

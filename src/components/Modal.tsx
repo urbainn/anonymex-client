@@ -8,7 +8,7 @@ const ANIMATION_DUREE = 200;
 /**
  * Modal, avec backdrop, centrage et entête
  */
-export function Modal({ children, onClose, titre }: { children: React.ReactNode; onClose: () => void; titre: string }) {
+export function Modal({ children, onClose, titre, width, height, newbgcolor }: { children: React.ReactNode; onClose: () => void; titre: string, width?: string, height?: string, newbgcolor?: string }) {
     const [isVisible, setIsVisible] = useState(false);
     const closeTimeoutRef = useRef<number | null>(null);
 
@@ -51,11 +51,11 @@ export function Modal({ children, onClose, titre }: { children: React.ReactNode;
             transition: `opacity ${ANIMATION_DUREE}ms ease`
         }}>
             <Box borderRadius={2} bgcolor="background.paper" boxShadow={5}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" bgcolor={colors.blue[100]} px={1} gap={4}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" bgcolor={newbgcolor ?? colors.blue[100]} px={1} gap={4}>
                     <Typography variant="h6" ml={2}>{titre}</Typography>
                     <IconButton onClick={handleClose} size="large"><Close /></IconButton>
                 </Stack>
-                <Box width="1000px" height="600px" >
+                <Box width={width ?? "100%"} height={height ?? "100%"} >
                     {children}
                 </Box>
             </Box>
