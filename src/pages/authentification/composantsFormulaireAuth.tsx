@@ -10,10 +10,10 @@ import { useState } from "react";
  * Wrapper pour les formulaires d'authentification.
  */
 export function AuthFormulaire(
-    { onSubmit, children }: { onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; children: React.ReactNode }
+    { onSubmit, type = 'signup', children }: { onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; type?: 'login' | 'signup'; children: React.ReactNode }
 ) {
     return (
-        <Paper sx={{ borderRadius: 4, width: 'clamp(400px, 50vw, 600px)' }}>
+        <Paper sx={{ borderRadius: 4, width: type === 'login' ? 'clamp(300px, 40vw, 500px)' : 'clamp(400px, 50vw, 600px)'}}>
             <form onSubmit={onSubmit}>
                 {children}
             </form>
@@ -25,11 +25,11 @@ export function AuthFormulaire(
  * Mise en page classique, avec entête pour les formulaires d'authentification.
  */
 export function AuthFormCorps(
-    { title, description, children }: { title: string; description?: string; children: React.ReactNode }
+    { title, description, type = 'signup', children }: { title: string; description?: string; children: React.ReactNode; type?: 'login' | 'signup' }
 ) {
     return (
-        <Box padding={5}>
-            <Typography variant="h4" fontWeight={600}>{title}</Typography>
+        <Box padding={5} textAlign={type === 'login' ? "center" : undefined}>
+            <Typography variant={type === 'signup' ? "h4" : "h3"} fontWeight={type === 'signup' ? 600 : 900}>{title}</Typography>
             {description && <Typography variant="body1" mt={1} color="textSecondary">{description}</Typography>}
             <Stack marginTop={4} spacing={2}>
                 {children}
@@ -62,11 +62,11 @@ export function AuthChampEmail(
  * Bouton de validation, avec état de chargement.
  */
 export function AuthBoutonValidation(
-    { label, loading, disabled, padding }: { label: string; loading: boolean; disabled?: boolean; padding?: string }
+    { label, loading, disabled, padding, type }: { label: string; loading: boolean; disabled?: boolean; padding?: string; type?: 'login' | 'signup' }
 ) {
     return (
-        <Box>
-            <Button type="submit" variant="contained" color="primary" fullWidth disabled={disabled || loading} loading={loading} size="large" sx={{ padding }}>
+        <Box sx={type === 'login' ? {display: 'flex', justifyContent: 'center', paddingBottom: 2} : undefined}>
+            <Button type="submit" variant="contained" color="primary" disabled={disabled || loading} loading={loading} size="large" sx={{ padding, borderRadius: 20, alignSelf: 'center'}}>
                 {label}
             </Button>
         </Box>

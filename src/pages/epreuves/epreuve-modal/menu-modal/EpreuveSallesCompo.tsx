@@ -4,7 +4,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import TodayIcon from '@mui/icons-material/Today';
 
-import IconRondV2 from "../../../../components/IconsRondV2";
+import IconRondV2 from "../../../../components/IconesRondV2";
 
 interface EpreuveSallesCompoProps {
     salle: string;

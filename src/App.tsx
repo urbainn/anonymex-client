@@ -1,11 +1,11 @@
 import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import LoginPage from './pages/authentification/login/LoginPage'
 import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
 import TestsComponents from './pages/TestsComponents'
 import PageInscription from './pages/authentification/signup/PageInscription'
 import SessionPage from './pages/sessions/SessionPage'
+import PageConnexion from './pages/authentification/login/PageConnexion'
 
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
     <Routes>
       { /* Authentification */}
       <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<PageConnexion />} />
       <Route path="/invitation/:jeton" element={<PageInscription />} />
 
       { /* Sessions*/}
