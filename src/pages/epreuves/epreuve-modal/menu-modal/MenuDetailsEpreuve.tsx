@@ -1,9 +1,15 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React from "react";
-import { Stack, Divider } from "@mui/material";
+import { Stack, Divider, Button, colors } from "@mui/material";
 import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
+import { TypoTitre } from "../TypoTitre";
+import { TypoSousTitre } from "../TypoSousTitre";
+import EpreuveSallesCompo from "./EpreuveSallesCompo";
+
+import FolderIcon from '@mui/icons-material/Folder';
+
 
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
@@ -79,17 +85,32 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     return (
         <>
 
-            <Stack spacing={2} direction="row" p={2} >
+            <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
                     <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} />
                     <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={handleSaveDate} />)} />
                     <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField debut={horaireEpreuve.split(" - ")[0]} fin={horaireEpreuve.split(" - ")[1]} fonctionSave={handleSaveHoraire} />)} />
                     <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} />
+                    <Stack>
+                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1 }} startIcon={<FolderIcon sx={{ color: colors.grey[800] }} />}>
+                            Réimporter depuis le tableur
+                        </Button>
+                    </Stack>
                 </Stack>
-                <Divider sx={{ my: 2 }} />
 
-                <Stack spacing={2} width={"60%"}>
+                <Divider orientation="vertical" flexItem />
 
+                <Stack width={"60%"}  >
+                    <TypoTitre>Répartition des étudiants</TypoTitre>
+                    <Stack sx={{ height: 40, py: 0.5 }} >
+                        <TypoSousTitre >Cliquez pour afficher la composition</TypoSousTitre>
+                    </Stack>
+                    <Stack spacing={1} pt={3} maxHeight={400} overflow="auto">
+                        <EpreuveSallesCompo salle="Amphi 36.3" nbEtudiants={60} nbEtuMMax={252} />
+                        <EpreuveSallesCompo salle="Amphi 5.05" nbEtudiants={252} nbEtuMMax={252} />
+                        <EpreuveSallesCompo salle="Amphi 36.01" nbEtudiants={14} nbEtuMMax={252} />
+                        <EpreuveSallesCompo salle="Amphi 5.03" nbEtudiants={130} nbEtuMMax={252} />
+                    </Stack>
                 </Stack>
             </Stack>
 

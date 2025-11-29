@@ -12,7 +12,7 @@ import MenuListeEtudiants from "./menu-modal/MenuListeEtudiants";
 import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
 
 import { useState } from "react";
-import { Stack } from "@mui/material";
+import { colors, Stack } from "@mui/material";
 
 export interface EpreuveModalProps {
     epreuve: APIEpreuve;
@@ -32,13 +32,20 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
         <Modal titre={epreuve.code} onClose={fermer}>
             <Stack>
                 <Stack >
-                    <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} sx={{ width: '100%' }}>
+                    <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} textColor="primary"
+                        sx={{
+                            width: '100%',
+                            bgcolor: colors.blue[100],
+                            '& .MuiTab-root': { color: colors.grey[900] },
+                            '& .MuiTab-root.Mui-selected': { color: colors.blue[800] },
+                            '& .MuiTab-root:hover': { color: colors.blue[800] }
+                        }}>
                         <Tab label="Details" />
                         <Tab label="Liste étudiants" />
                         <Tab label="Générer matériel d'examen" />
                     </Tabs>
                 </Stack>
-                <Stack width={"100%"}>
+                <Stack width={"100%"} padding={2}>
                     {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
                     {numeroOnglet === 1 && <MenuListeEtudiants />}
                     {numeroOnglet === 2 && <MenuGenererMatExam />}

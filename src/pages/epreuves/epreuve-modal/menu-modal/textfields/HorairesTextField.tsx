@@ -59,8 +59,8 @@ function HorairesTextField({ debut, fin, fonctionSave }: HoraireTextFieldProps) 
     const secondRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        console.log("Début:", debut, "Fin:", fin);
-    }, [tempValeurDebut, tempValeurFin]);
+        firstRef.current?.focus();
+    }, []);
 
 
 
@@ -73,9 +73,11 @@ function HorairesTextField({ debut, fin, fonctionSave }: HoraireTextFieldProps) 
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setTempValeurDebut(e.target.value) }}
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === "Enter") {
-                        if (estBonHoraire(tempValeurDebut, tempValeurFin, fonctionSave) == 0) {
+                        {/*if (estBonHoraire(tempValeurDebut, tempValeurFin, fonctionSave) == 0) {
                             secondRef.current?.focus();
                         }
+                            */}
+                        secondRef.current?.focus();
                     }
                 }}
                 fullWidth
