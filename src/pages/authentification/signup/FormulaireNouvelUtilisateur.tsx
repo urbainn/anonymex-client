@@ -44,7 +44,7 @@ export default function FormulaireNouvelUtilisateur({ jeton, email }: { jeton: s
             motDePasse: mdp
         })
         if (!response.data || response.status !== 200) setError(response.error || 'Erreur inconnue');
-        else if (response.data.success) navigate('/acceuil');
+        else if (response.data.success) navigate('/accueil');
         else setError('Création du compte refusée. Vérifiez les informations fournies.');
 
     };

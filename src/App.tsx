@@ -6,6 +6,7 @@ import TestsComponents from './pages/TestsComponents'
 import PageInscription from './pages/authentification/signup/PageInscription'
 import SessionPage from './pages/sessions/SessionPage'
 import PageConnexion from './pages/authentification/login/PageConnexion'
+import PageSession from './pages/sessions/PageSession'
 
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
       <Route path="/invitation/:jeton" element={<PageInscription />} />
 
       { /* Sessions*/}
-      <Route path="/accueil" element={<SessionPage />} />
+      <Route path="/accueil" element={<PageSession />} />
 
       { /* Examens/épreuves */}
       <Route path="/sessions/:sessionId/epreuves" element={<EpreuvesPage />} />
