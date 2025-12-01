@@ -40,7 +40,7 @@ export const getSessions = () => {
 }
 
 export const createSession = (newSession: APINewSession) => {
-    return apiRequest<APINewSession, APISession>('POST', '/sessions', newSession, NewSessionSchema);
+    return apiRequest<APINewSession, APISession>('POST', '/sessions/new', newSession, NewSessionSchema);
 }
 
 export const updateSession = (id: number, updateData: APIUpdateSession) => {

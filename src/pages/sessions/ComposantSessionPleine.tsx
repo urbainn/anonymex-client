@@ -2,8 +2,12 @@ import { Divider, Stack, Typography } from "@mui/material";
 import { ButtonGererSession, CarteDeSession } from "./composantsSession";
 import { Add, Archive, Download } from "@mui/icons-material";
 import theme from "../../theme/theme";
+import SessionParentEtape from "./session-modal/SessionParentEtape";
+import { useState } from "react";
 
 export default function ComposantSessionPleine({listeSessions}: {listeSessions: Array<{annee: number; id: number; nom: string; statut: 2 | 1 | 3 | 4}>}): React.ReactElement {
+
+    const [modalOpen, setModalOpen] = useState(false);
 
     return (
         <>
@@ -29,11 +33,19 @@ export default function ComposantSessionPleine({listeSessions}: {listeSessions: 
                 </Stack>
 
                 <Stack gap={4} flexDirection={'row'} alignItems="center" padding={4}>
-                    <ButtonGererSession icone={<Add sx={{fontSize: 55}}/>} description={"Nouvelle session"} onClick={function (): void {} } />
+                    <ButtonGererSession 
+                        icone={<Add sx={{fontSize: 55}}/>} 
+                        description={"Nouvelle session"} 
+                        onClick={() => setModalOpen(true)} 
+                    />
                     <ButtonGererSession icone={<Download sx={{fontSize: 55}}/>} description={"Importer une session passée"} onClick={function (): void {} } />
                     <ButtonGererSession icone={<Archive sx={{fontSize: 55}}/>} description={"Consulter les sessions archivées"} onClick={function (): void {} } />
                 </Stack>
             </Stack>
+
+            {modalOpen && (
+                <SessionParentEtape onClose={() => setModalOpen(false)} />
+            )}
         </>
     );
 }

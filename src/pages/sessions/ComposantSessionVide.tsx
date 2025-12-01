@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Stack, Typography } from "@mui/material";
 import theme from "../../theme/theme";
 import { Add } from "@mui/icons-material";
-import SessionModal from "./SessionModal";
+import SessionParentEtape from "./session-modal/SessionParentEtape";
 
 
 export default function ComposantSessionVide() {
@@ -28,7 +28,7 @@ export default function ComposantSessionVide() {
         </Stack>
 
         {modalOuvert && (
-            <SessionModal onClose={() => setModalOuvert(false)}/>
+            <SessionParentEtape onClose={() => setModalOuvert(false)}/>
         )}
         </>
     );
