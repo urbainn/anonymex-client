@@ -1,11 +1,9 @@
 import { Divider, Stack, Typography } from "@mui/material";
 import { ButtonGererSession, CarteDeSession } from "./composantsSession";
 import { Add, Archive, Download } from "@mui/icons-material";
-import type { SessionsStatut } from "../../contracts/sessions";
 import theme from "../../theme/theme";
 
-
-export default function ComposantSessionPleine({listeSessions}: {listeSessions: Array<{date: string; titre: string; status: SessionsStatut}>}): React.ReactElement {
+export default function ComposantSessionPleine({listeSessions}: {listeSessions: Array<{annee: number; id: number; nom: string; statut: 2 | 1 | 3 | 4}>}): React.ReactElement {
 
     return (
         <>
@@ -23,10 +21,10 @@ export default function ComposantSessionPleine({listeSessions}: {listeSessions: 
 
                     {listeSessions.map((session) => (
                         <CarteDeSession
-                            date={session.date}
-                            titre={session.titre}
-                            status={session.status}
-                        />
+                            annee={session.annee.toString()}
+                            id={session.id}
+                            nom={session.nom}
+                            nombreStatut={session.statut}                       />
                     ))}
                 </Stack>
 

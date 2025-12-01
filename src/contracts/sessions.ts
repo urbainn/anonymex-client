@@ -36,7 +36,7 @@ export type APIListSessions = z.infer<typeof ListSessionsSchema>;
 
 // --- Endpoints API ---
 export const getSessions = () => {
-    return apiRequest<null, APIListSessions>('GET', '/sessions');
+    return apiRequest<null, APIListSessions>('GET', '/sessions/list');
 }
 
 export const createSession = (newSession: APINewSession) => {

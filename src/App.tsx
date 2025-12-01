@@ -4,7 +4,6 @@ import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
 import TestsComponents from './pages/TestsComponents'
 import PageInscription from './pages/authentification/signup/PageInscription'
-import SessionPage from './pages/sessions/SessionPage'
 import PageConnexion from './pages/authentification/login/PageConnexion'
 import PageSession from './pages/sessions/PageSession'
 
