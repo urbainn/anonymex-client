@@ -13,7 +13,7 @@ export default function PageConnexion() {
         (async () => {
             const infoAuth = await getAuthInfo();
             if (infoAuth.data && infoAuth.data.premiereConnexion === true) {
-              navigate("/invitation/setup");
+                navigate("/invitation/setup");
             }
         })();
 
@@ -24,14 +24,14 @@ export default function PageConnexion() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [loginError, setLoginError] = useState<string | null>(null);
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         setIsLoading(true);
         setLoginError(null);
-        
-        const response = await loginUtilisateur({email: email, motDePasse:password});
+
+        const response = await loginUtilisateur({ email: email, motDePasse: password });
         if (response.status === 200) {
             const estCorrect = response.data?.success;
             if (!estCorrect) {
@@ -55,14 +55,14 @@ export default function PageConnexion() {
 
                         <Stack spacing={2}>
                             <AuthChampEmail value={email} onChange={setEmail} error={email.length > 0 && !(/^\S+@\S+\.\S+$/).test(email) ? "Adresse e-mail invalide." : null} />
-                            <AuthChampMotDePasse value={password} onChange={setPassword} error={password.length > 0 && password.length < 8 ? "Le mot de passe doit faire au moins 8 caractères." : null}/>
+                            <AuthChampMotDePasse value={password} onChange={setPassword} error={password.length > 0 && password.length < 8 ? "Le mot de passe doit faire au moins 8 caractères." : null} />
                         </Stack>
 
                         {loginError && <Alert severity="error">{loginError}</Alert>}
 
                     </AuthFormCorps>
 
-                    <AuthBoutonValidation label="Se connecter" loading={isLoading} disabled={isLoading} type="login"/>
+                    <AuthBoutonValidation label="Se connecter" loading={isLoading} disabled={isLoading} type="login" />
                 </AuthFormulaire>
             </IconsBackgroundWrapper>
         </>

@@ -11,6 +11,10 @@ import EpreuveSallesCompo from "./EpreuveSallesCompo";
 import FolderIcon from '@mui/icons-material/Folder';
 
 import ModalConfirmationChangements from "./ModalConfirmationChangements";
+import { updateEpreuve } from "../../../../contracts/epreuves";
+import { fa } from "zod/v4/locales";
+import { date } from "zod";
+
 
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
@@ -44,9 +48,13 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     const [horaireEpreuve, setHoraireEpreuve] = React.useState<string>((epreuve.date && epreuve.duree) ? calcHoraires(epreuve.date, epreuve.duree) : "Horaire non défini");
     const [nbInscritsEpreuve] = React.useState<string>(epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : "Aucun inscrit");
 
-    const [ouvrirModal, setOuvrirModal] = React.useState<boolean>(false);
+    const [ouvrirModalDate, setOuvrirModalDate] = React.useState<boolean>(false);
+    const [ouvrirModalHoraire, setOuvrirModalHoraire] = React.useState<boolean>(false);
 
-    const [valIntermerdiaireDate, setValIntermediaireDate] = React.useState<string>("");
+
+    const [valIntermediaireDate, setValIntermediaireDate] = React.useState<string>("");
+    const [valIntermediaireHoraire, setValIntermediaireHoraire] = React.useState<string>("");
+
 
     const handleModifEpreuve = () => {
         setModifEpreuve(true);
@@ -64,20 +72,83 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
 
     const confirmSaveDate = (newVal: string) => {
-        const date = new Date(newVal);
-        setValIntermediaireDate(date.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
+
+        console.log("Confirmation de la nouvelle date :", newVal);
+
+        setValIntermediaireDate(newVal);
         setModifDate(false);
-        setOuvrirModal(true);
+        setOuvrirModalDate(true);
     }
 
-    const handleSaveDate = (newVal: string) => {
-        const date = new Date(newVal);
-        setDateEpreuve(date.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
+    const handleSaveDate = async (newVal: string) => {
+        // Date arrive ici au format YYYY-MM-DD
+        console.log("Sauvegarde de la date :", newVal);
+
         setModifDate(false);
+
+        const heureDebut = horaireEpreuve.split(" - ")[0];
+        const dateCompleteISO = `${newVal}T${heureDebut}`;
+
+        console.log("Date complète ISO :", dateCompleteISO);
+
+        const dateNumber = new Date(dateCompleteISO).getTime();
+        console.log("Date en timestamp :", dateNumber);
+
+        // Afficher chargement & erreur si besoin
+
+        const result = await updateEpreuve(epreuve.session, epreuve.code, { date: dateNumber })
+
+        if (result.status === 200 && result.data?.success === true) {
+            console.log("Résultat de la mise à jour de la date :", result)
+            setDateEpreuve(new Date(newVal).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
+        } else {
+            console.log("Erreur lors de la mise à jour de la date :", result)
+            const ancicenTexte = new Date(dateEpreuve);
+            setDateEpreuve(ancicenTexte.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
+        };
     };
-    const handleSaveHoraire = (newVal: string) => {
-        setHoraireEpreuve(newVal);
+
+    const confirmSaveHoraire = (newVal: string) => {
+        console.log("Confirmation du nouvel horaire :", newVal);
+        setValIntermediaireHoraire(newVal);
         setModifHoraire(false);
+        setOuvrirModalHoraire(true);
+    }
+
+    const handleSaveHoraire = async (newVal: string) => {
+        console.log("Sauvegarde de l'horaire :", newVal);
+        setModifHoraire(false);
+
+        // newVal au format "HH:MM - HH:MM --> Transformer en durée
+
+        const dureeParts = newVal.split(" - ");
+        const heureDebut = dureeParts[0];
+        const heureFin = dureeParts[1];
+
+        const debutHeures = parseInt(heureDebut.split(":")[0], 10);
+        const debutMinutes = parseInt(heureDebut.split(":")[1], 10);
+        const finHeures = parseInt(heureFin.split(":")[0], 10);
+        const finMinutes = parseInt(heureFin.split(":")[1], 10);
+
+        const debutTotalMinutes = debutHeures * 60 + debutMinutes;
+        const finTotalMinutes = finHeures * 60 + finMinutes;
+        const duree = finTotalMinutes - debutTotalMinutes;
+
+        console.log("Durée calculée :", duree);
+
+        // Afficher chargement & erreur si besoin
+
+        const result = await updateEpreuve(epreuve.session, epreuve.code, { duree: duree });
+        if (result.status === 200 && result.data?.success === true) {
+            console.log("Résultat de la mise à jour de la durée :", result)
+            setHoraireEpreuve(newVal);
+        } else {
+            console.log("Erreur lors de la mise à jour de la durée :", result)
+            setHoraireEpreuve(calcHoraires(epreuve.date ? epreuve.date : 0, epreuve.duree ? epreuve.duree : 0))
+        };
+
+
+        console.log("Résultat de la mise à jour de la durée :", result)
     };
 
     {/* 
@@ -99,17 +170,18 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     return (
 
         <>
-            <ModalConfirmationChangements ouvert={ouvrirModal} setOuvert={setOuvrirModal} handleSaveDate={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermerdiaireDate} />
+            <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
+            <ModalConfirmationChangements ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} oldVal={horaireEpreuve} newVal={valIntermediaireHoraire} type="horaire" />
 
 
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
                     <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} />
                     <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} />
-                    <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField debut={horaireEpreuve.split(" - ")[0]} fin={horaireEpreuve.split(" - ")[1]} fonctionSave={handleSaveHoraire} />)} />
+                    <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField debut={horaireEpreuve.split(" - ")[0]} fin={horaireEpreuve.split(" - ")[1]} fonctionSave={confirmSaveHoraire} />)} />
                     <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} />
                     <Stack>
-                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1 }} startIcon={<FolderIcon sx={{ color: colors.grey[800] }} />}>
+                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} startIcon={<FolderIcon sx={{ color: colors.grey[800] }} />}>
                             Réimporter depuis le tableur
                         </Button>
                     </Stack>
@@ -119,7 +191,7 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
                 <Stack width={"60%"}  >
                     <TypoTitre>Répartition des étudiants</TypoTitre>
-                    <Stack sx={{ height: 40, py: 0.5 }} >
+                    <Stack sx={{ height: 35 }} >
                         <TypoSousTitre >Cliquez pour afficher la composition</TypoSousTitre>
                     </Stack>
                     <Stack spacing={1} pt={3} maxHeight={400} overflow="auto">

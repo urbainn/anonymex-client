@@ -1,7 +1,7 @@
 
 
 import { Stack } from "@mui/material";
-import { type JSX } from "react";
+import { useEffect, type JSX } from "react";
 import { TypoSousTitre } from "../TypoSousTitre";
 import { TypoTitre } from "../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,13 +15,20 @@ interface EpreuveCaracteristiqueProps {
     AdaptedTextField?: (props: any) => JSX.Element;
 }
 
+
 export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField }: EpreuveCaracteristiqueProps) => {
+
+
+    useEffect(() => {
+        console.log("sousTitre modifié :", sousTitre);
+    }, [sousTitre]);
+
 
     return (
         <Stack direction="column" >
             <TypoTitre>{titre}</TypoTitre>
 
-            <Stack direction="row" spacing={3} alignItems="center" justifyContent={"space-between"} width={"100%"} height={40}>
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent={"space-between"} width={"100%"} height={35}>
                 {modif == false && (
                     <>
                         {sousTitre ? (

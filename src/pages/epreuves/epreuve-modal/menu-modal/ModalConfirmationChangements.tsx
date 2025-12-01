@@ -4,26 +4,35 @@ import { Button, Stack, Typography } from "@mui/material";
 import { colors } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { useEffect } from "react";
 
 interface ModalConfirmationChangementsProps {
     ouvert: boolean;
     setOuvert: (ouvert: boolean) => void;
-    handleSaveDate: (newVal: string) => void;
+    handleSave: (newVal: string) => void;
     oldVal: string;
     newVal: string;
+    type?: "date" | "horaire";
 }
 
-function ModalConfirmationChangements({ ouvert, setOuvert, handleSaveDate, oldVal, newVal }: ModalConfirmationChangementsProps) {
+
+function ModalConfirmationChangements({ ouvert, setOuvert, handleSave, oldVal, newVal, type }: ModalConfirmationChangementsProps) {
+
+    useEffect(() => {
+        console.log("oldVal :", oldVal);
+        console.log("newVal :", newVal);
+    }, [ouvert]);
+
     return (
 
         <Modal open={ouvert} sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: 500, height: 200, margin: "auto" }}>
             <Stack >
-                <Stack height={20} bgcolor={colors.red[100]} sx={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
+                <Stack height={20} bgcolor={colors.red[300]} sx={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
                 <Stack direction="column" spacing={4} p={4} alignItems="center" justifyContent="center" sx={{ bgcolor: colors.grey[200], borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}>
                     <Stack spacing={2}>
                         <Stack >
                             <Typography variant="h6" color={colors.grey[700]} >
-                                Vous allez modifier la date de l'épreuve :
+                                Vous allez modifier {type === "date" ? "la date" : "l'horaire"} de l'épreuve :
                             </Typography>
 
                             <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"}>
@@ -36,21 +45,21 @@ function ModalConfirmationChangements({ ouvert, setOuvert, handleSaveDate, oldVa
                         <Stack>
 
                             <Typography variant="h6" color={colors.grey[700]} >
-                                Par la nouvelle date :
+                                {type === "date" ? "Par la nouvelle date :" : "Par le nouvel horaire :"}
                             </Typography>
                             <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"}>
                                 <Typography variant="h5" fontWeight={"bold"} >
-                                    {newVal}
+                                    {type === "date" ? new Date(newVal).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }) : newVal}
                                 </Typography>
                                 <CheckIcon sx={{ color: colors.green[700] }} fontSize="large" />
                             </Stack>
                         </Stack>
                     </Stack>
                     <Stack direction="row" spacing={4}>
-                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1 }} onClick={() => { handleSaveDate(newVal); setOuvert(false); }}>
+                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { handleSave(newVal); setOuvert(false); }}>
                             Confirmer le changement
                         </Button>
-                        <Button variant="contained" sx={{ bgcolor: colors.red[100], color: colors.grey[900], py: 1 }} onClick={() => { setOuvert(false); }}>
+                        <Button variant="contained" sx={{ bgcolor: colors.red[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { setOuvert(false); }}>
                             Annuler
                         </Button>
                     </Stack>

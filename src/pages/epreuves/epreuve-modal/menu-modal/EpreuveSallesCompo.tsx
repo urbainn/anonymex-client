@@ -17,7 +17,7 @@ function couleurPourcentage(nbEtudiants: number, nbEtuMMax: number): string {
     const couleurs = [colors.blue[100], colors.blue[200], colors.blue[300], colors.blue[400]]
 
     const pourcent = (nbEtudiants / nbEtuMMax) * 100;
-    console.log("Pourcentage de remplissage:", pourcent);
+
 
 
     return couleurs[Math.min(Math.floor(pourcent / 25), 3)];
@@ -26,21 +26,21 @@ function couleurPourcentage(nbEtudiants: number, nbEtuMMax: number): string {
 
 function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax }: EpreuveSallesCompoProps) {
     return (
-        <Stack width={"100%"} direction="row" alignItems={"center"} justifyContent="space-between" bgcolor={colors.grey[200]} padding={1} borderRadius={2}>
+        <Stack width={"100%"} direction="row" alignItems={"center"} justifyContent="space-between" bgcolor={colors.grey[200] + "60"} padding={1} borderColor={colors.blue[100]} borderRadius={2}>
             <Stack direction="row" spacing={2} alignItems="center">
-                <Stack alignItems={"center"} p={1} width={50} borderRadius={1} sx={{ bgcolor: couleurPourcentage(nbEtudiants, nbEtuMMax) }}>
+                <Stack alignItems={"center"} p={1} width={50} height={50} justifyContent={"center"} borderRadius={1} sx={{ bgcolor: couleurPourcentage(nbEtudiants, nbEtuMMax) }}>
                     <Typography fontWeight={"bold"}> {nbEtudiants} </Typography>
                 </Stack>
                 <Stack>
-                    <Typography fontWeight={"bold"}> {salle} </Typography>
-                    <Typography> {nbEtudiants} étudiants </Typography>
+                    <Typography fontWeight={500}> {salle} </Typography>
+                    <Typography sx={{ color: colors.grey[600] }}> {nbEtudiants} étudiants </Typography>
                 </Stack>
             </Stack>
 
             <Stack direction="row" spacing={2} p={1}>
-                <IconRondV2 children={<SyncAltIcon />} tooltip="Echange" />
-                <IconRondV2 children={<TodayIcon />} tooltip="Calendrier" />
-                <IconRondV2 children={<MenuIcon />} tooltip="Détails" />
+                <IconRondV2 sx={{ bgcolor: colors.blue[100] + "80" }} children={<SyncAltIcon />} tooltip="Echange" />
+                <IconRondV2 sx={{ bgcolor: colors.blue[100] + "80" }} children={<TodayIcon />} tooltip="Calendrier" />
+                <IconRondV2 sx={{ bgcolor: colors.blue[100] + "80" }} children={<MenuIcon />} tooltip="Détails" />
             </Stack>
 
         </Stack>

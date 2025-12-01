@@ -22,6 +22,8 @@ import IconeRond from './IconeRond';
 import { de } from 'zod/v4/locales';
 import { FormatListBulleted } from '@mui/icons-material';
 
+import { useNavigate } from 'react-router-dom';
+
 interface SearchBarProps {
     setNewSearchTerm: (value: string) => void;
     sessionName?: string;
@@ -41,11 +43,14 @@ function SearchBar(props: SearchBarProps) {
 
     const defaultHeight = 50;
 
+    const navigate = useNavigate();
+
     function handleSearch() {
         props.setNewSearchTerm(searchTerm);
     }
 
     function handleBackToSessions() {
+        navigate('/accueil');
         props.setBackToSessions(false);
     }
 

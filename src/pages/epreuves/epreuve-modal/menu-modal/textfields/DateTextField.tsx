@@ -9,35 +9,63 @@ interface DateTextFieldProps {
     fonctionSave: (newVal: string) => void;
 }
 
-function formatDate(date: string): string {
-    const d = new Date(date);
 
-    if (isNaN(d.getTime())) {
-        console.log("Date invalide, retour chaîne vide");
-        return "";
+
+
+function formatDate(date: string): string {
+    // Date reçue sous la forme 12 mars 2024
+
+    const mois: Record<string, string> = {
+        "janvier": "01",
+        "février": "02",
+        "mars": "03",
+        "avril": "04",
+        "mai": "05",
+        "juin": "06",
+        "juillet": "07",
+        "août": "08",
+        "septembre": "09",
+        "octobre": "10",
+        "novembre": "11",
+        "décembre": "12"
+    };
+
+    const parties = date.split(" ");
+
+    if (parties.length === 3) {
+        const jour = parties[0].padStart(2, '0');
+        const moisStr = parties[1].toLowerCase().padStart(2, '0');
+        const annee = parties[2].padStart(4, '0');
+
+        if (mois[moisStr]) {
+            return `${annee}-${mois[moisStr]}-${jour}`;
+        }
+
     }
 
-    return d.toISOString().split("T")[0];
+
+    return ""
+
 }
+
 
 
 function bonneDate(date: string, fonctionSave: (newVal: string) => void): boolean {
+    // La regex vérifie ISO YYYY-MM-DD
 
-    console.log("Vérification de la date:", date);
-
-    const dateTest = new Date(date);
-
-    if (!isNaN(dateTest.getTime())) {
-        fonctionSave(formatDate(date));
+    console.log("Vérification de la date :", date);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        fonctionSave(date);
         return true;
     }
-
     return false;
 }
+
 
 function DateTextField({ date, fonctionSave }: DateTextFieldProps) {
 
     const [tempValeur, setTempValeur] = useState<string>(formatDate(date));
+
 
     const ref = useRef<HTMLInputElement>(null);
 
@@ -45,6 +73,10 @@ function DateTextField({ date, fonctionSave }: DateTextFieldProps) {
     useEffect(() => {
         ref.current?.focus();
     }, []);
+
+    useEffect(() => {
+        console.log("Date modifiée :", tempValeur);
+    }, [tempValeur]);
 
 
     return (

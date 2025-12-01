@@ -29,7 +29,7 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
 
     return (
 
-        <Modal titre={epreuve.code} onClose={fermer} width="1000px" height="600px">
+        <Modal titre={epreuve.code} onClose={fermer} width="1000px" height="600px" newbgcolor={colors.blue[100]}>
             <Stack>
                 <Stack >
                     <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} textColor="primary"

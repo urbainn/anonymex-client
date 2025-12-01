@@ -51,7 +51,7 @@ export function Modal({ children, onClose, titre, width, height, newbgcolor }: {
             transition: `opacity ${ANIMATION_DUREE}ms ease`
         }}>
             <Box borderRadius={2} bgcolor="background.paper" boxShadow={5}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" bgcolor={newbgcolor ?? colors.blue[100]} px={1} gap={4}>
+                <Stack sx={{ borderTopRightRadius: 2, borderTopLeftRadius: 2 }} direction="row" justifyContent="space-between" alignItems="center" bgcolor={newbgcolor ?? colors.blue[100]} px={1} gap={4}>
                     <Typography variant="h6" ml={2}>{titre}</Typography>
                     <IconButton onClick={handleClose} size="large"><Close /></IconButton>
                 </Stack>
