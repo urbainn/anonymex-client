@@ -44,17 +44,16 @@ export default function PageSession() {
     console.log("sessions :", listeSession);
 
     return (
-        <Stack flexDirection={'column'} margin={4}>
+        <Stack flexDirection={'column'} margin={5}>
             
-            <Stack justifyContent={'space-between'} flexDirection={'row'} alignItems="center">
-                <Stack flexDirection={'column'} alignItems="baseline">
+            <Stack justifyContent={'space-between'} flexDirection={'row'}>
+                <Stack direction={"row"} gap={1} alignItems={'center'}>
+                    <Typography variant="h4" color={theme.palette.text.primary} fontWeight="bold">Anonymex</Typography>
+                    <Typography variant="h4" fontWeight={900} color='#00000050'>{'·'}</Typography>
                     <Typography variant="h4" color='#00000060'>Accueil</Typography>
-                    <Typography variant="h3" color={theme.palette.text.primary} fontWeight="bold">
-                        Anonymex
-                    </Typography>
                 </Stack>
 
-                <Stack gap={4} flexDirection={'row'} alignSelf="flex-start">
+                <Stack flexDirection={'row'} alignSelf="flex-start" gap={1}>
                     <Button 
                         variant="contained"
                         disabled
@@ -67,7 +66,6 @@ export default function PageSession() {
                     <IconButton
                         onClick={handleClick}
                         size="small"
-                        sx={{ ml: 2 }}
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
@@ -128,7 +126,7 @@ export default function PageSession() {
                 </MenuItem>
             </Menu>
 
-            <Stack flexDirection={'column'} marginTop={20} width={'100%'}>
+            <Stack flexDirection={'column'} marginTop={18} width={'100%'}>
                 {etape === "sessionVide" && <ComposantSessionVide />}
                 {etape === "sessionRempli" && <ComposantSessionPleine listeSessions={listeSession} />}
             </Stack>

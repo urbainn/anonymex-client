@@ -31,7 +31,7 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: {id: number; anne
     const navigate = useNavigate();
 
     return(
-        <Paper key={id} elevation={1} sx={{borderRadius: '10px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '90%'}}>
+        <Paper key={id} variant="outlined" sx={{borderRadius: '10px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
             <Box sx={{justifyContent: 'space-between', width: '100%'}} onClick={() => navigate('/sessions/'+ id+'/epreuves')}>
 

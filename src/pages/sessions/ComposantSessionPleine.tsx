@@ -11,7 +11,7 @@ export default function ComposantSessionPleine({listeSessions}: {listeSessions: 
 
     return (
         <>
-            <Stack justifyContent={'center'} alignItems="start" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} spacing={4}>
+            <Stack justifyContent={'center'} alignItems="start" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} gap={8} justifyItems={"center"}>
 
                 <Stack gap={4} flexDirection={'column'} alignItems="start" width={'50%'}>
                     <Stack flexDirection={'column'} alignItems="start">
@@ -23,16 +23,18 @@ export default function ComposantSessionPleine({listeSessions}: {listeSessions: 
                         </Typography>
                     </Stack>
 
-                    {listeSessions.map((session) => (
-                        <CarteDeSession
-                            annee={session.annee.toString()}
-                            id={session.id}
-                            nom={session.nom}
-                            nombreStatut={session.statut}                       />
-                    ))}
+                    <Stack gap={1} flexDirection={'column'} width={'100%'}>
+                        {listeSessions.map((session) => (
+                            <CarteDeSession
+                                annee={session.annee.toString()}
+                                id={session.id}
+                                nom={session.nom}
+                                nombreStatut={session.statut}                       />
+                        ))}
+                    </Stack>
                 </Stack>
 
-                <Stack flexDirection={'row'} alignSelf={"center"} width={'50%'} gap={4} padding={5} height={'100%'}>
+                <Stack flexDirection={'row'} alignSelf={"center"} width={'35%'} gap={3} height={'100%'}>
                     <ButtonGererSession 
                         icone={<Add sx={{fontSize: 79}}/>} 
                         description={"Nouvelle session"} 
