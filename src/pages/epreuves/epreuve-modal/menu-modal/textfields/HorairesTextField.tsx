@@ -2,47 +2,32 @@
 import { Stack, Typography, colors } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import CheckIcon from '@mui/icons-material/Check';
-import MyTextField from "./MyTextField";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import 'dayjs/locale/fr';
 
 interface HoraireTextFieldProps {
-    debut: string;
-    fin: string;
-    fonctionSave: (newVal: string) => void;
+    date: number;
+    dureeMinutes: number;
+    fonctionSave: (debut: number, fin: number) => void;
 }
 
-function HoursToMinutes(time: string): number {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-}
+function estBonHoraire(date: number, debut: number, fin: number, fonctionSave: (debut: number, fin: number) => void): number {
 
-function minutesToHours(minutes: number): string {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-}
-
-
-
-function estBonHoraire(debut: string, fin: string, fonctionSave: (newVal: string) => void): number {
-
-    console.log("Vérification des horaires:", debut, fin);
-
-    const debutHoraire = HoursToMinutes(debut);
-    const finHoraire = HoursToMinutes(fin);
-
-    console.log("Début horaire:", debutHoraire, "Fin horaire:", finHoraire);
-
-    if (finHoraire === debutHoraire) {
+    if (debut === fin) {
         return -1;
     }
 
     // Changement de focus
-    if (!finHoraire || !debutHoraire) {
+    if (!fin || !debut) {
         return 0;
     }
 
-    if (finHoraire > debutHoraire) {
-        fonctionSave(minutesToHours(debutHoraire) + " - " + minutesToHours(finHoraire));
+    if (fin > debut) {
+
+        fonctionSave(debut, fin);
         return 1;
     }
 
@@ -50,10 +35,12 @@ function estBonHoraire(debut: string, fin: string, fonctionSave: (newVal: string
 }
 
 
-function HorairesTextField({ debut, fin, fonctionSave }: HoraireTextFieldProps) {
 
-    const [tempValeurDebut, setTempValeurDebut] = useState<string>(debut);
-    const [tempValeurFin, setTempValeurFin] = useState<string>(fin);
+function HorairesTextField({ date, dureeMinutes, fonctionSave }: HoraireTextFieldProps) {
+
+    const [tempValeurDebut, setTempValeurDebut] = useState<number | null>(null);
+    const [tempValeurFin, setTempValeurFin] = useState<number | null>(null);
+
 
     const firstRef = useRef<HTMLInputElement>(null);
     const secondRef = useRef<HTMLInputElement>(null);
@@ -63,47 +50,77 @@ function HorairesTextField({ debut, fin, fonctionSave }: HoraireTextFieldProps) 
     }, []);
 
 
+    useEffect(() => {
+        console.log("Calcul debut et fin")
+        // départ sous forme de nombre (timestamp)
+
+        // conversion en dayjs
+        const dateDebut = dayjs(date);
+
+        // calcul de fin
+        const dateFin = dateDebut.add(dureeMinutes, "minute");
+
+        // EXTRACTION en number
+        setTempValeurDebut(dateDebut.valueOf());
+        setTempValeurFin(dateFin.valueOf());
+
+        console.log("Date debut:", dateDebut.valueOf(), "Date fin:", dateFin.valueOf());
+
+    }, []);
+
+
 
     return (
-        <Stack direction="row" spacing={2} alignItems="center" width={"100%"}>
-            <MyTextField
-                key="debut"
-                type="time"
-                value={tempValeurDebut}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setTempValeurDebut(e.target.value) }}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === "Enter") {
-                        {/*if (estBonHoraire(tempValeurDebut, tempValeurFin, fonctionSave) == 0) {
-                            secondRef.current?.focus();
-                        }
-                            */}
-                        secondRef.current?.focus();
-                    }
-                }}
-                fullWidth
-                size="small"
-                inputRef={firstRef}
+        <Stack direction="row" spacing={2} alignItems="center" width={"100%"} justifyContent={"space-between"}>
 
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
+                <TimePicker
+                    ref={firstRef}
+                    value={tempValeurDebut !== null ? dayjs(tempValeurDebut) : null}
+                    onChange={(newValue: Dayjs | null) => setTempValeurDebut(newValue ? newValue.valueOf() : null)}
+                    ampm={false}
+                    sx={{ maxWidth: 130 }}
+                    slotProps={{
+                        textField: {
+                            size: 'small',
+
+                            onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                                if (e.key === "Enter") {
+                                    secondRef.current?.focus();
+                                }
+                            }
+                        },
+                    }}
+                />
+            </LocalizationProvider>
+
+
 
             <Typography fontWeight="bold"> - </Typography>
 
-            <MyTextField
-                key="fin"
-                type="time"
-                value={tempValeurFin}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTempValeurFin(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === "Enter") {
-                        if (estBonHoraire(tempValeurDebut, tempValeurFin, fonctionSave) == 0) {
-                            firstRef.current?.focus();
-                        }
-                    }
-                }}
-                fullWidth
-                size="small"
-                inputRef={secondRef}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+
+                    ref={secondRef}
+                    value={tempValeurDebut !== null ? dayjs(tempValeurFin) : null}
+                    onChange={(newValue: Dayjs | null) => setTempValeurFin(newValue ? newValue.valueOf() : null)}
+                    ampm={false}
+                    sx={{ maxWidth: 130 }}
+                    slotProps={{
+                        textField: {
+                            size: 'small',
+
+                            onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                                if (e.key === "Enter") {
+                                    estBonHoraire(date, tempValeurDebut!, tempValeurFin!, fonctionSave)
+                                }
+                            }
+
+                        },
+
+                    }}
+                />
+            </LocalizationProvider>
 
 
             <Stack
@@ -114,7 +131,7 @@ function HorairesTextField({ debut, fin, fonctionSave }: HoraireTextFieldProps) 
                     cursor: 'pointer',
                     '&:hover': { bgcolor: colors.green[200] }
                 }}
-                onClick={() => { estBonHoraire(tempValeurDebut, tempValeurFin, fonctionSave) }}
+                onClick={() => { estBonHoraire(date, tempValeurDebut!, tempValeurFin!, fonctionSave) }}
 
             >
                 <CheckIcon fontSize="small" sx={{ color: "grey.700" }} />

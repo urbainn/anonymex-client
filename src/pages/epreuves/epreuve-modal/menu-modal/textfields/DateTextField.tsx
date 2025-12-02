@@ -22,9 +22,9 @@ function DateTextField({ date, fonctionSave }: DateTextFieldProps) {
 
     const [tempValeur, setTempValeur] = useState<number | null>(null);
 
-    const ref = useRef<HTMLInputElement>(null); 
+    const ref = useRef<HTMLInputElement>(null);
 
-    
+
 
     useEffect(() => {
         ref.current?.focus();
@@ -36,36 +36,36 @@ function DateTextField({ date, fonctionSave }: DateTextFieldProps) {
 
 
     return (
-     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}> 
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
 
-        <Stack direction="row" spacing={2} alignItems="center" width={"100%"}>
-          
-            <DatePicker
-                value={tempValeur !== null ? dayjs(tempValeur) : dayjs(date)} // toujours Dayjs
-                onChange={(newValue: Dayjs | null) => { setTempValeur(newValue ? newValue.valueOf() : null); }}
-                sx = {{width: "100%"}} 
-                slotProps={{
-          textField: {
-            size: 'small',       
-            variant: 'outlined', 
-          },
-        }}
-      />  
-            <Stack
-                sx={{
-                    bgcolor: colors.green[100],
-                    borderRadius: 100,
-                    padding: 0.75,
-                    cursor: 'pointer',
-                    '&:hover': { bgcolor: colors.green[200] }
-                }}
-                onClick={() => { fonctionSave(tempValeur ? tempValeur : date); }}
+            <Stack direction="row" spacing={2} alignItems="center" width={"100%"}>
 
-            >
-                <CheckIcon fontSize="small" sx={{ color: "grey.700" }} />
+                <DatePicker
+                    value={tempValeur !== null ? dayjs(tempValeur) : dayjs(date)} // toujours Dayjs
+                    onChange={(newValue: Dayjs | null) => { setTempValeur(newValue ? newValue.valueOf() : null); }}
+                    sx={{ width: "100%" }}
+                    slotProps={{
+                        textField: {
+                            size: 'small',
+                            variant: 'outlined',
+                        },
+                    }}
+                />
+                <Stack
+                    sx={{
+                        bgcolor: colors.green[100],
+                        borderRadius: 100,
+                        padding: 0.75,
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: colors.green[200] }
+                    }}
+                    onClick={() => { fonctionSave(tempValeur ? tempValeur : date); }}
+
+                >
+                    <CheckIcon fontSize="small" sx={{ color: "grey.700" }} />
+                </Stack>
             </Stack>
-        </Stack>
-            </LocalizationProvider>
+        </LocalizationProvider>
     )
 }
 
