@@ -111,7 +111,7 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: {id: number; anne
 export function ButtonGererSession({icone, description, onClick}: {icone: React.ReactNode; description: string; onClick: () => void}): React.ReactElement {
     return(
         <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', borderRadius: '10px', border: '2px solid #00000015', padding: '1em', justifyContent: 'space-evenly', flex: 1}} onClick={onClick}>
-            <IconButton size="large">{icone}</IconButton>
+            {icone}
             <Typography variant="h6" sx={{fontWeight: "400"}} color="textSecondary" textAlign={'center'}>{description}</Typography>
         </Box>
     );

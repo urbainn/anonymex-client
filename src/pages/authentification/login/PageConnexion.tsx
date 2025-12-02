@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { getAuthInfo, loginUtilisateur } from '../../../contracts/utilisateurs';
 import React, { useState } from 'react';
-import { AuthBoutonValidation, AuthChampEmail, AuthChampMotDePasse, AuthFormCorps, AuthFormulaire } from "../composantsFormulaireAuth";
+import { AuthBoutonValidation, AuthChampEmail, AuthChampMotDePasse, AuthFormulaire } from "../composantsFormulaireAuth";
 import { Alert, Box, Stack, Typography } from "@mui/material";
 import IconsBackgroundWrapper from "../IconsBackgroundWrapper";
 

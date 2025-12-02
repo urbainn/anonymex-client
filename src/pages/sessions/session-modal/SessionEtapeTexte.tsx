@@ -1,4 +1,4 @@
-import { FormulaireSession, SessionBoutonSubmit, SessionChampTexte, NomSessionValide, DateSessionValide } from "./composantsFormulaireSession";
+import { FormulaireSession, SessionBoutonSubmit, SessionChampTexte, SessionChampDate } from "./composantsFormulaireSession";
 import React from "react";
 import { ArrowForwardIosOutlined } from "@mui/icons-material";
 
@@ -25,12 +25,18 @@ export default function SessionEtapeTexte({
         setErrorNom(null);
         setErrorDate(null);
 
-        if (!NomSessionValide(nomSession)) {
-            setErrorNom("Nom de session invalide");
+        if(nomSession.length < 1) {
+            setErrorNom("Le nom de la session doit contenir au moins 1 caractère.");
             return;
         }
-        if (!DateSessionValide(date)) {
-            setErrorDate("Date invalide");
+
+        if(date < new Date().getFullYear().toString()) {
+            setErrorDate(`L'année doit être supérieure à ${new Date().getFullYear() - 1}.`);
+            return;
+        }
+
+        if(date > (new Date().getFullYear() + 10).toString()) {
+            setErrorDate(`L'année doit être inférieure à ${new Date().getFullYear() + 11}.`);
             return;
         }
 
@@ -44,7 +50,7 @@ export default function SessionEtapeTexte({
     return (
         <FormulaireSession onSubmit={handleSubmit}>
             <SessionChampTexte label="Nom de la session" value={nomSession} onChange={setNomSession} error={errorNom}/>
-            <SessionChampTexte label="Date" value={date} onChange={setDate} error={errorDate}/>
+            <SessionChampDate label="Année" value={date} onChange={setDate} error={errorDate}/>
             <SessionBoutonSubmit label="Étape suivante" loading={loading} endIcon={<ArrowForwardIosOutlined />} />
         </FormulaireSession>
     );

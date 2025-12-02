@@ -1,4 +1,4 @@
-import { Input, Stack, Typography } from "@mui/material";
+import { Alert, Input, Stack, Typography } from "@mui/material";
 import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import React, { useState } from "react";
 import { ArrowBackIosNewOutlined, Check } from "@mui/icons-material";
@@ -14,22 +14,21 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         if (e.target.files?.[0]) {
             setFichier(e.target.files[0]);
         }
+
+        if (!fichier.name.endsWith('.xlsx')) {
+            setError("Le fichier doit être un .xlsx.");
+            setIsLoading(false);
+            return;
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
         setIsLoading(true);
 
         if (!fichier) {
             setError("Veuillez sélectionner un fichier XLSX.");
             console.log(error);
-            setIsLoading(false);
-            return;
-        }
-
-        if (!fichier.name.endsWith('.xlsx')) {
-            setError("Le fichier doit être un .xlsx");
             setIsLoading(false);
             return;
         }
@@ -44,6 +43,8 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
             <Typography variant="body1">Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
 
             <Input type='file' inputProps={{ accept: '.xlsx' }} onChange={handleUpload} />
+
+            {error && <Alert severity="error">{error}</Alert>}
 
             <Stack direction="row" justifyContent={'space-between'}>
                 <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />

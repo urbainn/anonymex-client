@@ -40,7 +40,7 @@ export default function SessionParentEtape({onClose}: {onClose: () => void}) {
 
     return (
         <>
-            <Modal onClose={onClose} titre={"Création d'une nouvelle session"}>
+            <Modal onClose={onClose} titre={"Création d'une nouvelle session"} newbgcolor={"#80A4FF"} width="500px">
                 {etape === 1 && (
                     <SessionEtapeTexte
                         nomSession={nomSession}
