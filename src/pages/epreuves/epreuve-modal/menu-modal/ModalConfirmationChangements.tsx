@@ -9,10 +9,17 @@ import { useEffect } from "react";
 interface ModalConfirmationChangementsProps {
     ouvert: boolean;
     setOuvert: (ouvert: boolean) => void;
-    handleSave: (newVal: string) => void;
-    oldVal: string;
-    newVal: string;
+    handleSave: (newVal: number) => void;
+    oldVal: number;
+    newVal: number;
     type?: "date" | "horaire";
+}
+
+
+function formatDate(date: number): string {
+    console.log(date);
+    const dateConvert = new Date(date);
+    return dateConvert.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 
@@ -37,7 +44,7 @@ function ModalConfirmationChangements({ ouvert, setOuvert, handleSave, oldVal, n
 
                             <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"}>
                                 <Typography variant="h5" fontWeight={"bold"}  >
-                                    {oldVal}
+                                    {formatDate(oldVal)}
                                 </Typography>
                                 <CloseIcon sx={{ color: colors.red[700] }} fontSize="large" />
                             </Stack>

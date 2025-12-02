@@ -12,8 +12,6 @@ import FolderIcon from '@mui/icons-material/Folder';
 
 import ModalConfirmationChangements from "./ModalConfirmationChangements";
 import { updateEpreuve } from "../../../../contracts/epreuves";
-import { fa } from "zod/v4/locales";
-import { date } from "zod";
 
 
 export interface DetailsEpreuveProps {
@@ -44,7 +42,7 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     const [modifNbInscrits, setModifNbInscrits] = React.useState<boolean>(false);
 
     const [nomEpreuve] = React.useState<string>(epreuve.nom ? epreuve.nom : "Épreuve sans nom");
-    const [dateEpreuve, setDateEpreuve] = React.useState<string>(epreuve.date ? formatDate(epreuve.date) : "Date non définie");
+    const [dateEpreuve, setDateEpreuve] = React.useState<number>(epreuve.date ? epreuve.date : 0);
     const [horaireEpreuve, setHoraireEpreuve] = React.useState<string>((epreuve.date && epreuve.duree) ? calcHoraires(epreuve.date, epreuve.duree) : "Horaire non défini");
     const [nbInscritsEpreuve] = React.useState<string>(epreuve.inscrits ? (`${epreuve.inscrits} inscrits`) : "Aucun inscrit");
 
@@ -52,7 +50,7 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
     const [ouvrirModalHoraire, setOuvrirModalHoraire] = React.useState<boolean>(false);
 
 
-    const [valIntermediaireDate, setValIntermediaireDate] = React.useState<string>("");
+    const [valIntermediaireDate, setValIntermediaireDate] = React.useState<number>(0);
     const [valIntermediaireHoraire, setValIntermediaireHoraire] = React.useState<string>("");
 
 
@@ -71,41 +69,39 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
 
 
-    const confirmSaveDate = (newVal: string) => {
+    const confirmSaveDate = (newVal: number) => {
 
         console.log("Confirmation de la nouvelle date :", newVal);
-
         setValIntermediaireDate(newVal);
         setModifDate(false);
         setOuvrirModalDate(true);
     }
 
-    const handleSaveDate = async (newVal: string) => {
+    const handleSaveDate = async (newVal: number) => {
         // Date arrive ici au format YYYY-MM-DD
         console.log("Sauvegarde de la date :", newVal);
 
         setModifDate(false);
 
-        const heureDebut = horaireEpreuve.split(" - ")[0];
-        const dateCompleteISO = `${newVal}T${heureDebut}`;
+        const timeString = horaireEpreuve.split(" - ")[0];
+        const [hours, minutes] = timeString.split(":").map(Number);
 
-        console.log("Date complète ISO :", dateCompleteISO);
+    
+        const date = new Date(newVal)
+        date.setHours(hours)
+        date.setMinutes(minutes)
+        
+        console.log(date)
 
-        const dateNumber = new Date(dateCompleteISO).getTime();
-        console.log("Date en timestamp :", dateNumber);
+        const dateTimestamp = date.getTime()
+
+        console.log("Date en timestamp :", dateTimestamp);
 
         // Afficher chargement & erreur si besoin
 
-        const result = await updateEpreuve(epreuve.session, epreuve.code, { date: dateNumber })
+        setDateEpreuve(dateTimestamp)
+        const result = await updateEpreuve(epreuve.session, epreuve.code, { date: dateTimestamp })
 
-        if (result.status === 200 && result.data?.success === true) {
-            console.log("Résultat de la mise à jour de la date :", result)
-            setDateEpreuve(new Date(newVal).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
-        } else {
-            console.log("Erreur lors de la mise à jour de la date :", result)
-            const ancicenTexte = new Date(dateEpreuve);
-            setDateEpreuve(ancicenTexte.toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' }));
-        };
     };
 
     const confirmSaveHoraire = (newVal: string) => {
@@ -171,13 +167,13 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
         <>
             <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
-            <ModalConfirmationChangements ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} oldVal={horaireEpreuve} newVal={valIntermediaireHoraire} type="horaire" />
-
+         {/*   <ModalConfirmationChangements ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} oldVal={horaireEpreuve} newVal={valIntermediaireHoraire} type="horaire" /> */}
+ 
 
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
                     <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} />
-                    <EpreuveCaracteristique titre="Date" sousTitre={dateEpreuve} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} />
+                    <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve)} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} />
                     <EpreuveCaracteristique titre="Horaires" sousTitre={horaireEpreuve} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField debut={horaireEpreuve.split(" - ")[0]} fin={horaireEpreuve.split(" - ")[1]} fonctionSave={confirmSaveHoraire} />)} />
                     <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} />
                     <Stack>
