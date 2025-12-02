@@ -1,10 +1,10 @@
-import { indigo, grey } from '@mui/material/colors';
+import { indigo, grey, blue } from '@mui/material/colors';
 
 export const appColors = {
     primary: {
-        main: indigo[500],
-        light: indigo[300],
-        dark: indigo[700],
+        main: blue[500],
+        light: blue[300],
+        dark: blue[700],
     },
     background: {
         default: "#ffffff",

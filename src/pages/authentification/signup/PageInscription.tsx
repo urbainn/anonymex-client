@@ -5,7 +5,7 @@ import IconsBackgroundWrapper from "../IconsBackgroundWrapper";
 import FormulaireNouvelUtilisateur from "./FormulaireNouvelUtilisateur";
 
 export default function PageInscription() {
-    const [etape, setEtape] = useState<"email" | "final">("email");
+    const [etape, setEtape] = useState<"email" | "final">("final");
     const [email, setEmail] = useState<string>("");
     const { jeton } = useParams();
 
