@@ -32,14 +32,24 @@ export default function ComposantSessionPleine({listeSessions}: {listeSessions: 
                     ))}
                 </Stack>
 
-                <Stack gap={4} flexDirection={'row'} alignItems="center" padding={4}>
+                <Stack flexDirection={'row'} alignSelf={"center"} width={'50%'} gap={4} padding={5} height={'100%'}>
                     <ButtonGererSession 
-                        icone={<Add sx={{fontSize: 55}}/>} 
+                        icone={<Add sx={{fontSize: 79}}/>} 
                         description={"Nouvelle session"} 
                         onClick={() => setModalOpen(true)} 
                     />
-                    <ButtonGererSession icone={<Download sx={{fontSize: 55}}/>} description={"Importer une session passée"} onClick={function (): void {} } />
-                    <ButtonGererSession icone={<Archive sx={{fontSize: 55}}/>} description={"Consulter les sessions archivées"} onClick={function (): void {} } />
+
+                    <ButtonGererSession 
+                        icone={<Download sx={{fontSize: 79}}/>} 
+                        description={"Importer une session passée"} 
+                        onClick={function (): void {} } 
+                    />
+
+                    <ButtonGererSession 
+                        icone={<Archive sx={{fontSize: 79}}/>} 
+                        description={"Consulter les sessions archivées"} 
+                        onClick={function (): void {} } 
+                    />
                 </Stack>
             </Stack>
 

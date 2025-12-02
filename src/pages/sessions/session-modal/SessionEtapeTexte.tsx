@@ -37,7 +37,7 @@ export default function SessionEtapeTexte({
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-            onNext(); // ⬅ avance à l’étape suivante !
+            onNext();
         }, 300);
     };
 

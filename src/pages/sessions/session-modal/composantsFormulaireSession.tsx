@@ -8,7 +8,7 @@ export function FormulaireSession(
     {onSubmit, children}: {onSubmit: (e: React.FormEvent<HTMLFormElement>) => void; children: React.ReactNode}
 ) {
     return (
-        <Stack component="form" onSubmit={onSubmit} spacing={2} flexDirection={'column'} gap={2}>
+        <Stack component="form" onSubmit={onSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
             {children}
         </Stack>
     );
@@ -33,28 +33,31 @@ export function SessionChampTexte(
 }
 
 export function SessionBoutonSubmit(
-    {label, loading, disabled, endIcon, padding}: {label: string; loading?: boolean; disabled?: boolean; endIcon?: React.ReactNode; padding?: string}
+    {label, loading, disabled, endIcon, startIcon, padding}: {label: string; loading?: boolean; disabled?: boolean; endIcon?: React.ReactNode; startIcon?: React.ReactNode; padding?: string}
 ) {
     return (
-        <Button type="submit" variant="contained" size="medium" color="primary" endIcon={endIcon} sx={{margin: 3, borderRadius: '20px', padding: padding}} disabled={disabled || loading}  loading={loading}>
+        <Button type="submit" variant="contained" size="medium" color="primary" startIcon={startIcon} endIcon={endIcon} sx={{margin: 1, borderRadius: '20px', padding: padding}} disabled={disabled || loading}  loading={loading}>
             {label}
         </Button>
     );
 }
 
-const nomSessionAutorise = [
-    "Session 1 Pair",
-    "Session 1 Impair",
-    "Session 2 Pair",
-    "Session 2 Impair",
-];
+export function SessionBoutonSecondaire(
+    {label, onClick, endIcon, startIcon, loading, disabled}: {label: string; onClick: () => void; disabled?: boolean; endIcon?: React.ReactNode; startIcon?: React.ReactNode; loading?: boolean}
+) {
+    return (
+        <Button variant="outlined" size="medium" color="primary" sx={{margin: 1, borderRadius: '20px', border: '1px solid'}} onClick={onClick} disabled={disabled || loading} startIcon={startIcon} endIcon={endIcon} loading={loading}>
+            {label}
+        </Button>
+    );
+}
 
 export function NomSessionValide(nom: string): boolean {
-    return nom !== '' && nomSessionAutorise.includes(nom);
+    return nom !== '' && nom.length >= 8;
 }
 
 export function DateSessionValide(date: string): boolean {
     const annee = Number(date);
     const anneeActuelle = new Date().getFullYear();
-    return !isNaN(annee) && annee >= 2025 && annee <= anneeActuelle;
+    return !isNaN(annee) && annee >= 2025 && annee <= anneeActuelle + 2;
 }

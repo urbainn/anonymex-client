@@ -1,6 +1,7 @@
-import { Button, Stack, Typography } from "@mui/material";
-import { FormulaireSession, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { Input, Stack, Typography } from "@mui/material";
+import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import React, { useState } from "react";
+import { ArrowBackIosNewOutlined, Check } from "@mui/icons-material";
 
 
 export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, onValidate}: any) {
@@ -20,7 +21,6 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         setError(null);
         setIsLoading(true);
 
-        // Validation du fichier
         if (!fichier) {
             setError("Veuillez sélectionner un fichier XLSX.");
             console.log(error);
@@ -41,15 +41,13 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
 
     return (
         <FormulaireSession onSubmit={handleSubmit}>
-            <Typography>Téléversement XLSX</Typography>
+            <Typography variant="body1">Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
 
-            <input type="file" accept=".xlsx" onChange={handleUpload} />
+            <Input type='file' inputProps={{ accept: '.xlsx' }} onChange={handleUpload} />
 
-            <Stack direction="row" gap={2}>
-                <Button type='button' variant="outlined" sx = {{label:"Précédent"}} onClick={onPrev}>
-                    Précédent
-                </Button>
-                <SessionBoutonSubmit label="Valider la session" loading={isLoading}/>
+            <Stack direction="row" justifyContent={'space-between'}>
+                <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
+                <SessionBoutonSubmit label="Valider la session" loading={isLoading} endIcon={<Check />} />
             </Stack>
         </FormulaireSession>
     );

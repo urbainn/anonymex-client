@@ -1,5 +1,5 @@
 import { Button, Stack, Typography } from "@mui/material";
-import { FormulaireSession, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import React from "react";
 import { ArrowBackIosNewOutlined, ArrowForwardIosOutlined } from "@mui/icons-material";
 
@@ -21,12 +21,10 @@ export default function SessionEtapeBordereau({bordereau,setBordereau,onPrev,onN
     return (
         <Stack spacing={2} flexDirection={'column'} gap={2}>
             <FormulaireSession onSubmit={handleSubmit}>
-                <Typography variant="h6">Bordereau en cours de développement</Typography>
+                <Typography variant="h6" textAlign={'center'}>Configuration du Bordereau</Typography>
 
-                <Stack flexDirection="row" alignItems="center" gap={2}>
-                    <Button sx={{label:"Etape précédente"}} endIcon={<ArrowBackIosNewOutlined />} disabled={isLoading} onClick={onPrev}>
-                        Etape précédente
-                    </Button>
+                <Stack flexDirection="row" alignItems="center" gap={2} margin={2} justifyContent={'space-between'}>
+                    <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
                     <SessionBoutonSubmit label="Etape suivante" endIcon={<ArrowForwardIosOutlined />} loading={isLoading}/>
                 </Stack>
             </FormulaireSession>
