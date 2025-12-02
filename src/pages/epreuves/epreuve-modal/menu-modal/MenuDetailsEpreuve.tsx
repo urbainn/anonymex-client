@@ -1,6 +1,6 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
-import React from "react";
-import { Stack, Divider, Button, colors } from "@mui/material";
+import React, { useState } from "react";
+import { Stack, Divider, Button, colors, Alert } from "@mui/material";
 import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
@@ -12,6 +12,9 @@ import FolderIcon from '@mui/icons-material/Folder';
 
 import ModalConfirmationChangements from "./ModalConfirmationChangements";
 import { updateEpreuve } from "../../../../contracts/epreuves";
+
+import Snackbar from '@mui/material/Snackbar';
+import type { SnackbarCloseReason } from '@mui/material/Snackbar'
 
 
 export interface DetailsEpreuveProps {
@@ -52,6 +55,8 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     const [valIntermediaireDate, setValIntermediaireDate] = React.useState<number>(0);
     const [valIntermediaireHoraire, setValIntermediaireHoraire] = React.useState<string>("");
+
+    const [snackOpen, setSnackOpen] = useState<boolean>(false)
 
 
     const handleModifEpreuve = () => {
@@ -100,6 +105,7 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
         // Afficher chargement & erreur si besoin
 
         setDateEpreuve(dateTimestamp)
+        setSnackOpen(true)
         const result = await updateEpreuve(epreuve.session, epreuve.code, { date: dateTimestamp })
 
     };
@@ -161,6 +167,16 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     */}
 
+      const handleCloseSnack = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
 
 
     return (
@@ -169,6 +185,23 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
             <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
          {/*   <ModalConfirmationChangements ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} oldVal={horaireEpreuve} newVal={valIntermediaireHoraire} type="horaire" /> */}
  
+
+ 
+        <Snackbar
+        open={snackOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseSnack}
+        
+      >
+        <Alert
+        onClose={handleCloseSnack}
+        severity="success"
+        sx={{width:"100%"}}
+        >
+            Nouvelle date enregistrée
+        </Alert>
+
+        </Snackbar>
 
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
