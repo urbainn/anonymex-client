@@ -42,7 +42,7 @@ export type APIInvitationInfo = z.infer<typeof PostInvitationSchema>;
 
 // --- Endpoints API ---
 export const getUtilisateurs = () => {
-    return apiRequest<null, APIListUtilisateur>('GET', '/utilisateurs');
+    return apiRequest<null, APIListUtilisateur>('GET', '/utilisateurs/');
 }
 
 export const loginUtilisateur = (loginData: APILoginBody) => {
