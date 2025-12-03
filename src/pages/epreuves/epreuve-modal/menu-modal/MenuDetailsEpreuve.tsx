@@ -13,10 +13,11 @@ import FolderIcon from '@mui/icons-material/Folder';
 import ModalConfirmationChangements from "./ModalConfirmationChangements";
 import { updateEpreuve } from "../../../../contracts/epreuves";
 
-import Snackbar from '@mui/material/Snackbar';
-import type { SnackbarCloseReason } from '@mui/material/Snackbar'
 import ModalConfirmationChangementsHoraire from "./ModalConfirmationChangements copy";
 
+import { useSnackbarGlobal } from '../../../../contexts/SnackbarContext';
+
+import { themeEpreuves } from "../../../../theme/epreuves";
 
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
@@ -64,8 +65,7 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     const [valIntermediaireDuree, setValIntermediaireDuree] = React.useState<number>(0);
     const [valIntermediaireHoraireDebut, setValIntermediaireHoraireDebut] = React.useState<number>(0);
-    const [snackOpen, setSnackOpen] = useState<boolean>(false)
-
+    const { afficherErreur } = useSnackbarGlobal()
 
     useEffect(() => {
         console.log("Duree minutes mise à jour :", dureeMinutes);
@@ -105,12 +105,19 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
         // Afficher chargement & erreur si besoin
 
-        setDateEpreuve(newVal)
-        setSnackOpen(true)
         const result = await updateEpreuve(epreuve.session, epreuve.code, { date: newVal })
+
+        if (result.status == 200) {
+            console.log("Mise à jour de la date réussie");
+            setDateEpreuve(newVal)
+        } else {
+            afficherErreur("La mise à jour de la date a échoué. Veuillez réessayer.")
+        }
+
         console.log("Résultat de la mise à jour de la date :", result)
 
     };
+
 
     const confirmSaveHoraire = (debut: number, fin: number) => {
         console.log("Confirmation du nouvel horaire :", debut, fin);
@@ -125,14 +132,18 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
         setModifHoraire(false);
 
-
-
         console.log("Sauvegarde de l'horaire :", date, "durée :", duree);
         const result = await updateEpreuve(epreuve.session, epreuve.code, { date: date, duree: duree });
 
+        if (result.status == 200) {
+            console.log("Mise à jour de l'horaire réussie");
+            setDateEpreuve(date);
+            setDureeMinutes(duree);
+
+        } else {
+            afficherErreur("La mise à jour de l'horaire a échoué. Veuillez réessayer.")
+        }
         console.log("Résultat de la mise à jour de la durée :", result)
-        setDateEpreuve(date);
-        setDureeMinutes(duree);
 
     };
 
@@ -150,16 +161,6 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     */}
 
-    const handleCloseSnack = (
-        event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackOpen(false);
-    };
 
 
     return (
@@ -169,31 +170,14 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
             <ModalConfirmationChangementsHoraire ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} ancien={{ date: dateEpreuve, duree: dureeMinutes }} nouveau={{ date: valIntermediaireHoraireDebut, duree: valIntermediaireDuree }} />
 
 
-
-            <Snackbar
-                open={snackOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnack}
-
-            >
-                <Alert
-                    onClose={handleCloseSnack}
-                    severity="success"
-                    sx={{ width: "100%" }}
-                >
-                    Nouvelle date enregistrée
-                </Alert>
-
-            </Snackbar>
-
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
-                    <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} />
-                    <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve)} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} />
-                    <EpreuveCaracteristique titre="Horaires" sousTitre={calcHoraires(dateEpreuve, dureeMinutes)} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField date={dateEpreuve} dureeMinutes={dureeMinutes} fonctionSave={confirmSaveHoraire} />)} />
-                    <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} />
+                    <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} color={themeEpreuves.status[epreuve.statut]} />
+                    <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve)} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} color={themeEpreuves.status[epreuve.statut]} />
+                    <EpreuveCaracteristique titre="Horaires" sousTitre={calcHoraires(dateEpreuve, dureeMinutes)} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField date={dateEpreuve} dureeMinutes={dureeMinutes} fonctionSave={confirmSaveHoraire} />)} color={themeEpreuves.status[epreuve.statut]} />
+                    <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} color={themeEpreuves.status[epreuve.statut]} />
                     <Stack>
-                        <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} startIcon={<FolderIcon sx={{ color: colors.grey[800] }} />}>
+                        <Button variant="contained" sx={{ bgcolor: themeEpreuves.status[epreuve.statut] + "60", color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} startIcon={<FolderIcon sx={{ color: colors.grey[800] }} />}>
                             Réimporter depuis le tableur
                         </Button>
                     </Stack>
@@ -207,10 +191,11 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
                         <TypoSousTitre >Cliquez pour afficher la composition</TypoSousTitre>
                     </Stack>
                     <Stack spacing={1} pt={3} maxHeight={400} overflow="auto">
-                        <EpreuveSallesCompo salle="Amphi 36.3" nbEtudiants={60} nbEtuMMax={252} />
-                        <EpreuveSallesCompo salle="Amphi 5.05" nbEtudiants={252} nbEtuMMax={252} />
-                        <EpreuveSallesCompo salle="Amphi 36.01" nbEtudiants={14} nbEtuMMax={252} />
-                        <EpreuveSallesCompo salle="Amphi 5.03" nbEtudiants={130} nbEtuMMax={252} />
+
+                        <EpreuveSallesCompo salle="Amphi 5.05" nbEtudiants={252} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
+                        <EpreuveSallesCompo salle="Amphi 5.03" nbEtudiants={130} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
+                        <EpreuveSallesCompo salle="Amphi 36.3" nbEtudiants={60} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
+                        <EpreuveSallesCompo salle="Amphi 36.01" nbEtudiants={14} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
                     </Stack>
                 </Stack>
             </Stack>

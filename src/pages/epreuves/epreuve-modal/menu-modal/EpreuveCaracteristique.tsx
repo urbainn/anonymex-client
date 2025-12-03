@@ -13,10 +13,11 @@ interface EpreuveCaracteristiqueProps {
     fonctionModif: () => void;
     modif: boolean;
     AdaptedTextField?: (props: any) => JSX.Element;
+    color?: string;
 }
 
 
-export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField }: EpreuveCaracteristiqueProps) => {
+export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField, color }: EpreuveCaracteristiqueProps) => {
 
 
     useEffect(() => {
@@ -44,11 +45,11 @@ export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif,
                         {AdaptedTextField && (
                             <Stack
                                 sx={{
-                                    bgcolor: colors.blue[100],
+                                    bgcolor: color + "80",
                                     borderRadius: 100,
                                     padding: 0.75,
                                     cursor: 'pointer',
-                                    '&:hover': { bgcolor: colors.blue[200] }
+                                    '&:hover': { bgcolor: color + "AF" }
                                 }}
                                 onClick={fonctionModif}
                             >

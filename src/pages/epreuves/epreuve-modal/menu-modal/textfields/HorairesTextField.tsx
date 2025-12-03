@@ -14,7 +14,7 @@ interface HoraireTextFieldProps {
     fonctionSave: (debut: number, fin: number) => void;
 }
 
-function estBonHoraire(date: number, debut: number, fin: number, fonctionSave: (debut: number, fin: number) => void): number {
+function estBonHoraire(debut: number, fin: number, fonctionSave: (debut: number, fin: number) => void): number {
 
     if (debut === fin) {
         return -1;
@@ -112,7 +112,7 @@ function HorairesTextField({ date, dureeMinutes, fonctionSave }: HoraireTextFiel
 
                             onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
                                 if (e.key === "Enter") {
-                                    estBonHoraire(date, tempValeurDebut!, tempValeurFin!, fonctionSave)
+                                    estBonHoraire(tempValeurDebut!, tempValeurFin!, fonctionSave)
                                 }
                             }
 
@@ -131,7 +131,7 @@ function HorairesTextField({ date, dureeMinutes, fonctionSave }: HoraireTextFiel
                     cursor: 'pointer',
                     '&:hover': { bgcolor: colors.green[200] }
                 }}
-                onClick={() => { estBonHoraire(date, tempValeurDebut!, tempValeurFin!, fonctionSave) }}
+                onClick={() => { estBonHoraire(tempValeurDebut!, tempValeurFin!, fonctionSave) }}
 
             >
                 <CheckIcon fontSize="small" sx={{ color: "grey.700" }} />

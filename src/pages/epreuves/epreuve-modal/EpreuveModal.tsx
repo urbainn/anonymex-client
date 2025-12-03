@@ -14,6 +14,8 @@ import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
 import { useState } from "react";
 import { colors, Stack } from "@mui/material";
 
+import { themeEpreuves } from "../../../theme/epreuves";
+
 export interface EpreuveModalProps {
     epreuve: APIEpreuve;
 }
@@ -29,16 +31,18 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
 
     return (
 
-        <Modal titre={epreuve.code} onClose={fermer} width="1000px" height="600px" newbgcolor={colors.blue[100]}>
+        <Modal titre={epreuve.code} onClose={fermer} width="1000px" height="600px" newbgcolor={themeEpreuves.status[epreuve.statut] + '4F'}>
             <Stack>
                 <Stack >
                     <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} textColor="primary"
                         sx={{
                             width: '100%',
-                            bgcolor: colors.blue[100],
-                            '& .MuiTab-root': { color: colors.grey[900] },
-                            '& .MuiTab-root.Mui-selected': { color: colors.blue[800] },
-                            '& .MuiTab-root:hover': { color: colors.blue[800] }
+                            bgcolor: themeEpreuves.status[epreuve.statut] + '4F',
+                            '& .MuiTab-root': { color: colors.grey[800] },
+                            '& .MuiTab-root.Mui-selected': { color: colors.grey[900] },
+                            '& .MuiTab-root:hover': { backgroundColor: themeEpreuves.status[epreuve.statut] + '20' },
+                            '& .MuiTabs-indicator': { backgroundColor: themeEpreuves.status[epreuve.statut] + 'FF' },
+
                         }}>
                         <Tab label="Details" />
                         <Tab label="Liste étudiants" />

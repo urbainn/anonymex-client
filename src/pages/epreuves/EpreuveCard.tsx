@@ -24,7 +24,7 @@ const epreuveStatutTextes: Record<EpreuveStatut, string> = {
 
 
 const epreuveStatutIcons: Record<EpreuveStatut, JSX.Element> = {
-    1: <PrintDisabledIcon/>,
+    1: <PrintDisabledIcon />,
     2: <PrintIcon />,
     3: <HourglassTopIcon />,
     4: <DocumentScannerIcon />,
@@ -38,27 +38,31 @@ export function EpreuveCard(props: { epreuve: APIEpreuve, onClick: () => void })
     return (
         <Card variant="outlined" sx={{ backgroundColor: grey[50], borderRadius: 2 }}>
             <CardActionArea sx={{ '&:hover': { backgroundColor: grey[100] } }} onClick={props.onClick}>
-                <Stack direction="row"  alignItems="center">
+                <Stack direction="row" alignItems="center">
                     <Stack padding={2} direction="row" alignItems="center" spacing={2}>
                         <IconeRond icon={epreuveStatutIcons[epreuve.statut]} bgcolor={themeEpreuves.status[epreuve.statut] + '4F'} />
                         <Stack direction="column">
-                            <Typography variant="h6">{epreuve.nom}</Typography>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                                <Typography variant="h6">{epreuve.code}</Typography>
+                                <Typography variant="h6" fontWeight={500}>-</Typography>
+                                <Typography variant="h6" fontWeight={400}> {epreuve.nom} </Typography>
+                            </Stack>
                             <Stack direction="row" spacing={2}>
-                                <Typography variant="body2">{epreuve.code} - {epreuve.salles.join(', ')}</Typography>
+                                <Typography variant="body2">{epreuve.salles.join(', ')}</Typography>
                             </Stack>
                         </Stack>
                     </Stack>
 
-                <Stack flexGrow={1} />
+                    <Stack flexGrow={1} />
                     <Stack direction="column" spacing={1} padding={2} alignItems="flex-end">
-                        <Chip label={`${epreuveStatutTextes[epreuve.statut]}`} size="small" sx={{ bgcolor: themeEpreuves.status[epreuve.statut] + '8F'}} />
-                    </Stack>    
+                        <Chip label={`${epreuveStatutTextes[epreuve.statut]}`} size="small" sx={{ bgcolor: themeEpreuves.status[epreuve.statut] + '8F' }} />
+                    </Stack>
 
                     <Stack alignItems={'center'} justifyContent='center' alignSelf={'stretch'}
                         sx={{
                             width: '5rem', fontSize: '1.2rem',
                             bgcolor: themeEpreuves.status[epreuve.statut] + '8F', // note: on rajoute 8F en ALPHA, c'est un byte hexédécimal supplémentaire pour l'opacité
-                            
+
                         }}
                     >
                         {date.getHours().toString().padStart(2, '0')}:
