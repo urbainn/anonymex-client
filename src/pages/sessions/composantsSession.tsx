@@ -1,4 +1,4 @@
-import { Box, Chip, IconButton, ListItemIcon, Menu, MenuItem, Paper, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardActions, Chip, IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import type { SessionsStatut } from "../../contracts/sessions";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import React from "react";
 import { DeleteForever, Settings } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
 
 type CouleurStatut = { [key in SessionsStatut]: [string, string, React.ElementType] };
 const Statut: CouleurStatut = {
@@ -31,80 +32,53 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: {id: number; anne
     const navigate = useNavigate();
 
     return(
-        <Paper key={id} variant="outlined" sx={{borderRadius: '10px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Card key={id} variant="outlined" sx={{cursor: 'pointer', backgroundColor: grey[50], borderRadius: 2}}>
+            <CardActionArea onClick={() => navigate(`/sessions/${id}/epreuves`)} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 1}}>
 
-            <Box sx={{justifyContent: 'space-between', width: '100%'}} onClick={() => navigate('/sessions/'+ id+'/epreuves')}>
-
-                <Box sx={{display: 'flex', flexDirection: 'row', padding: '1em', gap: 4}}>
+                {/* Partie gauche de la carte de session (Année - Titre + Statut) */}
+                <Box sx={{ display: 'flex', gap: 4, alignItems: 'center', paddingLeft: 2 }}>
                     <Typography variant="h6" color="textSecondary">{annee} - {nom}</Typography>
-                    <Chip sx={{bgcolor: Statut[nombreStatut][0], padding: '1em 0.5em'}} label={Statut[nombreStatut][1]} icon={React.createElement(Statut[nombreStatut][2])} />
+                    <Chip sx={{ bgcolor: Statut[nombreStatut][0], px: 1 }} label={Statut[nombreStatut][1]} icon={React.createElement(Statut[nombreStatut][2])}/>
                 </Box>
 
-                <Box alignSelf={'flex-end'} />
+                {/* Partie droite de la carte de session (icone menu) */}
+                <CardActions onClick={(e) => e.stopPropagation()}>
+                    <IconButton
+                        onClick={handleClick}
+                        aria-controls={open ? 'account-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                    >
+                        <MoreHorizIcon />
+                    </IconButton>
+                </CardActions>
 
-            </Box>
+            </CardActionArea>
 
-            <IconButton 
-                onClick={handleClick} 
-                sx={{marginRight: '0.5em'}} 
-                aria-controls={open ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-            >
-                <MoreHorizIcon />
-            </IconButton>
-
+            {/* Menu déroulant de la carte de session */}
             <Menu
                 anchorEl={anchorEl}
-                id="account-menu"
                 open={open}
                 onClose={handleClose}
                 onClick={handleClose}
-                slotProps={{
-                paper: {
-                    elevation: 0,
-                    sx: {
-                    overflow: 'visible',
-                    filter: 'drop-shadow(0px 2px 8px #3f51b533)',
-                    mt: 1.5,
-                    '& .MuiAvatar-root': {
-                        width: 32,
-                        height: 32,
-                        ml: -0.5,
-                        mr: 1,
-                    },
-                    '&::before': {
-                        content: '""',
-                        display: 'block',
-                        position: 'absolute',
-                        top: 0,
-                        right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: 'background.paper',
-                        transform: 'translateY(-50%) rotate(45deg)',
-                        zIndex: 0,
-                    },
-                    },
-                },
-                }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={() => {}}>
-                <ListItemIcon>
-                    <Settings fontSize="small" />
-                </ListItemIcon>
-                Modifier la session
+                <MenuItem>
+                    <ListItemIcon>
+                        <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Modifier la session
                 </MenuItem>
-                <MenuItem onClick={() => {}}>
-                <ListItemIcon>
-                    <DeleteForever fontSize="small" />
-                </ListItemIcon>
-                Supprimer la session
+                
+                <MenuItem>
+                    <ListItemIcon>
+                        <DeleteForever fontSize="small" />
+                    </ListItemIcon>
+                    Supprimer la session
                 </MenuItem>
             </Menu>
-        </Paper>
+        </Card>
     );
 }
 

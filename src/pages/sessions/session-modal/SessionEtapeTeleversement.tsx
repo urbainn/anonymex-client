@@ -14,12 +14,6 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         if (e.target.files?.[0]) {
             setFichier(e.target.files[0]);
         }
-
-        if (!fichier.name.endsWith('.xlsx')) {
-            setError("Le fichier doit être un .xlsx.");
-            setIsLoading(false);
-            return;
-        }
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,6 +23,12 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         if (!fichier) {
             setError("Veuillez sélectionner un fichier XLSX.");
             console.log(error);
+            setIsLoading(false);
+            return;
+        }
+
+        if (!fichier.name.endsWith('.xlsx')) {
+            setError("Le fichier doit être un .xlsx.");
             setIsLoading(false);
             return;
         }

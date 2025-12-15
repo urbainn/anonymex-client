@@ -25,19 +25,19 @@ export default function PageSession() {
         setAnchorEl(null);
     };
 
-    useEffect(() => {
-        async function fetchSessions() {
-            const response = await getSessions();
-            if (response.status !== 200 || !response.data) {
-                console.error("Erreur :", response.error || "Inconnue");
-                return;
-            }
-
-            const sessions = response.data.sessions;
-            setListeSession(sessions);
-            setEtape(sessions.length === 0 ? "sessionVide" : "sessionRempli");
+    async function fetchSessions() {
+        const response = await getSessions();
+        if (response.status !== 200 || !response.data) {
+            console.error("Erreur :", response.error || "Inconnue");
+            return;
         }
 
+        const sessions = response.data.sessions;
+        setListeSession(sessions);
+        setEtape(sessions.length === 0 ? "sessionVide" : "sessionRempli");
+    }
+
+    useEffect(() => {
         fetchSessions();
     }, []);
 
@@ -81,34 +81,7 @@ export default function PageSession() {
                 open={open}
                 onClose={handleClose}
                 onClick={handleClose}
-                slotProps={{
-                paper: {
-                    elevation: 0,
-                    sx: {
-                    overflow: 'visible',
-                    filter: 'drop-shadow(0px 2px 8px #3f51b533)',
-                    mt: 1.5,
-                    '& .MuiAvatar-root': {
-                        width: 32,
-                        height: 32,
-                        ml: -0.5,
-                        mr: 1,
-                    },
-                    '&::before': {
-                        content: '""',
-                        display: 'block',
-                        position: 'absolute',
-                        top: 0,
-                        right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: 'background.paper',
-                        transform: 'translateY(-50%) rotate(45deg)',
-                        zIndex: 0,
-                    },
-                    },
-                },
-                }}
+                slotProps={{paper: {sx: {mt: 1.5}}}}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
@@ -128,7 +101,7 @@ export default function PageSession() {
 
             <Stack flexDirection={'column'} marginTop={18} width={'100%'}>
                 {etape === "sessionVide" && <ComposantSessionVide />}
-                {etape === "sessionRempli" && <ComposantSessionPleine listeSessions={listeSession} />}
+                {etape === "sessionRempli" && <ComposantSessionPleine listeSessions={listeSession} fetchSessions={fetchSessions}/>}
             </Stack>
 
         </Stack>

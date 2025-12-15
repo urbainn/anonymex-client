@@ -5,7 +5,7 @@ import SessionEtapeTeleversement from "./SessionEtapeTeleversement";
 import { Modal } from "../../../components/Modal";
 import { createSession } from "../../../contracts/sessions";
 
-export default function SessionParentEtape({onClose}: {onClose: () => void}) {
+export default function SessionParentEtape({onClose, fetchSessions}: {onClose: () => void, fetchSessions: () => Promise<void>}) {
     const [etape, setEtape] = useState(1);
 
     // Données globales
@@ -32,10 +32,8 @@ export default function SessionParentEtape({onClose}: {onClose: () => void}) {
                 // Succès
                 console.log("Session créée avec succès :", response.data);
                 onClose();
+                await fetchSessions();
             }
-    
-            
-            
     }
 
     return (
