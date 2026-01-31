@@ -2,14 +2,11 @@
 import { Stack, colors } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import CheckIcon from '@mui/icons-material/Check';
-import MyTextField from "./MyTextField";
-
 import 'dayjs/locale/en-gb';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs"
-import { de, enGB, zhCN } from 'date-fns/locale';
 
 interface DateTextFieldProps {
     date: number;

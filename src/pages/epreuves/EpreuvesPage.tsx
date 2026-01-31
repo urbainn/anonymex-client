@@ -65,7 +65,7 @@ export default function EpreuvesPage(): ReactElement {
 
     // lorsqu'une épreuve est cliquée : afficher modal
     const handleEpreuveClick = (epreuve: APIEpreuve) => {
-        ouvrir(<EpreuveModal epreuve={epreuve} />);
+        ouvrir(<EpreuveModal epreuve={epreuve}  />);
     }
 
     // lorsque le filtre de type d'épreuve change
