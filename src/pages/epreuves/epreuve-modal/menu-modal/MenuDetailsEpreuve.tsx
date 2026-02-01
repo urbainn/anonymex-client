@@ -1,19 +1,19 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React, { use, useEffect, useState } from "react";
 import { Stack, Divider, Button, colors, Alert } from "@mui/material";
-import { EpreuveCaracteristique } from "./EpreuveCaracteristique";
+import { EpreuveCaracteristique } from "./composantsEpreuves/EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
 import { TypoTitre } from "../TypoTitre";
 import { TypoSousTitre } from "../TypoSousTitre";
-import EpreuveSallesCompo from "./EpreuveSallesCompo";
+import EpreuveSallesCompo from "./composantsEpreuves/EpreuveSallesCompo";
 
 import FolderIcon from '@mui/icons-material/Folder';
 
-import ModalConfirmationChangements from "./ModalConfirmationChangements";
+import ModalConfirmationChangements from "./composantsEpreuves/ModalConfirmationChangements";
 import { updateEpreuve } from "../../../../contracts/epreuves";
 
-import ModalConfirmationChangementsHoraire from "./ModalConfirmationChangements copy";
+import ModalConfirmationChangementsHoraire from "./composantsEpreuves/ModalConfirmationChangementsHoraire";
 
 import { useSnackbarGlobal } from '../../../../contexts/SnackbarContext';
 

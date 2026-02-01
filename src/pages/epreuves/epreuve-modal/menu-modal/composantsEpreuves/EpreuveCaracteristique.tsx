@@ -2,8 +2,8 @@
 
 import { Stack } from "@mui/material";
 import { useEffect, type JSX } from "react";
-import { TypoSousTitre } from "../TypoSousTitre";
-import { TypoTitre } from "../TypoTitre";
+import { TypoSousTitre } from "../../TypoSousTitre";
+import { TypoTitre } from "../../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
 import { colors } from "@mui/material";
 
