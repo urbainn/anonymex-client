@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import type { JSX } from '@emotion/react/jsx-runtime';
-import { red } from '@mui/material/colors';
+import { grey, red } from '@mui/material/colors';
 
 interface StudentRow {
     numEtu: number;
@@ -25,7 +25,7 @@ interface StudentRow {
     Note: number;
 }
 
-export function useConfirm() {
+export function useConfirmEdit() {
     const [ouvert, setOuvert] = useState(false);
     const [oldVal, setOldVal] = useState<StudentRow | any>("");
     const [newVal, setNewVal] = useState<StudentRow | any>("");
@@ -73,28 +73,18 @@ export function useConfirm() {
             {Object.entries(dico).map(([cle, valeur]) => {
                 if (change1.changes.hasOwnProperty(cle)) return (
                     <Stack sx={{ flexDirection: "row", alignItems: "center", width: "100%" }} key={cle}>
-                        <Typography sx={{ color: red[400] }} fontSize="large" fontWeight="600">{`${cle}: `}</Typography>
-                        <Typography sx={{ color: red[400] }} fontSize="large" fontWeight="600" key={cle + "valeur"}>{` \u00A0${valeur}`}</Typography>
+                        <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="500">{`${cle}: `}</Typography>
+                        <Typography sx={{ color: grey[900] }} variant='h5' fontWeight="800" key={cle + "valeur"}>{` \u00A0${valeur}`}</Typography>
                     </Stack>
-                )
-                else return (
-                    <Stack sx={{ flexDirection: "row", alignItems: "center", width: "100%" }} key={cle}>
-                        <Typography fontSize="large" sx={{ color: "grey.800" }} fontWeight="400">{`${cle}: `}</Typography>
-                        <Typography fontSize="large" fontWeight="500" key={cle + "valeur"}>{` \u00A0${valeur}`}</Typography>
-                    </Stack>
-                )
-
-            }
-
-
-            )}
+                );
+            })}
 
         </>;
     }
 
     return {
         confirm,
-        confirmDialog:
+        confirmModalEdit:
             <Modal open={ouvert} sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: 200, margin: "auto" }}>
                 <Stack >
                     <Stack height={20} bgcolor={colors.red[300]} sx={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }} />
@@ -102,10 +92,10 @@ export function useConfirm() {
                         <Stack spacing={2}>
                             <Stack >
                                 <Typography variant="h6" color={colors.grey[700]} >
-                                    Vous allez modifier l'épreuve :
+                                    Vous allez modifier:
                                 </Typography>
 
-                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ backgroundColor: colors.grey[300], pl: 1, pr: 1, borderRadius: 2 }}>
+                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}>
                                     {affichageDico(oldVal!)}
                                     <CloseIcon sx={{ color: colors.red[700] }} fontSize="large" />
                                 </Stack>
@@ -113,9 +103,9 @@ export function useConfirm() {
                             <Stack>
 
                                 <Typography variant="h6" color={colors.grey[700]} >
-                                    Par la nouvelle :
+                                    Par :
                                 </Typography>
-                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ backgroundColor: colors.grey[300], pl: 1, pr: 1, borderRadius: 2 }}   >
+                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}   >
 
                                     {affichageDico(newVal!)}
 
