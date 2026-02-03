@@ -11,7 +11,7 @@ import { useConfirmDelete } from './composantsListe/useConfirmDelete';
 import { useConfirmTransfer } from './composantsListe/useConfirmTransfer';
 
 import { useGridApiRef } from '@mui/x-data-grid';
-import Header from './composantsListe/header';
+import Header from './composantsListe/Header';
 
 interface StudentRow {
     numEtu: number;
@@ -145,21 +145,20 @@ function MenuListeEtudiants() {
             {confirmModalTransfer}
 
 
-            <Box sx={{ height: 400, pt: 2 }}>
+            <Box sx={{ height: 500 }}>
 
                 <DataGrid
                     showToolbar
                     slots={{ toolbar: Header } as any}
-                    slotProps={{ toolbar: { selectedRows, handleDelete, handleTransfer, handleConvocations } as HeaderProps } as any}
+                    slotProps={{ toolbar: { selectedRows, handleDelete, handleTransfer, handleConvocations, setSalleFilter, salleFilter, sallesUniques } as HeaderProps } as any}
                     apiRef={apiRef}
-                    sx={{ height: 400 }}
+                    sx={{ height: "100%" }}
                     getRowId={(row) => row.numEtu}
                     loading={loading}
                     density='compact'
                     rows={salleFilter === "x" ? rows : rows.filter(row => row.salle === salleFilter)}
                     columns={columns}
-                    hideFooterPagination
-                    pageSizeOptions={[10]}
+                    hideFooter
                     checkboxSelection
                     processRowUpdate={(newRow, oldRow, params) =>
                         !memeDico(oldRow, newRow)
@@ -185,20 +184,7 @@ function MenuListeEtudiants() {
                 />
 
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, mb: 2 }}>
-                    <FormControl sx={{ mt: 3, minWidth: 120 }} size="small">
-                        <InputLabel >Salle</InputLabel>
-                        <Select
-                            id="salle-select"
-                            value={salleFilter}
-                            label="Salle"
-                            onChange={(event) => { setSalleFilter(event.target.value); console.log(event.target.value); }}
-                        >
-                            <MenuItem value="x">Toutes les salles</MenuItem>
-                            {sallesUniques.map((salle) => (
-                                <MenuItem key={salle} value={salle}>{salle}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+
 
 
 
