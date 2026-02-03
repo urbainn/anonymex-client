@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { useState, type JSX } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 import { frFR } from '@mui/x-data-grid/locales';
 
 import { getColumns } from './composantsListe/colonnesListe';
@@ -29,9 +29,13 @@ interface HeaderProps {
     handleConvocations: (listeNumEtu: number[]) => void;
 }
 
+interface MenuListeEtudiantsProps {
+    menuColor?: string;
+}
 
 
-function MenuListeEtudiants() {
+
+function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
 
     const [noteModifiable, setNoteModifiable] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -41,12 +45,16 @@ function MenuListeEtudiants() {
     const [hovered, setHovered] = useState<string | null>(null);
 
     const [selectedRows, setSelectedRows] = useState<StudentRow[]>([]);
+    const [menuColor, setMenuColor] = useState<string>("grey");
+
 
     const columns = getColumns(noteModifiable, hovered);
 
     const { confirm, confirmModalEdit } = useConfirmEdit();
     const { confirmDelete, confirmModalDelete } = useConfirmDelete();
     const { confirmTransfer, confirmModalTransfer } = useConfirmTransfer();
+
+
 
     const [rows, setRows] = useState<StudentRow[]>([
         { numEtu: 12552, nom: "Dupont", prenom: "Jean", salle: "K111", codeAnonymat: "E12345", Note: 12 },
@@ -90,6 +98,9 @@ function MenuListeEtudiants() {
         return result;
     }
 
+    useEffect(() => {
+        console.log(props.menuColor);
+    }, []);
 
     const memeDico = (a: StudentRow, b: StudentRow): boolean => {
         const keysA = Object.keys(a);
@@ -152,7 +163,28 @@ function MenuListeEtudiants() {
                     slots={{ toolbar: Header } as any}
                     slotProps={{ toolbar: { selectedRows, handleDelete, handleTransfer, handleConvocations, setSalleFilter, salleFilter, sallesUniques } as HeaderProps } as any}
                     apiRef={apiRef}
-                    sx={{ height: "100%" }}
+                    sx={{
+                        '& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root': {
+                            color: props.menuColor + 'AC',
+                        },
+                        '& .MuiDataGrid-cellCheckbox .MuiCheckbox-root': {
+                            color: props.menuColor + 'AC',
+                        }
+                        ,
+                        '& .MuiDataGrid-row': {
+                            backgroundColor: props.menuColor + '05',
+                        },
+                        '& .MuiDataGrid-row.Mui-selected': {
+                            backgroundColor: props.menuColor + '20',
+                        },
+                        '& .MuiDataGrid-row.Mui-selected:hover': {
+                            backgroundColor: props.menuColor + '30',
+                        },
+
+                        '& .MuiDataGrid-row:hover': {
+                            backgroundColor: props.menuColor + '10',
+                        },
+                    }}
                     getRowId={(row) => row.numEtu}
                     loading={loading}
                     density='compact'
@@ -160,6 +192,7 @@ function MenuListeEtudiants() {
                     columns={columns}
                     hideFooter
                     checkboxSelection
+
                     processRowUpdate={(newRow, oldRow, params) =>
                         !memeDico(oldRow, newRow)
                             ? handleSaveRows(newRow, oldRow, params)

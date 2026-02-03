@@ -20,12 +20,14 @@ import { grey, red } from '@mui/material/colors';
 export function useConfirmDelete() {
     const [ouvert, setOuvert] = useState(false);
     const [students, setStudents] = useState<number[]>([]);
+    const [nbStudents, setNbStudents] = useState<number>(0);
 
     const [resolver, setResolver] = useState<((value: number[]) => void) | null>(null);
 
 
     const confirmDelete = (students: number[]): Promise<number[]> => {
         setStudents(students);
+        setNbStudents(students.length);
         setOuvert(true);
 
         return new Promise(resolve => {
@@ -56,25 +58,8 @@ export function useConfirmDelete() {
                         <Stack spacing={2}>
                             <Stack >
                                 <Typography variant="h6" color={colors.grey[700]} >
-                                    Vous allez supprimer:
+                                    Vous allez supprimer: <Typography component="span" color={colors.grey[900]} variant="h6" fontWeight={800}>{nbStudents}</Typography>  étudiant{nbStudents > 1 ? 's' : ''}
                                 </Typography>
-
-                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}>
-                                    {students.map(affichageListe)}
-                                    <CloseIcon sx={{ color: colors.red[700] }} fontSize="large" />
-                                </Stack>
-                            </Stack>
-                            <Stack>
-
-                                <Typography variant="h6" color={colors.grey[700]} >
-                                    Par :
-                                </Typography>
-                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}   >
-
-                                    {students.map(affichageListe)}
-
-                                    <CheckIcon sx={{ color: colors.green[700] }} fontSize="large" />
-                                </Stack>
                             </Stack>
                         </Stack>
                         <Stack direction="row" spacing={4}>

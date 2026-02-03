@@ -2,7 +2,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { grey, red } from '@mui/material/colors';
-import { Delete, Height, Sort } from '@mui/icons-material';
+import { Delete, Height, Sort, Sync } from '@mui/icons-material';
 import { Box, colors, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Switch, Toolbar, Typography } from '@mui/material';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import Visibility from '@mui/icons-material/Visibility';
@@ -16,7 +16,7 @@ import {
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 import SearchIcon from '@mui/icons-material/Search';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
 
@@ -42,6 +42,7 @@ interface HeaderProps {
 
 
 export default function Header(props: HeaderProps) {
+    const [openSelect, SetOpenSelect] = useState(false);
 
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -105,14 +106,54 @@ export default function Header(props: HeaderProps) {
                 </Button>
             </Tooltip>
             <GridToolbarDivider />
-            <Tooltip title="Transférer les étudiants dans une salle">
-                <Button
-                    disabled={props.selectedRows.length === 0}
-                    onClick={() => props.handleTransfer(props.selectedRows.map(row => row.numEtu), "EXSALLE")}
-                    sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
-                    <SyncAltIcon />
-                </Button>
-            </Tooltip>
+
+            <Select
+                id="transfer-salle-select"
+                open={openSelect}
+                onClose={() => SetOpenSelect(false)}
+                onOpen={() => SetOpenSelect(true)}
+                disabled={props.selectedRows.length === 0}
+                displayEmpty
+                renderValue={() => (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <SyncAltIcon fontSize="small" />
+                    </Box>
+                )}
+                sx={{
+                    height: 30,
+                    width: 70,
+                    color: grey[700],
+                    borderColor: grey[400],
+                    '& input': {
+                        padding: 1,
+                        backgroundColor: 'white',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                    },
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                    },
+                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        border: 'none',
+                    },
+                    '& .MuiOutlinedInput-root:hover': {
+                        borderColor: 'grey.500',
+                    },
+                }}
+            >
+                {props.sallesUniques.map((salle) => (
+                    <MenuItem onClick={() => {
+                        props.handleTransfer(props.selectedRows.map(row => row.numEtu), salle);
+                        SetOpenSelect(false);
+                    }} >{salle}
+
+
+                    </MenuItem>
+                ))}
+            </Select>
+
+
             <GridToolbarDivider />
             <Tooltip title="Voir la convocation d'un étudiant">
                 <Button

@@ -17,7 +17,7 @@ interface EpreuveSallesCompoProps {
 
 function couleurPourcentage(nbEtudiants: number, nbEtuMMax: number, color?: string): string {
 
-    const couleurs = [color + "60", color + "80", color + "A0", color + "C0"];
+    const couleurs = [color + "50", color + "60", color + "65", color + "75"];
 
     const pourcent = (nbEtudiants / nbEtuMMax) * 100;
 

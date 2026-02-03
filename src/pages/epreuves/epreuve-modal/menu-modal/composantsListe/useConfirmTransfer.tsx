@@ -21,12 +21,14 @@ export function useConfirmTransfer() {
     const [ouvert, setOuvert] = useState(false);
     const [students, setStudents] = useState<number[]>([]);
     const [salle, setSalle] = useState<string>("");
+    const [nbStudents, setNbStudents] = useState<number>(0);
 
     const [resolver, setResolver] = useState<((value: number[], salle: string) => void) | null>(null);
 
 
     const confirmTransfer = (students: number[], salle: string): Promise<number[]> => {
         setStudents(students);
+        setNbStudents(students.length);
         setSalle(salle);
         setOuvert(true);
 
@@ -58,26 +60,19 @@ export function useConfirmTransfer() {
                         <Stack spacing={2}>
                             <Stack >
                                 <Typography variant="h6" color={colors.grey[700]} >
-                                    Vous allez deplacer :
+                                    Vous allez deplacer :  <Typography component="span" color={colors.grey[900]} variant="h6" fontWeight={800}>{nbStudents}</Typography>  étudiant{nbStudents > 1 ? 's' : ''}
                                 </Typography>
 
                                 <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}>
-                                    {students.map(affichageListe)}
-                                    <CloseIcon sx={{ color: colors.red[700] }} fontSize="large" />
+
                                 </Stack>
                             </Stack>
                             <Stack>
 
                                 <Typography variant="h6" color={colors.grey[700]} >
-                                    Dans :
+                                    Dans la salle : <Typography component="span" color={colors.grey[900]} variant="h6" fontWeight={800}> {salle} </Typography>
                                 </Typography>
-                                <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}   >
 
-                                    {salle}
-                                    <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="800" key={"salle"}>{` \u00A0${salle}`}</Typography>
-
-                                    <CheckIcon sx={{ color: colors.green[700] }} fontSize="large" />
-                                </Stack>
                             </Stack>
                         </Stack>
                         <Stack direction="row" spacing={4}>
