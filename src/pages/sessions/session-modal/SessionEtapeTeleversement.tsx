@@ -11,42 +11,49 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
 
 
     const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.[0]) {
-            setFichier(e.target.files[0]);
+        const file = e.target.files?.[0];
+
+        if (!file) {
+            setError("Aucun fichier sélectionné.");
+            setFichier(null);
+            return;
         }
+
+        const isXlsx = file.name.toLowerCase().endsWith(".xlsx");
+
+        if (!isXlsx) {
+            setError("Veuillez importer un fichier Excel (.xlsx).");
+            setFichier(null);
+            return;
+        }
+
+        setError(null);
+        setFichier(file);
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsLoading(true);
 
         if (!fichier) {
             setError("Veuillez sélectionner un fichier XLSX.");
-            console.log(error);
-            setIsLoading(false);
             return;
         }
 
-        if (!fichier.name.endsWith('.xlsx')) {
-            setError("Le fichier doit être un .xlsx.");
-            setIsLoading(false);
-            return;
-        }
-
+        setIsLoading(true);
         await onValidate(e);
-
         setIsLoading(false);
     };
 
     return (
         <FormulaireSession onSubmit={handleSubmit}>
-            <Typography variant="body1">Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
+            <Typography variant="body1" mb={2}>Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
 
             <Input type='file' inputProps={{ accept: '.xlsx' }} onChange={handleUpload} />
 
-            {error && <Alert severity="error">{error}</Alert>}
+            {fichier && (<Alert sx={{ mt: 1 }} severity="success">Fichier sélectionné : {fichier.name}</Alert>)}
+            {error && <Alert sx={{ mt: 1 }}severity="error">{error}</Alert>}
 
-            <Stack direction="row" justifyContent={'space-between'}>
+            <Stack direction="row" justifyContent={'space-between'} mt={3}>
                 <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
                 <SessionBoutonSubmit label="Valider la session" loading={isLoading} endIcon={<Check />} />
             </Stack>
