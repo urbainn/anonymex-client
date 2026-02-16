@@ -1,6 +1,6 @@
 import type z from "zod";
 
-const URL_API_BASE = "http://localhost:3000/api";
+export const URL_API_BASE = "http://localhost:3000/api";
 
 export async function apiRequest<B /* type body */, R /* type réponse */>(
     methode: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
