@@ -52,7 +52,7 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
                 <Stack width={"100%"} padding={2}>
                     {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
                     {numeroOnglet === 1 && <MenuListeEtudiants menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]} />}
-                    {numeroOnglet === 2 && <MenuGenererMatExam />}
+                    {numeroOnglet === 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} />}
                 </Stack>
             </Stack>
         </Modal>

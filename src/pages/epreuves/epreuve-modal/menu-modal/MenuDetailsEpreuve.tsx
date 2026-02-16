@@ -1,6 +1,6 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
-import React, { use, useEffect, useState } from "react";
-import { Stack, Divider, Button, colors, Alert } from "@mui/material";
+import React, { useEffect } from "react";
+import { Stack, Divider, Button, colors } from "@mui/material";
 import { EpreuveCaracteristique } from "./composantsEpreuves/EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
