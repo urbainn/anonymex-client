@@ -13,9 +13,9 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: {
 
     return (
         <>
-            <Stack justifyContent={'center'} alignItems="start" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} gap={8} justifyItems={"center"}>
+            <Stack alignItems="start" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} gap={8} justifyItems={"center"}>
 
-                <Stack gap={4} flexDirection={'column'} alignItems="start" width={'50%'}>
+                <Stack gap={4} flexDirection={'column'} width={'50%'}>
                     <Stack flexDirection={'column'} alignItems="start">
                         <Typography variant="h4" color={theme.palette.text.secondary} fontWeight="bold">
                             Liste des sessions
@@ -38,19 +38,19 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: {
 
                 <Stack flexDirection={'row'} alignSelf={"center"} width={'35%'} gap={3} height={'100%'}>
                     <ButtonGererSession 
-                        icone={<Add sx={{fontSize: 79, opacity: 0.3}}/>} 
+                        icone={<Add sx={{fontSize: 79, opacity: 0.6}}/>} 
                         description={"Nouvelle session"} 
                         onClick={() => setModalOpen(true)} 
                     />
 
                     <ButtonGererSession 
-                        icone={<Download sx={{fontSize: 79, opacity: 0.3}}/>} 
+                        icone={<Download sx={{fontSize: 79, opacity: 0.6}}/>} 
                         description={"Importer une session passée"} 
                         onClick={function (): void {} } 
                     />
 
                     <ButtonGererSession 
-                        icone={<Archive sx={{fontSize: 79 , opacity: 0.3}}/>} 
+                        icone={<Archive sx={{fontSize: 79 , opacity: 0.6}}/>} 
                         description={"Consulter les sessions archivées"} 
                         onClick={function (): void {} } 
                     />

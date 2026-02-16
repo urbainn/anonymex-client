@@ -28,7 +28,9 @@ export default function ComposantSessionVide() {
             </Stack>
 
         {modalOuvert && (
-            <SessionParentEtape onClose={() => setModalOuvert(false)}/>
+            <SessionParentEtape onClose={() => setModalOuvert(false)} fetchSessions={function (): Promise<void> {
+                    throw new Error("Function not implemented.");
+                } }/>
         )}
         </>
     );
