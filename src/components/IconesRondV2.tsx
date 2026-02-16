@@ -1,5 +1,5 @@
 import React, { cloneElement } from "react";
-import { Box, colors } from "@mui/material";
+import { Box, colors, Typography } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Tooltip from '@mui/material/Tooltip';
 
@@ -13,6 +13,7 @@ interface IconRondV2Props {
     hoverColor?: string;
     sx?: object;
     tooltip?: string;
+    text?: string;
 }
 
 function IconRondV2(props: IconRondV2Props) {
@@ -37,7 +38,7 @@ function IconRondV2(props: IconRondV2Props) {
 
             >
                 <Box display="flex" fontSize="small" sx={{ color: "grey.800" }} >
-                    {cloneElement(props.children, { fontSize: "small" })}
+                    {cloneElement(props.children, { fontSize: "small" })} <Typography>{props.text}</Typography>
                 </Box>
             </Stack >
         </Tooltip>

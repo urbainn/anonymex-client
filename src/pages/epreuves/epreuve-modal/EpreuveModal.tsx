@@ -49,7 +49,7 @@ export function EpreuveModal({ epreuve }: EpreuveModalProps) {
                         <Tab label="Générer matériel d'examen" />
                     </Tabs>
                 </Stack>
-                <Stack width={"100%"} padding={2}>
+                <Stack width={"100%"} padding={2} height={"100%"}>
                     {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
                     {numeroOnglet === 1 && <MenuListeEtudiants menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]} />}
                     {numeroOnglet === 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} />}
