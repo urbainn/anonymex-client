@@ -16,7 +16,7 @@ function MenuGenererMatExam(props: MenuGenererMatExamProps) {
     const [afficherMenu, setAfficherMenu] = useState<boolean>(true);
     const [pdfPage, setPdfPage] = useState<boolean>(false);
     const [documentSelectionne, setDocumentSelectionne] = useState<1 | 2 | 3>(1);
-
+    const [documentTelecharge, setDocumentTelecharge] = useState<boolean[]>([false, false, false]);
 
     const handleClickBordereaux = () => {
         setDocumentSelectionne(1);
@@ -41,23 +41,23 @@ function MenuGenererMatExam(props: MenuGenererMatExamProps) {
         {pdfPage &&
             <Stack>
 
-                <PDFPage documentSelectionne={documentSelectionne} setPDFpage={setPdfPage} color={props.menuColor ?? colors.grey[200]} />
+                <PDFPage documentSelectionne={documentSelectionne} setPDFpage={setPdfPage} color={props.menuColor ?? colors.grey[200]} documentTelecharge={documentTelecharge} setDocumentTelecharge={setDocumentTelecharge} />
 
             </Stack>
         }
 
         {/* Menu documents à télécharger */}
-        {!pdfPage &&
+        {pdfPage == false ?
 
             <Stack mt={8} direction="column" alignItems="center" color={colors.grey[700]} >
                 <Typography variant="h6" marginBottom={5} fontWeight={500} > Choisissez un document à télécharger </Typography>
                 <Stack direction="column" spacing={2} alignItems="center" >
-                    <Selection titre="Bordereaux" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={true} handleClick={handleClickBordereaux} icone={<LocalPrintshopIcon sx={{ color: colors.grey[800] }} />} />
-                    <Selection titre="Coupons d'identification" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={true} handleClick={handleClickCoupons} icone={<GroupIcon sx={{ color: colors.grey[800] }} />} />
-                    <Selection titre="Listes d'émargement" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={false} handleClick={handleClickListes} icone={<ContactEmergencyIcon sx={{ color: colors.grey[800] }} />} />
+                    <Selection titre="Bordereaux" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[0]} handleClick={handleClickBordereaux} icone={<LocalPrintshopIcon sx={{ color: colors.grey[800] }} />} />
+                    <Selection titre="Coupons d'identification" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[1]} handleClick={handleClickCoupons} icone={<GroupIcon sx={{ color: colors.grey[800] }} />} />
+                    <Selection titre="Listes d'émargement" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[2]} handleClick={handleClickListes} icone={<ContactEmergencyIcon sx={{ color: colors.grey[800] }} />} />
                 </Stack>
             </Stack>
-
+            : null
         }
     </>;
 }

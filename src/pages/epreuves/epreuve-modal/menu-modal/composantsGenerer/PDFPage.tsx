@@ -1,12 +1,17 @@
-import { Typography, Stack, colors, Button } from "@mui/material";
+import { Typography, Stack, colors, Button, FormControl, Select, MenuItem } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BoutonStandard from "../../components/BoutonStantard";
 import DownloadIcon from '@mui/icons-material/Download';
+
+import { useState } from "react";
+
 
 interface PDFPageProps {
     documentSelectionne: 1 | 2 | 3;
     setPDFpage: (value: boolean) => void;
     color: string;
+    documentTelecharge: boolean[];
+    setDocumentTelecharge: (value: boolean[]) => void;
 }
 
 const Documents: Record<number, string> = {
@@ -17,6 +22,22 @@ const Documents: Record<number, string> = {
 
 
 export default function PDFPage(props: PDFPageProps) {
+
+    //const [documentUrl, setDocumentUrl] = useState<string>("");
+
+    //const document = await fetch("https://..."); // 
+    const documentUrl = "https://us1.pdfgeneratorapi.com/api/v3/templates/686726/output?key=ab0801834ab51edb6e8fee01dd4adc28f0dcd8a03ea2f2f17eeeb475b5c51ec8&workspace=demo.example@actualreports.com&signature=3123e0212c6e3d44b64738a77b0daf0781a1271439cab6301755cb4773a6446f&data=https://pdfgeneratorapi-web-assets.s3.amazonaws.com/data/bill_of_lading_data.json&format=pdf&output=I"
+    const listeSalles = ["Aucune", "Salle 1", "Salle 2", "Salle 3"];
+
+    const [salleSelectionnee, setSalleSelectionnee] = useState<number>(0);
+
+
+    const handleDowload = () => {
+        window.open(documentUrl, "_blank");
+        const newDocumentTelecharge = [...props.documentTelecharge];
+        newDocumentTelecharge[props.documentSelectionne] = true;
+        props.setDocumentTelecharge(newDocumentTelecharge);
+    }
 
 
     return (
@@ -31,17 +52,56 @@ export default function PDFPage(props: PDFPageProps) {
                         title="Exemple de cadre intégré"
                         width="100%"
                         height="470"
-                        src="https://us1.pdfgeneratorapi.com/api/v3/templates/686726/output?key=ab0801834ab51edb6e8fee01dd4adc28f0dcd8a03ea2f2f17eeeb475b5c51ec8&workspace=demo.example@actualreports.com&signature=3123e0212c6e3d44b64738a77b0daf0781a1271439cab6301755cb4773a6446f&data=https://pdfgeneratorapi-web-assets.s3.amazonaws.com/data/bill_of_lading_data.json&format=pdf&output=I">
+                        src={documentUrl}>
                     </iframe>
                 </Stack>
                 <Stack width={"30%"} justifyContent={"space-between"}>
-                    <Stack>
+                    <Stack color={colors.grey[800]}>
                         <Typography variant="h5" fontWeight={500} mb={4}> {Documents[props.documentSelectionne]} </Typography>
+
+                        <Typography variant="h6" color={colors.grey[700]} mb={1}> Trier par salle </Typography>
+                        <FormControl fullWidth size="small">
+                            <Select
+                                value={salleSelectionnee}
+                                onChange={(e) => {
+                                    setSalleSelectionnee(e.target.value as number);
+                                    console.log(e.target.value);
+                                }}
+                                variant="standard"
+                                disableUnderline
+                                sx={{
+                                    backgroundColor: colors.grey[200],
+                                    borderRadius: "8px",
+                                    px: 1.5,
+                                    py: 0.5,
+                                    transition: "all 0.2s ease",
+                                    "&:hover": {
+                                        backgroundColor: colors.grey[300],
+                                    },
+                                    "& .MuiSelect-select": {
+                                        display: "flex",
+                                        alignItems: "center",
+                                    },
+                                }}
+                            >
+                                {listeSalles.map((salle, index) => (
+                                    <MenuItem
+                                        key={index}
+                                        value={index}
+                                        sx={{
+                                            fontSize: "0.9rem",
+                                        }}
+                                    >
+                                        {salle}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Stack>
 
                     <Stack spacing={1}>
-                        <BoutonStandard color={props.color} onClick={() => props.setPDFpage(false)} icone={<DownloadIcon />} texte="Télécharger" />
-                        <BoutonStandard color={colors.grey[500]} onClick={() => props.setPDFpage(false)} icone={<ChevronLeftIcon />} texte="Retour au menu" />
+                        <BoutonStandard color={props.color} onClick={() => { handleDowload(); }} icone={<DownloadIcon />} texte="Télécharger" />
+                        <BoutonStandard color={colors.grey[500]} onClick={() => { props.setPDFpage(false);; }} icone={<ChevronLeftIcon />} texte="Retour au menu" />
                     </Stack>
                 </Stack>
             </Stack >

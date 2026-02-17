@@ -13,7 +13,7 @@ export default function BoutonStandard(props: BoutonStandardProps) {
 
     return (
 
-        <Button variant="contained" sx={{ bgcolor: props.color + "60", color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' }, '&:focus': { boxShadow: 'none' } }} startIcon={props.icone}>
+        <Button onClick={props.onClick} variant="contained" sx={{ bgcolor: props.color + "60", color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none', bgcolor: props.color + "80" }, '&:focus': { boxShadow: 'none' } }} startIcon={props.icone}>
             {props.texte}
         </Button>
     );
