@@ -1,11 +1,16 @@
 import { Alert, Input, Stack, Typography } from "@mui/material";
-import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import React, { useState } from "react";
 import { ArrowBackIosNewOutlined, Check } from "@mui/icons-material";
-import { URL_API_BASE } from "../../../utils/api";
 
+type Props = {
+    fichier: File | null;
+    setFichier: (f: File | null) => void;
+    onPrev: () => void;
+    onValidate: () => Promise<void>;
+};
 
-export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, onValidate}: any) {
+export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, onValidate}: Props) {
 
     const [error, setError] = React.useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +37,7 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         setFichier(file);
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!fichier) {
@@ -41,46 +46,22 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         }
 
         setIsLoading(true);
-
-        try {
-            const formData = new FormData();
-            formData.append("fichier", fichier);
-
-            const id = 0;
-            const response = await fetch(`${URL_API_BASE}/sessions/${id}/importer/`, {
-                method: "POST",
-                body: formData
-            });
-
-            if (!response.ok) {
-                const message = await response.text();
-                setError(message || "Échec de l'envoi du fichier.");
-                setIsLoading(false);
-                return;
-            }
-
-            //await onValidate(e);
-        } catch (err) {
-            console.error("Erreur lors de l'envoi du fichier:", err);
-            setError("Erreur réseau lors de l'envoi du fichier.");
-        } finally {
-            setIsLoading(false);
-        }
+        await onValidate();
+        setIsLoading(false);
     };
 
     return (
-        <FormulaireSession onSubmit={handleSubmit}>
+        <Stack component="form" onSubmit={handleSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
             <Typography variant="body1" mb={2}>Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
 
             <Input type='file' inputProps={{ accept: '.xlsx' }} onChange={handleUpload} />
 
-            {fichier && (<Alert sx={{ mt: 1 }} severity="success">Fichier sélectionné : {fichier.name}</Alert>)}
             {error && <Alert sx={{ mt: 1 }}severity="error">{error}</Alert>}
 
             <Stack direction="row" justifyContent={'space-between'} mt={3}>
                 <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
-                <SessionBoutonSubmit label="Valider la session" loading={isLoading} endIcon={<Check />} />
+                <SessionBoutonSubmit label="Créer" loading={isLoading} endIcon={<Check />} />
             </Stack>
-        </FormulaireSession>
+        </Stack>
     );
 }

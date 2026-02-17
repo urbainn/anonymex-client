@@ -4,37 +4,68 @@ import SessionEtapeBordereau from "./SessionEtapeBordereau";
 import SessionEtapeTeleversement from "./SessionEtapeTeleversement";
 import { Modal } from "../../../components/Modal";
 import { createSession } from "../../../contracts/sessions";
+import { URL_API_BASE } from "../../../utils/api";
 
-export default function SessionParentEtape({onClose, fetchSessions}: {onClose: () => void, fetchSessions: () => Promise<void>}) {
+type Props = {
+    onClose: () => void;
+    fetchSessions: () => Promise<void>;
+};
+
+export default function SessionParentEtape({onClose, fetchSessions}: Props) {
     const [etape, setEtape] = useState(1);
 
     // Données globales
     const [nomSession, setNomSession] = useState('');
     const [date, setDate] = useState('');
-    const [bordereau, setBordereau] = useState('');
+    const [bordereau, setBordereau] = useState(null);
     const [fichier, setFichier] = useState<File | null>(null);
+
+    const [sessionId, setSessionId] = useState<number | null>(null);
 
     const next = () => setEtape((e) => e + 1);
     const prev = () => setEtape((e) => e - 1);
 
-    const onFinalSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-    
-            const response = await createSession({
-                nom: nomSession,
-                annee: parseInt(date, 10)
-            });
-    
-            if (response.status !== 200 || !response.data) {
-                console.error("Erreur lors de la création de la session :", response.error || "Inconnue");
-                return;
-            } else {
-                // Succès
-                console.log("Session créée avec succès :", response.data);
-                onClose();
-                await fetchSessions();
-            }
-    }
+    const handleCreateSession = async () => {
+        const response = await createSession({
+            nom: nomSession,
+            annee: parseInt(date, 10),
+        });
+
+        console.log("Données de la session créée :", response);
+
+        if (response.status !== 200 || !response.data) {
+            console.error("Erreur lors de la création de la session :", response.error || "Inconnue");
+            return;
+        }
+
+        setSessionId(response.data.id);
+
+        next();
+    };
+
+    const handleUploadFile = async () => {
+        if (!sessionId || !fichier) return;
+
+        if (!sessionId || !fichier) return;
+
+        const formData = new FormData();
+        formData.append("fichier", fichier);
+
+        const response = await fetch(
+            `${URL_API_BASE}/sessions/${sessionId}/importer/`,
+            { method: "POST", body: formData }
+        );
+
+        if (!response.ok) {
+            console.error("Erreur upload fichier");
+            return;
+        }
+
+        await fetchSessions();
+        onClose();
+    };
+
+
 
     return (
         <>
@@ -54,7 +85,7 @@ export default function SessionParentEtape({onClose, fetchSessions}: {onClose: (
                         bordereau={bordereau}
                         setBordereau={setBordereau}
                         onPrev={prev}
-                        onNext={next}
+                        onNext={handleCreateSession}          
                     />
                 )}
 
@@ -63,7 +94,7 @@ export default function SessionParentEtape({onClose, fetchSessions}: {onClose: (
                         fichier={fichier}
                         setFichier={setFichier}
                         onPrev={prev}
-                        onValidate={onFinalSubmit}
+                        onValidate={handleUploadFile}
                     />
                 )}
             </Modal>

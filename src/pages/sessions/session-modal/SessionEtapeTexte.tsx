@@ -1,21 +1,18 @@
-import { FormulaireSession, SessionBoutonSubmit, SessionChampTexte, SessionChampDate } from "./composantsFormulaireSession";
+import { SessionBoutonSubmit, SessionChampDate, SessionChampTexte } from "./composantsFormulaireSession";
 import React from "react";
 import { ArrowForwardIosOutlined } from "@mui/icons-material";
+import { Stack } from "@mui/material";
 
+type Props = {
+    nomSession: string;
+    date: string;
+    setNomSession: (v: string) => void;
+    setDate: (v: string) => void;
+    onNext: () => void;
+};
 
-export default function SessionEtapeTexte({
-    nomSession,
-    date,
-    setNomSession,
-    setDate,
-    onNext,
-}: {
-    nomSession: string,
-    date: string,
-    setNomSession: (v: string) => void,
-    setDate: (v: string) => void,
-    onNext: () => void
-}) {
+export default function SessionEtapeTexte({nomSession, date, setNomSession, setDate, onNext}: Props) {
+
     const [errorNom, setErrorNom] = React.useState<string | null>(null);
     const [errorDate, setErrorDate] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
@@ -35,11 +32,6 @@ export default function SessionEtapeTexte({
             return;
         }
 
-        if(date > (new Date().getFullYear() + 10).toString()) {
-            setErrorDate(`L'année doit être inférieure à ${new Date().getFullYear() + 11}.`);
-            return;
-        }
-
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
@@ -48,10 +40,12 @@ export default function SessionEtapeTexte({
     };
 
     return (
-        <FormulaireSession onSubmit={handleSubmit}>
-            <SessionChampTexte label="Nom de la session" value={nomSession} onChange={setNomSession} error={errorNom}/>
-            <SessionChampDate label="Année" value={date} onChange={setDate} error={errorDate}/>
+        <Stack component="form" onSubmit={handleSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
+
+            <SessionChampTexte label="Nom de la session" name="nom" onChange={setNomSession} error={errorNom} value={nomSession}/>
+            <SessionChampDate label="Année" onChange={setDate} error={errorDate} value={date} name={"annee"}/>
             <SessionBoutonSubmit label="Étape suivante" loading={loading} endIcon={<ArrowForwardIosOutlined />} />
-        </FormulaireSession>
+
+        </Stack>
     );
 }

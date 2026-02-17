@@ -1,5 +1,5 @@
 import React from "react";
-import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import { Modal } from "../../../components/Modal";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -28,7 +28,6 @@ function FormValide(nom: string, annee: string): FormErrors {
 
     if (!nom.trim()) newErrors.nom = "Le nom est requis.";
     if (year < currentYear -1) newErrors.annee = `L'année doit être supérieure à ${currentYear - 1}`;
-    if (year > currentYear + 11) newErrors.annee = `L'année doit être inférieure à  ${currentYear + 11}`;
 
     return newErrors;
 }
@@ -72,21 +71,21 @@ export default function ModalModificationSession({ session, onClose }: Props) {
 
   return (
     <Modal onClose={onClose} titre="Modifier la session" width="550px">
-      <FormulaireSession onSubmit={handleSubmit}>
+      <Stack component="form" onSubmit={handleSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
         <Typography color="text.secondary" mb={1}>
           Modifiez les informations puis enregistrez.
         </Typography>
 
-        <TextField label="Nom de la session" name="nom" defaultValue={session.nom} margin="normal" error={!!errors.nom} helperText={errors.nom}disabled={isLoading}/>
+        <TextField label="Nom de la session" name="nom" defaultValue={session.nom} margin="normal" helperText={errors.nom}disabled={isLoading}/>
 
-        <TextField label="Année" name="annee" defaultValue={session.annee} margin="normal" error={!!errors.annee} helperText={errors.annee} disabled={isLoading}
+        <TextField label="Année" name="annee" defaultValue={session.annee} margin="normal" helperText={errors.annee} disabled={isLoading}
         />
 
         <Stack direction="row" justifyContent="flex-end" mt={3}>
           <SessionBoutonSecondaire label="Annuler" onClick={onClose} />
           <SessionBoutonSubmit label="Enregistrer" loading={isLoading} />
         </Stack>
-      </FormulaireSession>
+      </Stack>
     </Modal>
   );
 }

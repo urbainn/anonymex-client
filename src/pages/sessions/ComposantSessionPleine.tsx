@@ -5,7 +5,17 @@ import theme from "../../theme/theme";
 import SessionParentEtape from "./session-modal/SessionParentEtape";
 import { useState } from "react";
 
-export default function ComposantSessionPleine({listeSessions, fetchSessions}: {listeSessions: Array<{annee: number; id: number; nom: string; statut: 2 | 1 | 3 | 4}>, fetchSessions: () => Promise<void>}) {
+type Props = {
+    listeSessions: Array<{
+        id: number;
+        nom: string;
+        annee: number;
+        statut: 1 | 2 | 3 | 4;
+    }>;
+    fetchSessions: () => Promise<void>;
+};
+
+export default function ComposantSessionPleine({listeSessions, fetchSessions}: Props) {
 
     const [modalOpen, setModalOpen] = useState(false);
 

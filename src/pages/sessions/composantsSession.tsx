@@ -13,6 +13,13 @@ import ModalModificationSession from "./session-modal/ModalModificationSession";
 
 type CouleurStatut = { [key in SessionsStatut]: [string, string, React.ElementType] };
 
+type Props = {
+    id: number;
+    annee: string;
+    nom: string;
+    nombreStatut: SessionsStatut;
+};
+
 type ModalState =
   | { type: "editionSession" ; sessionId: number, sessionName: string, sessionYear: number }
   | { type: "archivageSession" ; sessionId: number, sessionName: string, sessionYear: number }
@@ -27,7 +34,7 @@ const Statut: CouleurStatut = {
     4: ["#D8A2A3", 'En suppression', AutoDeleteIcon]
 };
 
-export function CarteDeSession({id, annee, nom, nombreStatut}: {id: number; annee: string; nom: string; nombreStatut: 1 | 2 | 3 | 4;}): React.ReactElement {
+export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.ReactElement {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -108,16 +115,16 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: {id: number; anne
                     </MenuItem>
                 </Menu>
             </Card>
-
+            
             {activeModal && activeModal.type === "editionSession" && (
                 <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
             )}
             {activeModal && activeModal.type === "archivageSession" && (
                 <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
-            )}
+            )} {/* A remplacer par un composant de confirmation d'archivage*/}
             {activeModal && activeModal.type === "suppressionSession" && (
                 <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
-            )}
+            )} {/* A remplacer par un composant de confirmation de suppression*/}
         </>
     );
 }

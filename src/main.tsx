@@ -12,9 +12,12 @@ import CssBaseline from '@mui/material/CssBaseline'
 import theme from './theme/theme'
 import { SnackbarProvider } from './contexts/SnackbarContext.tsx';
 import { ModalProvider } from './contexts/ModalContext.tsx';
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 createRoot(document.getElementById('root')!).render(
-    <ThemeProvider theme={theme}>
+  <ThemeProvider theme={theme}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <CssBaseline />
       <SnackbarProvider>
         <ModalProvider>
@@ -23,5 +26,6 @@ createRoot(document.getElementById('root')!).render(
           </BrowserRouter>
         </ModalProvider>
       </SnackbarProvider>
-    </ThemeProvider>
+    </LocalizationProvider>
+  </ThemeProvider>
 )
