@@ -2,6 +2,7 @@ import { Alert, Input, Stack, Typography } from "@mui/material";
 import { FormulaireSession, SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
 import React, { useState } from "react";
 import { ArrowBackIosNewOutlined, Check } from "@mui/icons-material";
+import { URL_API_BASE } from "../../../utils/api";
 
 
 export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, onValidate}: any) {
@@ -40,8 +41,31 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
         }
 
         setIsLoading(true);
-        await onValidate(e);
-        setIsLoading(false);
+
+        try {
+            const formData = new FormData();
+            formData.append("fichier", fichier);
+
+            const id = 0;
+            const response = await fetch(`${URL_API_BASE}/sessions/${id}/importer/`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                setError(message || "Échec de l'envoi du fichier.");
+                setIsLoading(false);
+                return;
+            }
+
+            //await onValidate(e);
+        } catch (err) {
+            console.error("Erreur lors de l'envoi du fichier:", err);
+            setError("Erreur réseau lors de l'envoi du fichier.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
