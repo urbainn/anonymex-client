@@ -46,18 +46,17 @@ export default function SessionParentEtape({onClose, fetchSessions}: Props) {
     const handleUploadFile = async () => {
         if (!sessionId || !fichier) return;
 
-        if (!sessionId || !fichier) return;
-
         const formData = new FormData();
         formData.append("fichier", fichier);
 
-        const response = await fetch(
-            `${URL_API_BASE}/sessions/${sessionId}/importer/`,
-            { method: "POST", body: formData }
-        );
+        const response = await fetch(`${URL_API_BASE}/sessions/${sessionId}/importer/`, { 
+            method: "POST", 
+            body: formData 
+        });
 
         if (!response.ok) {
-            console.error("Erreur upload fichier");
+            const message = await response.text();
+            console.error(message || "Échec de l'envoi du fichier.");
             return;
         }
 
