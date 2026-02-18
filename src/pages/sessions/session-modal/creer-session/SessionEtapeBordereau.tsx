@@ -1,16 +1,16 @@
-import { Stack, Typography } from "@mui/material";
-import { SessionBoutonPrincipal, SessionBoutonSecondaire } from "./composantsFormulaireSession";
 import React from "react";
+import { Stack, Typography } from "@mui/material";
+import { SessionModalBouton } from "../composantsFormulaireSession";
 import { ArrowBackIosNewOutlined, ArrowForwardIosOutlined } from "@mui/icons-material";
 
 type Props = {
     bordereau: null;
     setBordereau: (f: null) => void;
     onPrev: () => void;
-    onNext: () => void;
+    onNext: () => Promise<void>;
 };
 
-export default function SessionEtapeBordereau({onPrev,onNext}: Props) {
+export default function SessionEtapeBordereau({onPrev, onNext}: Props) {
     
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -26,8 +26,8 @@ export default function SessionEtapeBordereau({onPrev,onNext}: Props) {
                 <Typography variant="h6" textAlign={'center'}>Configuration du Bordereau</Typography>
 
                 <Stack flexDirection="row" alignItems="center" gap={2} margin={2} justifyContent={'space-between'}>
-                    <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
-                    <SessionBoutonPrincipal label="Etape suivante" endIcon={<ArrowForwardIosOutlined />} loading={isLoading} onClick={handleNext}/>
+                    <SessionModalBouton label="Etape précédente" onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} outlined={true} />
+                    <SessionModalBouton label="Etape suivante" endIcon={<ArrowForwardIosOutlined />} loading={isLoading} onClick={handleNext}/>
                 </Stack>
             </Stack>
         </Stack>

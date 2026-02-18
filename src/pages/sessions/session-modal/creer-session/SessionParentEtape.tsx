@@ -2,9 +2,10 @@ import { useState } from "react";
 import SessionEtapeTexte from "./SessionEtapeTexte";
 import SessionEtapeBordereau from "./SessionEtapeBordereau";
 import SessionEtapeTeleversement from "./SessionEtapeTeleversement";
-import { Modal } from "../../../components/Modal";
-import { createSession } from "../../../contracts/sessions";
-import { URL_API_BASE } from "../../../utils/api";
+import { Modal } from "../../../../components/Modal";
+import { createSession } from "../../../../contracts/sessions";
+import { URL_API_BASE } from "../../../../utils/api";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     onClose: () => void;
@@ -22,7 +23,8 @@ export default function SessionParentEtape({onClose, fetchSessions}: Props) {
 
     const [sessionId, setSessionId] = useState<number | null>(null);
 
-    const next = () => setEtape((e) => e + 1);
+    const navigate = useNavigate();
+
     const prev = () => setEtape((e) => e - 1);
 
     const handleCreateSession = async () => {
@@ -31,16 +33,13 @@ export default function SessionParentEtape({onClose, fetchSessions}: Props) {
             annee: parseInt(date, 10),
         });
 
-        console.log("Données de la session créée :", response);
-
         if (response.status !== 200 || !response.data) {
             console.error("Erreur lors de la création de la session :", response.error || "Inconnue");
             return;
         }
 
         setSessionId(response.data.id);
-
-        next();
+        setEtape(3);
     };
 
     const handleUploadFile = async () => {
@@ -60,22 +59,21 @@ export default function SessionParentEtape({onClose, fetchSessions}: Props) {
             return;
         }
 
-        await fetchSessions();
-        onClose();
+        navigate("/sessions/" + sessionId.toString() + "/epreuves");
     };
 
 
 
     return (
         <>
-            <Modal onClose={onClose} titre={"Création d'une nouvelle session"} width="600px">
+            <Modal onClose={etape < 3 ? onClose : undefined} titre="Nouvelle session" width="600px">
                 {etape === 1 && (
                     <SessionEtapeTexte
                         nomSession={nomSession}
                         date={date}
                         setNomSession={setNomSession}
                         setDate={setDate}
-                        onNext={next}
+                        onNext={handleCreateSession}
                     />
                 )}
 
@@ -92,7 +90,6 @@ export default function SessionParentEtape({onClose, fetchSessions}: Props) {
                     <SessionEtapeTeleversement
                         fichier={fichier}
                         setFichier={setFichier}
-                        onPrev={prev}
                         onValidate={handleUploadFile}
                     />
                 )}

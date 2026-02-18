@@ -46,31 +46,14 @@ export function SessionChampDate(
     );
 }
 
-export function SessionBoutonSubmit(
-    { label, loading, disabled, endIcon, startIcon, padding }: { label: string; loading?: boolean; disabled?: boolean; endIcon?: React.ReactNode; startIcon?: React.ReactNode; padding?: string }
+export function SessionModalBouton(
+    { label, loading, disabled, startIcon, endIcon, outlined, onClick }: { label: string; loading?: boolean; disabled?: boolean; startIcon?: React.ReactNode; endIcon?: React.ReactNode; padding?: string; outlined?: boolean; onClick?: () => void }
 ) {
     return (
-        <Button type="submit" variant="contained" size="medium" color="primary" startIcon={startIcon} endIcon={endIcon} sx={{ margin: 1, padding: padding }} disabled={disabled || loading} loading={loading}>
-            {label}
-        </Button>
-    );
-}
-
-export function SessionBoutonPrincipal(
-    { label, onClick, endIcon, startIcon, loading, disabled }: { label: string; onClick: () => void; disabled?: boolean; endIcon?: React.ReactNode; startIcon?: React.ReactNode; loading?: boolean }
-) {
-    return (
-        <Button variant="contained" size="medium" color="primary" sx={{ margin: 1 }} onClick={onClick} disabled={disabled || loading} startIcon={startIcon} endIcon={endIcon} loading={loading}>
-            {label}
-        </Button>
-    );
-}
-
-export function SessionBoutonSecondaire(
-    { label, onClick, endIcon, startIcon, loading, disabled }: { label: string; onClick: () => void; disabled?: boolean; endIcon?: React.ReactNode; startIcon?: React.ReactNode; loading?: boolean }
-) {
-    return (
-        <Button variant="outlined" size="medium" color="primary" sx={{ margin: 1, border: '1px solid' }} onClick={onClick} disabled={disabled || loading} startIcon={startIcon} endIcon={endIcon} loading={loading}>
+        <Button type={onClick ? "button" : "submit"} variant={outlined ? "outlined" : "contained"} size="medium" color="primary"
+            sx={{padding: 1}} startIcon={startIcon} endIcon={endIcon} disabled={disabled || loading}
+            loading={loading} disableElevation onClick={onClick}
+        >
             {label}
         </Button>
     );

@@ -1,4 +1,4 @@
-import { SessionBoutonSubmit, SessionChampDate, SessionChampTexte } from "./composantsFormulaireSession";
+import { SessionModalBouton, SessionChampDate, SessionChampTexte } from "../composantsFormulaireSession";
 import React from "react";
 import { ArrowForwardIosOutlined } from "@mui/icons-material";
 import { Stack } from "@mui/material";
@@ -44,7 +44,7 @@ export default function SessionEtapeTexte({nomSession, date, setNomSession, setD
 
             <SessionChampTexte label="Nom de la session" name="nom" onChange={setNomSession} error={errorNom} value={nomSession}/>
             <SessionChampDate label="Année" onChange={setDate} error={errorDate} value={date} name={"annee"}/>
-            <SessionBoutonSubmit label="Étape suivante" loading={loading} endIcon={<ArrowForwardIosOutlined />} />
+            <SessionModalBouton label="Étape suivante" loading={loading} endIcon={<ArrowForwardIosOutlined />} disabled={nomSession.length < 1 || date.length < 1}/>
 
         </Stack>
     );

@@ -1,5 +1,5 @@
 import React from "react";
-import { SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { SessionModalBouton } from "./composantsFormulaireSession";
 import { Modal } from "../../../components/Modal";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -82,8 +82,8 @@ export default function ModalModificationSession({ session, onClose }: Props) {
         />
 
         <Stack direction="row" justifyContent="flex-end" mt={3}>
-          <SessionBoutonSecondaire label="Annuler" onClick={onClose} />
-          <SessionBoutonSubmit label="Enregistrer" loading={isLoading} />
+          <SessionModalBouton outlined={true} label="Annuler" onClick={onClose} />
+          <SessionModalBouton label="Enregistrer" loading={isLoading} />
         </Stack>
       </Stack>
     </Modal>

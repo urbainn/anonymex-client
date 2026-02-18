@@ -1,16 +1,15 @@
-import { Alert, Input, Stack, Typography } from "@mui/material";
-import { SessionBoutonSecondaire, SessionBoutonSubmit } from "./composantsFormulaireSession";
+import { Alert, Box, colors, Input, Stack, Typography } from "@mui/material";
+import { SessionModalBouton } from "../composantsFormulaireSession";
 import React, { useState } from "react";
-import { ArrowBackIosNewOutlined, Check } from "@mui/icons-material";
+import { Check } from "@mui/icons-material";
 
 type Props = {
     fichier: File | null;
     setFichier: (f: File | null) => void;
-    onPrev: () => void;
     onValidate: () => Promise<void>;
 };
 
-export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, onValidate}: Props) {
+export default function SessionEtapeTeleversement({fichier,setFichier,onValidate}: Props) {
 
     const [error, setError] = React.useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -52,16 +51,16 @@ export default function SessionEtapeTeleversement({fichier,setFichier,onPrev, on
 
     return (
         <Stack component="form" onSubmit={handleSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
-            <Typography variant="body1" mb={2}>Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
+            <Typography variant="body1">Veuillez téléverser un fichier XLSX ci-dessous pour finaliser la création.</Typography>
 
-            <Input type='file' inputProps={{ accept: '.xlsx' }} onChange={handleUpload} />
+            <Input type='file'  inputProps={{ accept: '.xlsx' }} onChange={handleUpload} sx={{
+                border: '3px dashed', borderColor: colors.blue[400], padding: '1.5rem', borderRadius: 3, '&:before': { border: 'none', position: 'initial' }, '&:before:hover': { border: 'none' } }}></Input>
 
             {error && <Alert sx={{ mt: 1 }}severity="error">{error}</Alert>}
 
-            <Stack direction="row" justifyContent={'space-between'} mt={3}>
-                <SessionBoutonSecondaire label={"Etape précédente"} onClick={onPrev} startIcon={<ArrowBackIosNewOutlined />} />
-                <SessionBoutonSubmit label="Créer" loading={isLoading} endIcon={<Check />} />
-            </Stack>
+        <Box mt={1} />
+        <SessionModalBouton label="Importer les données" loading={isLoading} endIcon={<Check />} disabled={!fichier}/>
+        
         </Stack>
     );
 }

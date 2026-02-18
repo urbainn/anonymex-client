@@ -2,7 +2,7 @@ import { Divider, Stack, Typography } from "@mui/material";
 import { ButtonGererSession, CarteDeSession } from "./composantsSession";
 import { Add, Archive, Download } from "@mui/icons-material";
 import theme from "../../theme/theme";
-import SessionParentEtape from "./session-modal/SessionParentEtape";
+import SessionParentEtape from "./session-modal/creer-session/SessionParentEtape";
 import { useState } from "react";
 
 type Props = {
@@ -23,9 +23,9 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
 
     return (
         <>
-            <Stack alignItems="start" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} gap={8} justifyItems={"center"}>
+            <Stack alignItems="center" flexDirection={'row'} divider={<Divider orientation="vertical" flexItem />} gap={6} justifyItems={"center"} mx={1}>
 
-                <Stack gap={4} flexDirection={'column'} width={'50%'}>
+                <Stack gap={4} flexDirection={'column'} width="80%">
                     <Stack flexDirection={'column'} alignItems="start">
                         <Typography variant="h4" color={theme.palette.text.secondary} fontWeight="bold">
                             Liste des sessions
@@ -46,7 +46,7 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
                     </Stack>
                 </Stack>
 
-                <Stack flexDirection={'row'} alignSelf={"center"} width={'35%'} gap={3} height={'100%'}>
+                <Stack flexDirection={'row'} alignSelf={"center"} gap={3} pt={6}>
                     <ButtonGererSession 
                         icone={<Add sx={{fontSize: 79, opacity: 0.6}}/>} 
                         description={"Nouvelle session"} 
