@@ -19,7 +19,7 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
 
     const [modalOpen, setModalOpen] = useState(false);
 
-    console.log("ComposantSessionPleine fetchSessions =", fetchSessions);
+    console.log("ComposantSessionPleine fetchSessions remonté est = ", fetchSessions);
 
     return (
         <>
@@ -38,10 +38,13 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
                     <Stack gap={1} flexDirection={'column'} width={'100%'}>
                         {listeSessions.map((session) => (
                             <CarteDeSession
+                                key={session.id}
                                 annee={session.annee.toString()}
                                 id={session.id}
                                 nom={session.nom}
-                                nombreStatut={session.statut}                       />
+                                nombreStatut={session.statut}
+                                fetchSessions={fetchSessions}
+                            />
                         ))}
                     </Stack>
                 </Stack>
@@ -68,7 +71,7 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
             </Stack>
 
             {modalOpen && (
-                <SessionParentEtape onClose={() => setModalOpen(false)} fetchSessions={() => fetchSessions()} />
+                <SessionParentEtape onClose={() => setModalOpen(false)} fetchSessions={fetchSessions} />
             )}
         </>
     );

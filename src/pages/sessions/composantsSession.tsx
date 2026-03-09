@@ -1,4 +1,4 @@
-import { Box, Button, ButtonBase, Card, CardActionArea, CardActions, Chip, IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
+import { Box, ButtonBase, Card, CardActionArea, CardActions, Chip, IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import type { SessionsStatut } from "../../contracts/sessions";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,8 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import React, { useState } from "react";
 import { DeleteForever, Settings } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
-import ModalModificationSession from "./session-modal/ModalModificationSession";
+import ModalModificationSession from "./session-modal/modifier-session/ModalModificationSession";
+import ModalSuppressionSession from "./session-modal/supprimer-session/ModalSuppressionSession";
 
 type CouleurStatut = { [key in SessionsStatut]: [string, string, React.ElementType] };
 
@@ -18,6 +19,7 @@ type Props = {
     annee: string;
     nom: string;
     nombreStatut: SessionsStatut;
+    fetchSessions: () => Promise<void>;
 };
 
 type ModalState =
@@ -34,7 +36,7 @@ const Statut: CouleurStatut = {
     3: ["#D8A2A3", 'En suppression', AutoDeleteIcon]
 };
 
-export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.ReactElement {
+export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Props): React.ReactElement {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -52,8 +54,8 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.Rea
 
     return(
         <>
-            <Card key={id} variant="outlined" sx={{cursor: 'pointer', backgroundColor: grey[50], borderRadius: 2}}>
-                <CardActionArea onClick={() => navigate(`/sessions/${id}/epreuves`)} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 1}}>
+            <Card variant="outlined" sx={{cursor: 'pointer', backgroundColor: grey[50], borderRadius: 2}}>
+                <CardActionArea component="div" onClick={() => navigate(`/sessions/${id}/epreuves`)} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 1}}>
 
                     {/* Partie gauche de la carte de session (Année - Titre + Statut) */}
                     <Box sx={{ display: 'flex', gap: 4, alignItems: 'center', paddingLeft: 2 }}>
@@ -64,7 +66,10 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.Rea
                     {/* Partie droite de la carte de session (icone menu) */}
                     <CardActions onClick={(e) => e.stopPropagation()}>
                         <IconButton
-                            onClick={handleClick}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleClick(e);
+                            }}
                             aria-controls={open ? 'account-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
@@ -117,14 +122,38 @@ export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.Rea
             </Card>
             
             {activeModal && activeModal.type === "editionSession" && (
-                <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
+                <ModalModificationSession 
+                session={{
+                    id: activeModal.sessionId, 
+                    nom: activeModal.sessionName, 
+                    annee: activeModal.sessionYear
+                }} 
+                onClose={() => {setActiveModal(null);}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                />
             )}
             {activeModal && activeModal.type === "archivageSession" && (
-                <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
-            )} {/* A remplacer par un composant de confirmation d'archivage*/}
+                <ModalModificationSession 
+                session={{
+                    id: activeModal.sessionId, 
+                    nom: activeModal.sessionName, 
+                    annee: activeModal.sessionYear
+                }} 
+                onClose={() => {setActiveModal(null);}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                />
+            )}
             {activeModal && activeModal.type === "suppressionSession" && (
-                <ModalModificationSession session={{id: activeModal.sessionId, nom: activeModal.sessionName, annee: activeModal.sessionYear}} onClose={() => setActiveModal(null)} />
-            )} {/* A remplacer par un composant de confirmation de suppression*/}
+                <ModalSuppressionSession 
+                session={{
+                    id: activeModal.sessionId, 
+                    nom: activeModal.sessionName, 
+                    annee: activeModal.sessionYear
+                }} 
+                onClose={() => {setActiveModal(null);}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                />
+            )}
         </>
     );
 }

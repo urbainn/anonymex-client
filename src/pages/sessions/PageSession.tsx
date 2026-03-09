@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ComposantSessionVide from "./ComposantSessionVide";
 import ComposantSessionPleine from "./ComposantSessionPleine";
-import { Avatar, Button, IconButton, ListItemIcon, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Alert, Avatar, Button, IconButton, ListItemIcon, Menu, MenuItem, Snackbar, Stack, Typography } from "@mui/material";
 import theme from "../../theme/theme";
 import LinkIcon from '@mui/icons-material/Link';
 import { getSessions } from "../../contracts/sessions";
@@ -12,8 +12,9 @@ import { Logout } from "@mui/icons-material";
 
 export default function PageSession() {
     const [etape, setEtape] = useState<"sessionVide" | "sessionRempli" | null>(null);
-    const [listeSession, setListeSession] = useState<Array<{annee: number; id: number; nom: string; statut: 1 | 2 | 3 | 4}>>([]);
-
+    const [listeSession, setListeSession] = useState<Array<{ id: number; nom: string; annee: number; statut: 0 | 1 | 2 | 3 }>>([]);
+    const [snackbar, setSnackbar] = useState<{ message: string; severity: "success" | "error" } | null>(null);
+    
     const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -29,6 +30,7 @@ export default function PageSession() {
         const response = await getSessions();
         if (response.status !== 200 || !response.data) {
             console.error("Erreur :", response.error || "Inconnue");
+            setSnackbar({ message: (response.error? response.error : "Erreur Inconnue"), severity: "error" });
             return;
         }
 
@@ -100,6 +102,15 @@ export default function PageSession() {
             </Menu>
 
             <Stack flexDirection={'column'} marginTop={18} width={'100%'}>
+                {snackbar && (
+
+                    <Snackbar open={!!snackbar} autoHideDuration={10000} onClose={() => setSnackbar(null)}>
+                        <Alert severity={snackbar.severity} sx={{ width: '100%' }} variant="filled">
+                            {"Impossible de charger les sessions : " + snackbar?.message}
+                        </Alert>
+                    </Snackbar>
+                )}
+
                 {etape === "sessionVide" && <ComposantSessionVide />}
                 {etape === "sessionRempli" && <ComposantSessionPleine listeSessions={listeSession} fetchSessions={fetchSessions}/>}
             </Stack>

@@ -1,10 +1,12 @@
 import React from "react";
-import { SessionModalBouton } from "./composantsFormulaireSession";
-import { Modal } from "../../../components/Modal";
+import { SessionModalBouton } from "../composantsFormulaireSession";
+import { Modal } from "../../../../components/Modal";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { updateSession } from "../../../contracts/sessions";
+import { updateSession } from "../../../../contracts/sessions";
+import Button from "@mui/material/Button";
+import { Alert, Snackbar } from "@mui/material";
 
 
 type Props = {
@@ -14,6 +16,7 @@ type Props = {
     annee: number;
   };
   onClose: () => void;
+  onSuccess: () => void;
 };
 
 type FormErrors = {
@@ -32,9 +35,11 @@ function FormValide(nom: string, annee: string): FormErrors {
     return newErrors;
 }
 
-export default function ModalModificationSession({ session, onClose }: Props) {
+export default function ModalModificationSession({ session, onClose, onSuccess }: Props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errors, setErrors] = React.useState<FormErrors>({});
+
+  let message_erreurs = "";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,35 +62,44 @@ export default function ModalModificationSession({ session, onClose }: Props) {
         annee: parseInt(annee, 10) 
     });
 
-    setIsLoading(false);
-
     if (response.status !== 200 || !response.data) { 
         console.error("Erreur lors de la modification de la session :", response.error || "Inconnue");
+        message_erreurs = "Erreur lors de la modification de la session :" + (response.error || "Une erreur inconnue est survenue.");
+        setIsLoading(false);
         return; 
     } else { 
         console.log("Session modifiée avec succès :", response.data);
     }
 
-    onClose();
+    setIsLoading(false);
+    onSuccess();
   };
 
   return (
+    <>
     <Modal onClose={onClose} titre="Modifier la session" width="550px">
       <Stack component="form" onSubmit={handleSubmit} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
         <Typography color="text.secondary" mb={1}>
           Modifiez les informations puis enregistrez.
         </Typography>
 
-        <TextField label="Nom de la session" name="nom" defaultValue={session.nom} margin="normal" helperText={errors.nom}disabled={isLoading}/>
+        <TextField label="Nom de la session" name="nom" defaultValue={session.nom} margin="normal" helperText={errors.nom}/>
 
-        <TextField label="Année" name="annee" defaultValue={session.annee} margin="normal" helperText={errors.annee} disabled={isLoading}
+        <TextField label="Année" name="annee" defaultValue={session.annee} margin="normal" helperText={errors.annee}
         />
 
         <Stack direction="row" justifyContent="flex-end" mt={3}>
-          <SessionModalBouton outlined={true} label="Annuler" onClick={onClose} />
+          <Button onClick={onClose} color="inherit">Annuler</Button>
           <SessionModalBouton label="Enregistrer" loading={isLoading} />
         </Stack>
       </Stack>
     </Modal>
+
+    <Snackbar open={!!message_erreurs} autoHideDuration={6000} onClose={() => message_erreurs = ""}>
+        <Alert onClose={() => message_erreurs = ""} severity="error" sx={{ width: '100%' }}>
+            {message_erreurs}
+        </Alert>
+    </Snackbar>
+  </>
   );
 }
