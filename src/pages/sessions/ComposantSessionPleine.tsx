@@ -10,7 +10,7 @@ type Props = {
         id: number;
         nom: string;
         annee: number;
-        statut: 1 | 2 | 3 | 4;
+        statut: 0 | 1 | 2 | 3;
     }>;
     fetchSessions: () => Promise<void>;
 };

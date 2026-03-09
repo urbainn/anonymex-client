@@ -28,10 +28,10 @@ type ModalState =
 
 
 const Statut: CouleurStatut = {
-    1: ["#A2D8B0", 'Active', HourglassBottomIcon], // Icone à revoir
-    2: ["#D5D5D5", 'Terminée', DoneIcon],
-    3: ["#80A4FF", 'Archivée', ArchiveIcon],
-    4: ["#D8A2A3", 'En suppression', AutoDeleteIcon]
+    0: ["#A2D8B0", 'Active', HourglassBottomIcon], // Icone à revoir
+    1: ["#D5D5D5", 'Terminée', DoneIcon],
+    2: ["#80A4FF", 'Archivée', ArchiveIcon],
+    3: ["#D8A2A3", 'En suppression', AutoDeleteIcon]
 };
 
 export function CarteDeSession({id, annee, nom, nombreStatut}: Props): React.ReactElement {

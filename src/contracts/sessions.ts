@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { apiRequest } from "../utils/api";
 
-export type SessionsStatut = 1 | 2 | 3 | 4;
+export type SessionsStatut = 0 | 1 | 2 | 3;
 
 export const SessionsStatusNom: Record<SessionsStatut, string> = {
-    1: "Active",
-    2: "Terminée",
-    3: "Archivée",
-    4: "En suppression"
+    0: "Active",
+    1: "Terminée",
+    2: "Archivée",
+    3: "En suppression"
 };
 
 // --- Schémas ---
@@ -15,7 +15,7 @@ export const SessionSchema = z.object({
     id: z.number().int().positive(),
     nom: z.string(),
     annee: z.number().int().min(2025),
-    statut: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
+    statut: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
 });
 
 export const NewSessionSchema = SessionSchema.omit({ id: true, statut: true });

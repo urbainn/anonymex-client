@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useTransition, type ReactElement } from "react";
+import { useParams } from "react-router-dom";
 import { getEpreuves, type APIEpreuve, type APIListEpreuves } from "../../contracts/epreuves";
 import { Box, Divider, Stack, Typography } from "@mui/material";
 import { useSnackbarGlobal } from "../../contexts/SnackbarContext";
@@ -38,11 +39,15 @@ export default function EpreuvesPage(): ReactElement {
     // Modal
     const { ouvrir } = useModal();
 
+    // Paramètres d'URL
+    const { sessionId } = useParams<{ sessionId: string }>();
+    if (!sessionId) return <Typography variant="h5" color="error">ID de session manquant dans l'URL.</Typography>;
+
     // Charger les épreuves depuis l'API
     useEffect(() => {
         setEstChargement(true);
         async function chargerEpreuves() {
-            const reponse = await getEpreuves(1);
+            const reponse = await getEpreuves(parseInt(sessionId ?? '-1'));
             if (reponse.data && reponse.status === 200) {
                 // Chargement réussi
                 /*const compteursStatus = new Map<number, number>();
