@@ -190,9 +190,9 @@ export default function EpreuvesPage(): ReactElement {
 
 
                         <Stack spacing={2}>
-                            <Typography variant="h5" paddingTop={5} fontWeight={700}>Autre</Typography>
-                            <BoutonImportant color={teal[400]} titre="Imprimer les bordereaux" sousTitre="Générer et télécharger les bordereaux pour les épreuves sélectionnées." icone={<Download sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleImprimerBordereaux()} />
-                            <BoutonImportant color={lightGreen[400]} titre="Scanner les copies" sousTitre="Utiliser la caméra pour scanner les documents liés aux épreuves." icone={<DocumentScannerIcon sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleScan()} />
+                            <Typography variant="h5" paddingTop={5} fontWeight={700}>Actions</Typography>
+                            <BoutonImportant color={teal[400]} titre="Imprimer les bordereaux" icone={<Download sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleImprimerBordereaux()} />
+                            <BoutonImportant color={lightGreen[400]} titre="Déposer des scans" icone={<DocumentScannerIcon sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleScan()} />
                         </Stack>
                         <BordereauxModal ouvert={ouvertModal} onFermer={() => setOuvertModal(false)} />
                         <ScanModal setSuccess={setOpenSnackbar} ouvert={ouvertModalScan} setOuvertModalScan={setOuvertModalScan} />

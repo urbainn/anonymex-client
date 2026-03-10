@@ -6,7 +6,7 @@ import type { JSX } from "react";
 interface EpreuvesFiltresProps {
     onClick: () => void;
     titre: string;
-    sousTitre: string;
+    sousTitre?: string;
     icone: JSX.Element;
     color: string;
 }
@@ -24,8 +24,8 @@ function BoutonImportant(props: EpreuvesFiltresProps): JSX.Element {
                     <Stack direction={"row"}>
                         <Stack alignItems={'center'} justifyContent='center' alignSelf={'stretch'}
                             sx={{
-                                width: '15rem', fontSize: '1.2rem',
-                                bgcolor: props.color + '8F', // note: on rajoute 8F en ALPHA, c'est un byte hexédécimal supplémentaire pour l'opacité
+                                width: '5rem', fontSize: '1.2rem',
+                                bgcolor: '#00000010', // note: on rajoute 8F en ALPHA, c'est un byte hexédécimal supplémentaire pour l'opacité
                                 padding: 2
                             }}
                         >
@@ -35,10 +35,7 @@ function BoutonImportant(props: EpreuvesFiltresProps): JSX.Element {
 
                         <Stack padding={2} direction="row" alignItems="center" spacing={2}>
                             <Stack direction="column">
-                                <Typography color="grey.800" fontWeight={500} variant="h5"> {props.titre} </Typography>
-                                <Typography variant="body1" color={grey[500]}>
-                                    Les bordereaux sont des documents qui récapitulent les informations essentielles sur les épreuves, tels que les codes, les dates et les lieux.
-                                </Typography>
+                                <Typography color="grey.800" fontWeight={500} variant="h6"> {props.titre} </Typography>
                             </Stack>
                         </Stack>
                     </Stack>

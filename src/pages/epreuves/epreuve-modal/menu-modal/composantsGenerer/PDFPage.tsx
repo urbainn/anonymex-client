@@ -4,6 +4,7 @@ import BoutonStandard from "../../components/BoutonStantard";
 import DownloadIcon from '@mui/icons-material/Download';
 
 import { useState } from "react";
+import { URL_API_BASE } from "../../../../../utils/api";
 
 
 interface PDFPageProps {
@@ -26,7 +27,7 @@ export default function PDFPage(props: PDFPageProps) {
     //const [documentUrl, setDocumentUrl] = useState<string>("");
 
     //const document = await fetch("https://..."); // 
-    const documentUrl = "https://us1.pdfgeneratorapi.com/api/v3/templates/686726/output?key=ab0801834ab51edb6e8fee01dd4adc28f0dcd8a03ea2f2f17eeeb475b5c51ec8&workspace=demo.example@actualreports.com&signature=3123e0212c6e3d44b64738a77b0daf0781a1271439cab6301755cb4773a6446f&data=https://pdfgeneratorapi-web-assets.s3.amazonaws.com/data/bill_of_lading_data.json&format=pdf&output=I"
+    const documentUrl = URL_API_BASE + "/documents/bordereau.pdf";
     const listeSalles = ["Aucune", "Salle 1", "Salle 2", "Salle 3"];
 
     const [salleSelectionnee, setSalleSelectionnee] = useState<number>(0);
