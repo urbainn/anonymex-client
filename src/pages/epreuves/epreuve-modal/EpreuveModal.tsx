@@ -81,7 +81,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
                         {numeroOnglet === 1 && <MenuListeEtudiants statut={epreuve.statut} menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]} />}
 
                         {numeroOnglet === 2 && epreuve.statut <= 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} />}
-                        {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} menuColor={themeEpreuves.status[epreuve.statut]} sessionId={sessionId} />}
+                        {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />}
 
                     </Stack>
                 </Stack>

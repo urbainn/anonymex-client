@@ -5,7 +5,7 @@ import { Stack } from "@mui/material";
 interface MenuScanCopiesProps {
     menuColor: string;
     codeUE: string;
-    sessionId: string;
+    idSession: string;
 }
 
 export function MenuScanCopies(props: MenuScanCopiesProps) {
@@ -18,7 +18,7 @@ export function MenuScanCopies(props: MenuScanCopiesProps) {
             justifyContent="center"
             direction={"column"}
         >
-            <DepotLayout isModal={false} codeUE={props.codeUE} />
+            <DepotLayout isModal={false} codeUE={props.codeUE} idSession={props.idSession} />
         </Stack>
     );
 }

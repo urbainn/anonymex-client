@@ -1,5 +1,5 @@
 import { Close } from "@mui/icons-material";
-import { Collapse, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { Collapse, Stack, TextField } from "@mui/material";
 import { green } from "@mui/material/colors";
 import { useSnackbarGlobal } from "../../../../../contexts/SnackbarContext";
 import { DropZone } from "./DropZone";
@@ -8,12 +8,14 @@ import { useEffect, useRef, useState } from "react";
 import { FileList } from "./FileList";
 
 import type { APIListIncidents, APIIncident } from "../../../../../contracts/incidents";
-import { is } from "zod/v4/locales";
+import { URL_API_BASE } from "../../../../../utils/api";
+
 
 
 interface DepotLayoutProps {
     isModal: boolean;
     handleClose?: () => void;
+    idSession: string; // Nécessaire pour l'appel API
     codeUE?: string; // Si ouvert depuis une UE, on peut préremplir le code UE, sinon il sera demandé à l'utilisateur
     setCodeScan?: (code: string) => void;
     setSuccess?: (success: boolean) => void;
@@ -34,8 +36,11 @@ export function DepotLayout(props: DepotLayoutProps) {
     // Si c'est un modal, on affiche le champ de code UE
     const [codeUE, setCodeUE] = useState<string>("");
 
-    const [incidents, setIncidents] = useState<APIListIncidents | null>(null); // Affichage
-    const [incidentOuvert, setIncidentOuvert] = useState<APIIncident | null>(null); // Pour savoir quel incident est ouvert
+    const [incidents] = useState<APIListIncidents | null>(null); // Affichage
+    const [incidentOuvert] = useState<APIIncident | null>(null); // Pour savoir quel incident est ouvert
+
+    const [sources, setSources] = useState<EventSource[]>([]);
+
 
     // Contexte pour afficher les messages d'erreur
     const { afficherErreur } = useSnackbarGlobal();
@@ -52,7 +57,6 @@ export function DepotLayout(props: DepotLayoutProps) {
     // Réinitialiser le champ de fichier et l'état associé
     const handleReset = () => {
         setFichiers(null);
-        setCodeUE("");
         if (inputRef.current) {
             inputRef.current.value = "";
         }
@@ -80,10 +84,13 @@ export function DepotLayout(props: DepotLayoutProps) {
     }
 
 
+    useEffect(() => {
+        console.log("Liste des sources mis à jour :", sources);
+    }, [sources]);
 
 
     // Soumettre le fichier sélectionné (appel API)
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // Appel API pour envoyer le fichier
         if (!fichiers) {
             afficherErreur("Aucun fichier sélectionné, veuillez sélectionner un fichier avant de soumettre");
@@ -94,31 +101,77 @@ export function DepotLayout(props: DepotLayoutProps) {
             afficherErreur("Code UE manquant, veuillez entrer le code UE associé au fichier");
             return;
         }
-        // variable codeUE pour appel API
 
-        // await 
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
+        console.log("Appel recuperer depots ID");
+        for (const fichier of Array.from(fichiers)) {
 
-            // Si success
+            const formData = new FormData();
+            formData.append("fichier", fichier);
 
-            {
-                props.isModal && (
-                    props.setSuccess!(true),
-                    props.setCodeScan!(codeUE),
-                    props.handleClose!()
-                )
-            }
+            const response = await fetch(`${URL_API_BASE}/sessions/${props.idSession}/epreuves/${codeUE}/depot`, {
+                method: "POST",
+                body: formData,
+            });
 
-            setFichiers(null)
-            setCodeUE("");
+            const info = await response.json();
 
-        }, 2000);
+            appelerAPI(info);
+
+        }
 
 
+        {/* 
+        {
+            props.isModal && (
+                props.setSuccess!(true),
+                props.setCodeScan!(codeUE),
+                props.handleClose!()
+            )
+        }
+
+        setFichiers(null)
+        setCodeUE("");
+
+        */}
     }
+
+    // Appeler l'API pour écouter les événements de progression du dépôt via SSE
+    const appelerAPI = async (depotID: string) => {
+
+        const url = `${URL_API_BASE}/sessions/${props.idSession}/epreuves/${codeUE}/depot/${depotID}/progress`;
+        console.log("Écoute des événements de progression pour le dépôt :", depotID, "via l'URL :", url);
+        const evtSource = new EventSource(url);
+
+        setSources(prev => [...prev, evtSource]);
+
+        // Écouter les événements de progression envoyés par le serveur
+        evtSource.addEventListener("progress", function (event) {
+
+            console.log(`Progression du dépôt ${depotID} :`, event.data);
+
+        });
+
+        // Si le dépôt est traité avec succès, on affiche un message de succès et on ferme la connexion SSE
+        evtSource.addEventListener("ok", function (event) {
+            console.log(`Dépôt ${depotID} traité avec succès :`, event.data);
+            evtSource.close();
+            setSources(prev => {
+                // Retirer la source fermée de la liste des sources
+                const next = prev.filter(source => source !== evtSource);
+
+                // Si plus aucune source, on arrête le loading
+                if (next.length === 0) {
+                    setLoading(false);
+                }
+
+                return next;
+            });
+        });
+    }
+
+
 
     return (
         <Stack

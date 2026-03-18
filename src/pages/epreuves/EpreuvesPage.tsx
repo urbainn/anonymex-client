@@ -85,7 +85,7 @@ export default function EpreuvesPage(): ReactElement {
             setEstChargement(false);
         }
         chargerEpreuves();
-    }, [afficherErreur]);
+    }, [afficherErreur, sessionId]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -97,10 +97,11 @@ export default function EpreuvesPage(): ReactElement {
         const epreuve = listeEpreuves.epreuvesAvenir.concat(listeEpreuves.epreuvesPassees).find(e => { if (typeof e != "number") { return e?.code === ue; } });
 
         if ((typeof epreuve != "number") && epreuve) {
+            console.log("Ouvrir modal pour l'épreuve :", epreuve, "idSession :", sessionId);
             ouvrir(<EpreuveModal epreuve={epreuve} sessionId={sessionId} tab={tab} />);
         }
 
-    }, [location.search, listeEpreuves]);
+    }, [location.search, listeEpreuves, ouvrir, sessionId]);
 
     // lorsqu'une épreuve est cliquée : afficher modal
     const handleEpreuveClick = (epreuve: APIEpreuve) => {
@@ -214,7 +215,7 @@ export default function EpreuvesPage(): ReactElement {
                             <BoutonImportant color={lightGreen[400]} titre="Déposer des scans" icone={<DocumentScannerIcon sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleScan()} />
                         </Stack>
                         <BordereauxModal ouvert={ouvertModal} onFermer={() => setOuvertModal(false)} />
-                        <ScanModal setSuccess={setOpenSnackbar} ouvert={ouvertModalScan} setOuvertModalScan={setOuvertModalScan} setCodeScan={setCodeScan} />
+                        <ScanModal setSuccess={setOpenSnackbar} idSession={sessionId} ouvert={ouvertModalScan} setOuvertModalScan={setOuvertModalScan} setCodeScan={setCodeScan} />
 
                         <Snackbar
                             open={openSnackbar}

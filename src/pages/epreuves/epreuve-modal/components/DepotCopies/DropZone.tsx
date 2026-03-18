@@ -1,7 +1,6 @@
 
-import { Button, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { useSnackbarGlobal } from "../../../../../contexts/SnackbarContext";
 import { keyframes } from "@emotion/react";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import BoutonStandard from "../BoutonStantard";
@@ -31,7 +30,6 @@ const fadeInFadeOut = keyframes`
 
 export function DropZone(props: DropZoneProps) {
 
-    const { afficherErreur } = useSnackbarGlobal();
 
     const [animate, setAnimate] = useState<boolean>(false);
 

@@ -9,6 +9,7 @@ import { DepotLayout } from "./components/DepotCopies/DepotLayout";
 
 interface ScanModalProps {
     ouvert: boolean;
+    idSession: string;
     setOuvertModalScan: (ouvert: boolean) => void;
     setSuccess: (success: boolean) => void;
     setCodeScan: (code: string) => void;
@@ -32,7 +33,7 @@ export function ScanModal(props: ScanModalProps) {
                 direction={"column"}
             >
 
-                <DepotLayout isModal={true} handleClose={handleClose} />
+                <DepotLayout isModal={true} idSession={props.idSession} handleClose={handleClose} />
 
             </Stack >
 
