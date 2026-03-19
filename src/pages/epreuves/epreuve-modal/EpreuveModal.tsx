@@ -10,6 +10,7 @@ import Tab from "@mui/material/Tab";
 import DetailsEpreuve from "./menu-modal/MenuDetailsEpreuve";
 import MenuListeEtudiants from "./menu-modal/MenuListeEtudiants";
 import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
+import MenuIncidents from "./menu-modal/MenuIncidents";
 
 import { useState } from "react";
 import { colors, Stack } from "@mui/material";
@@ -28,14 +29,17 @@ export interface EpreuveModalProps {
 export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
     const { fermer } = useModal();
 
-    const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2>(0);
+    const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2 | 3>(0);
 
-    const handleChange = (_event: React.SyntheticEvent, newValue: 0 | 1 | 2) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: 0 | 1 | 2 | 3) => {
         setNumeroOnglet(newValue);
     };
 
     // Gestion route pour ouvrir le modal sur un onglet précis
     useEffect(() => {
+         if (tab === "incidents"){
+            setNumeroOnglet(3);
+        }
         if (tab === "scan") {
             setNumeroOnglet(2);
         }
@@ -74,6 +78,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
                             {epreuve.statut === 4 || epreuve.statut === 5 ? (
                                 <Tab label="Copies scannées" />
                             ) : null}
+                            <Tab label="Incidents" />
                         </Tabs>
                     </Stack>
                     <Stack width={"100%"} padding={2} height={"100%"} justifyContent={"center"}>
@@ -82,6 +87,8 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
 
                         {numeroOnglet === 2 && epreuve.statut <= 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} />}
                         {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />}
+
+                        {numeroOnglet === 3 && <MenuIncidents epreuve={epreuve} />}
 
                     </Stack>
                 </Stack>
