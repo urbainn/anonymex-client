@@ -11,7 +11,7 @@ import type { APIIncident } from "../../../../../contracts/incidents";
 import { URL_API_BASE } from "../../../../../utils/api";
 import IncidentListe from "../../menu-modal/composantsIncidents/IncidentListe";
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
-
+import IncidentDetails from "../../menu-modal/composantsIncidents/IncidentDetail";
 
 interface DepotLayoutProps {
     isModal: boolean;
@@ -60,6 +60,9 @@ export function DepotLayout(props: DepotLayoutProps) {
         }
     }, [props.codeUE]);
 
+    useEffect(() => {
+        console.log("Incident ouvert : 1", incidentOuvert);
+    }, [incidentOuvert]);
 
     // Réinitialiser le champ de fichier et l'état associé
     const handleReset = () => {
@@ -74,7 +77,7 @@ export function DepotLayout(props: DepotLayoutProps) {
         setIncidents([]);
 
         if (inputRef.current) {
-            inputRef.current.value = "";    
+            inputRef.current.value = "";
         }
     };
 
@@ -174,7 +177,7 @@ export function DepotLayout(props: DepotLayoutProps) {
 
                 console.log(`Progression du dépôt ${depotID} :`, event.data);
                 const infos = JSON.parse(event.data);
-                
+
                 // set page d'index numFichier à jour
                 setPage(prev => {
                     const newPage = [...(prev || [])];
@@ -196,10 +199,10 @@ export function DepotLayout(props: DepotLayoutProps) {
             evtSource.addEventListener("ok", function (event) {
                 console.log(`Dépôt ${depotID} traité avec succès :`, event.data);
                 evtSource.close();
-             
+
                 resolve(true);
             });
-            
+
             evtSource.addEventListener("incident", function (event) {
                 console.log('Erreur, INCIDENT détécté', event.data);
                 const info = JSON.parse(event.data)
@@ -229,104 +232,100 @@ export function DepotLayout(props: DepotLayoutProps) {
                 p: 3,
                 pt: props.isModal ? 3 : 0,
                 transition: "height 0.3s ease, width 0.3s ease",
-
             }}
-
             spacing={2}
         >
-            <Stack width={"100%"} direction="row" spacing={2}>
+            <Stack width="100%" direction="row" spacing={2}>
 
-                {/* Partie gauche, zone de dépôt & validation */}
-
+                {/* Partie gauche */}
                 <Stack
                     sx={{
-                        width: fichiers ? "50%" : "100%",
+                        width: fichiers
+                            ? incidentOuvert
+                                ? "40%"
+                                : "50%"
+                            : "100%",
                         transition: "width 0.3s ease",
-                        height: "100%"
-
+                        height: "100%",
                     }}
                 >
-                    {/* Si c'est un modal, on affiche le bouton de fermeture */}
                     {props.isModal && (
                         <Close
                             onClick={() => {
                                 props.handleClose?.();
                                 handleReset();
                             }}
-                            sx={{ cursor: "pointer", alignItems: "flex-start" }}
+                            sx={{ cursor: "pointer", alignSelf: "flex-start" }}
                         />
                     )}
 
-
-                    <Stack spacing={2} width="100%" height={"100%"} alignItems={"center"}>
-
-                        {/* Si il n'y a pas d'incidents, on affiche la dropzone, sinon on affiche les incidents */}
-                        {!debutTraitement ? (<>
-
-                            <DropZone inputRef={inputRef} setFichiers={setFichiers} fichiers={fichiers} />
-                            <Collapse in={fichiers !== null} sx={{ width: "100%" }}>
-                                <Stack spacing={1} width="100%">
-
-                                    {/* Si c'est un modal, on affiche le champ de code UE, si non, il sera envoyé automatiquement */}
-                                    {props.isModal && (
-                                        <TextField
-                                            value={codeUE ?? ""}
-                                            label="Code UE du fichier"
-                                            variant="outlined"
-                                            onChange={(e) => setCodeUE(e.target.value)}
-                                            fullWidth
-                                        />
-                                    )}
-
-                                    <Stack direction="row" width="100%" spacing={2}>
-                                        <BoutonStandard
-                                            loading={loading}
-                                            color={green[400]}
-                                            onClick={handleSubmit}
-                                            texte="Envoyer"
-                                            width="100%"
-                                        />
-                                    </Stack>
-                                </Stack>
-                            </Collapse>
-                        </>)
-
-                            : (
-                                /* Affichage des incidents */
-                                <Stack alignContent={"center"} alignItems={"center"} justifyContent={"center"} width={"100%"} pt={8}>
-                                    {incidents.length === 0 ? (
-                                        <Stack alignItems={"center"} spacing={2}> 
-                                            <QueryBuilderIcon sx={{fontSize:100, color:grey[600]}}/>
-
-                                            <Typography variant="h5" fontWeight={500} color={grey[700]} textAlign={"center"}>
-                                                Ici seront affichés les<br/>incidents de lecture
-                                            </Typography>
-                                                
+                    <Stack spacing={2} height="100%" alignItems="center">
+                        {!debutTraitement ? (
+                            <>
+                                <DropZone inputRef={inputRef} setFichiers={setFichiers} fichiers={fichiers} />
+                                <Collapse in={!!fichiers} sx={{ width: "100%", transition: "width 0.3s ease" }}>
+                                    <Stack spacing={1} width="100%">
+                                        {props.isModal && (
+                                            <TextField
+                                                value={codeUE ?? ""}
+                                                label="Code UE du fichier"
+                                                variant="outlined"
+                                                onChange={(e) => setCodeUE(e.target.value)}
+                                                fullWidth
+                                            />
+                                        )}
+                                        <Stack direction="row" width="100%" spacing={2}>
+                                            <BoutonStandard
+                                                loading={loading}
+                                                color={green[400]}
+                                                onClick={handleSubmit}
+                                                texte="Envoyer"
+                                                width="100%"
+                                            />
                                         </Stack>
-                                    ) : (
-                                        <>
-                                           
-                                        <IncidentListe liste={incidents} onClick={setIncidentOuvert} /> </>
-                                    )}
-                                </Stack>
-                            )}
-
-
-
+                                    </Stack>
+                                </Collapse>
+                            </>
+                        ) : (
+                            <Stack width="100%">
+                                {incidents.length === 0 ? (
+                                    <Stack alignItems="center" spacing={2} pt={8}>
+                                        <QueryBuilderIcon sx={{ fontSize: 100, color: grey[600] }} />
+                                        <Typography variant="h5" fontWeight={500} color={grey[700]} textAlign="center">
+                                            Ici seront affichés les<br />incidents de lecture
+                                        </Typography>
+                                    </Stack>
+                                ) : (
+                                    <IncidentListe liste={incidents} onClick={setIncidentOuvert} selectedIncidentId={incidentOuvert?.idIncident || null} />
+                                )}
+                            </Stack>
+                        )}
                     </Stack>
                 </Stack>
 
-                {/* Partie droite, affichage des fichiers sélectionnés ou des incidents */}
+                {/* Partie droite */}
                 {!incidentOuvert && (
-
-                    <Collapse in={fichiers !== null} unmountOnExit orientation="vertical" sx={{ width: fichiers ? "50%" : "0%", transition: "width 0.3s ease" }} >
+                    <Collapse
+                        in={!!fichiers}
+                        unmountOnExit
+                        orientation="vertical"
+                        sx={{
+                            width: fichiers ? "50%" : "0%",
+                            transition: "width 0.3s ease",
+                        }}
+                    >
                         <Box p={2}>
-                            <Stack direction="column" alignItems="center" justifyContent={"space-between"}>
-                                {fichiers && (
-                                    <FileList fichiers={fichiers} handleSupprFile={handleSupprFile} numPage={numPage} totalPages={totalPages} numFichier={numFichier} debutTraitement={debutTraitement} erreurs={erreurs} />
-                                )}
-                            </Stack>
-
+                            {fichiers && (
+                                <FileList
+                                    fichiers={fichiers}
+                                    handleSupprFile={handleSupprFile}
+                                    numPage={numPage}
+                                    totalPages={totalPages}
+                                    numFichier={numFichier}
+                                    debutTraitement={debutTraitement}
+                                    erreurs={erreurs}
+                                />
+                            )}
                             <Stack direction="row" width="100%" spacing={2} justifyContent="center">
                                 {afficherConfirmation && (
                                     <BoutonStandard
@@ -338,21 +337,26 @@ export function DepotLayout(props: DepotLayoutProps) {
                                 )}
                             </Stack>
                         </Box>
-
                     </Collapse>
-
-
                 )}
 
-                {/* Si un incident est ouvert, on affiche les détails de l'incident */}
-                {incidentOuvert !== null && (
-                    <Stack sx={{ width: "50%", transition: "width 0.3s ease" }}>
-                        {/* <IncidentDetails incident={incidents[incidentOuvert]} /> */}
+                {/* Détails incident ouvert */}
+                {incidentOuvert && (
+                    <Stack
+                        width="60%"
+                        sx={{
+                            transition: "width 0.3s ease",
+                        }}
+                    >
+                        <IncidentDetails
+                            onClick={() => setIncidentOuvert(null)}
+                            onClose={() => setIncidentOuvert(null)}
+                            incident={incidentOuvert}
+
+                        />
                     </Stack>
                 )}
-
             </Stack>
-        </Stack >
-
+        </Stack>
     );
 }

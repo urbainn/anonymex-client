@@ -1,7 +1,17 @@
 import { colors, TextField } from "@mui/material";
 
+interface MyTextFieldProps {
+    type: string;
+    sx?: object;
+    label: string;
+    value: string | number | undefined;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: boolean;
+    helperText?: string;
+    InputProps?: object;
+}
 
-function MyTextField(props: any) {
+function MyTextField(props: MyTextFieldProps) {
 
     return (
         <TextField {...props}
@@ -37,6 +47,12 @@ function MyTextField(props: any) {
                 '& .MuiInputBase-input': {
                     transition: "all 0.2s ease",
                 },
+
+
+                "& input::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
+                "& input::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
+                "& input[type=number]": { MozAppearance: "textfield" },
+
             }} />);
 }
 export default MyTextField;

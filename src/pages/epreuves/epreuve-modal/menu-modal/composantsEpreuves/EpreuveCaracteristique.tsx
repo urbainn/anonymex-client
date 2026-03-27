@@ -5,7 +5,6 @@ import { useEffect, type JSX } from "react";
 import { TypoSousTitre } from "../../TypoSousTitre";
 import { TypoTitre } from "../../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
-import { colors } from "@mui/material";
 
 interface EpreuveCaracteristiqueProps {
     titre: string;

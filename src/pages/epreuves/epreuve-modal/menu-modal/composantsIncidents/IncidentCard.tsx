@@ -2,7 +2,8 @@ import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { APIIncident } from '../../../../../contracts/incidents';
-
+import { grey, red } from "@mui/material/colors";
+import { useState } from "react";
 
 type IncidentType = "resolu" | "non resolu";
 
@@ -10,10 +11,12 @@ interface IncidentCardProps {
     incident: APIIncident;
     onClick: (incident: APIIncident) => void;
     type?: IncidentType;
+    selected: boolean;
 }
 
-function IncidentCard({ incident, onClick, type = "non resolu" }: IncidentCardProps) {
-    const isResolved = type === "resolu";
+function IncidentCard(props: IncidentCardProps) {
+    const isResolved = props.type === "resolu";
+
 
     const colors = {
         bg: isResolved ? '#e0f9dc' : '#F9DEDC',
@@ -25,43 +28,46 @@ function IncidentCard({ incident, onClick, type = "non resolu" }: IncidentCardPr
         <Card
             variant="outlined"
             sx={{
-                borderColor: colors.border,
-                backgroundColor: '#fdf0ef87',
+
+                backgroundColor: props.selected ? colors.bg + 'AF' : '#fdf0ef87',
                 borderRadius: '10px',
-                
+                flexShrink: 0,
+                height: 70,
+                border: 'none',
+                transition: 'background-color 0.3s ease',
             }}
         >
             <CardActionArea
-                onClick={() => onClick(incident)}
-                sx={{ display: 'flex', p: 1.5}}
-                
-                
+                onClick={() => {
+                    props.onClick(props.incident);
+                }}
+
+                sx={{
+                    height: 70,
+                }}
             >
-                <Stack direction="row" spacing={2} width={"100%"} justifyContent={"flex-start"}>
+                <Stack direction="row" spacing={2} width={"100%"} alignItems="center">
                     <Stack
                         alignItems="center"
                         justifyContent="center"
-                        width={40}
-                        height={40}
-                        padding={2}
-                        borderRadius="50%"
+                        width={70}
+                        height={70}
                         bgcolor={colors.bg}
-                        color={colors.text}
                     >
-                        {isResolved ? <CheckCircleIcon /> : <ErrorIcon />}
+                        {isResolved ? <CheckCircleIcon /> : <ErrorIcon fontSize="large" sx={{ color: red[300] }} />}
                     </Stack>
 
                     <Stack >
                         <Typography
                             variant="subtitle1"
                             fontWeight="bold"
-                            color={isResolved ? "#000000d4" : "#852221"}
+                            color={isResolved ? "#000000d4" : red[500]}
                         >
-                            {incident.titre} 
+                            {props.incident.titre}
                         </Typography>
 
                         <Typography variant="body2" color="text.secondary">
-                            {incident.details}
+                            {props.incident.details}
                         </Typography>
                     </Stack>
                 </Stack>
