@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { apiRequest } from "../utils/api";
+import type { APIEpreuve } from "./epreuves";
 
 export type RechercheResultatType = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -76,8 +77,21 @@ export type APIRechercheReponse = APIRechercheUE | APIRechercheSalle | APIRecher
 export const getRecherche = (sessionId: number, query: string) => {
     const q = encodeURIComponent(query);
 
-    return apiRequest<null, APIListRecherche>(
-        'GET', 
-        `/session/${sessionId}/recherche?q=${q}`
-    );
+    return apiRequest<null, APIListRecherche>('GET', `/sessions/${sessionId}/recherche?q=${q}`);
+}
+
+export const getRechercheSalle = (sessionId: number, codeSalle: string) => {
+    return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/recherche/salle/${codeSalle}`);
+}
+
+export const getRechercheHeure = (sessionId: number, horodatage: string) => {
+    return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/recherche/heure/${horodatage}`);
+}
+
+export const getRechercheSalleHeure = (sessionId: number, codeSalle: string, horodatage: string) => {
+    return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/recherche/salleheure/${codeSalle}/${horodatage}`);
+}
+
+export const getRechercheEtudiant = (sessionId: number, numeroEtudiant: string) => {
+    return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/recherche/etudiant/${numeroEtudiant}`);
 }

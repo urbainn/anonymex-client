@@ -25,3 +25,7 @@ export const createEtudiant = (newEtudiant: APINewEtudiant) => {
 export const updateEtudiant = (numero: number, updateData: APIUpdateEtudiant) => {
     return apiRequest<APIUpdateEtudiant, APIEtudiant>('PATCH', `/etudiants/${numero}`, updateData, UpdateEtudiantSchema);
 }
+
+export const getEtudiant = (numero: number) => {
+    return apiRequest<null, APIEtudiant>('GET', `/etudiants/${numero}`);
+}
