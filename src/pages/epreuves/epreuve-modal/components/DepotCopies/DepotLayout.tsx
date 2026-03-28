@@ -1,5 +1,5 @@
 import { Close } from "@mui/icons-material";
-import { Box, Collapse, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Collapse, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import { green, grey } from "@mui/material/colors";
 import { useSnackbarGlobal } from "../../../../../contexts/SnackbarContext";
 import { DropZone } from "./DropZone";
@@ -7,7 +7,7 @@ import BoutonStandard from "../BoutonStantard";
 import { useEffect, useRef, useState } from "react";
 import { FileList } from "./FileList";
 
-import type { APIIncident } from "../../../../../contracts/incidents";
+import { getIncidents, type APIIncident } from "../../../../../contracts/incidents";
 import { URL_API_BASE } from "../../../../../utils/api";
 import IncidentListe from "../../menu-modal/composantsIncidents/IncidentListe";
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
@@ -48,6 +48,11 @@ export function DepotLayout(props: DepotLayoutProps) {
 
     // Confirmation de fin
     const [afficherConfirmation, setAfficherConfirmation] = useState<boolean>(false);
+
+    // State pour le Snackbar de succès / erreur lors de la correction d'un incident
+    const [ouvertSucces, setOuvertSucces] = useState<boolean>(false);
+    const [ouvertEchec, setOuvertEchec] = useState<boolean>(false);
+    const [messageSnackbar, setMessageSnackbar] = useState<string>("");
 
     // Contexte pour afficher les messages d'erreur
     const { afficherErreur } = useSnackbarGlobal();
@@ -162,6 +167,14 @@ export function DepotLayout(props: DepotLayoutProps) {
         setCodeUE("");
 
         */}
+    }
+
+    const ajouterIncident = (incident: APIIncident) => {
+        setIncidents((prev) => [...prev, incident]);
+    }
+
+    const retirerIncident = (idIncident: number) => {
+        setIncidents((prev) => prev.filter(incident => incident.idIncident !== idIncident));
     }
 
     // Appeler l'API pour écouter les événements de progression du dépôt via SSE
@@ -352,11 +365,33 @@ export function DepotLayout(props: DepotLayoutProps) {
                             onClick={() => setIncidentOuvert(null)}
                             onClose={() => setIncidentOuvert(null)}
                             incident={incidentOuvert}
-
+                            ajouterIncident={ajouterIncident}
+                            retirerIncident={retirerIncident}
+                            setOuvertSucces={setOuvertSucces}
+                            setOuvertEchec={setOuvertEchec}
+                            setMessageSnackbar={setMessageSnackbar}
                         />
                     </Stack>
                 )}
             </Stack>
+            <Snackbar
+                open={ouvertSucces}
+                autoHideDuration={3000}
+                onClose={() => setOuvertSucces(false)}
+            >
+                <Alert severity="success" variant="filled">
+                    {messageSnackbar}
+                </Alert>
+            </Snackbar>
+            <Snackbar
+                open={ouvertEchec}
+                autoHideDuration={3000}
+                onClose={() => setOuvertEchec(false)}
+            >
+                <Alert severity="error" variant="filled">
+                    {messageSnackbar}
+                </Alert>
+            </Snackbar>
         </Stack>
     );
 }

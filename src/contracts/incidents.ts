@@ -36,3 +36,7 @@ export const getIncidents = (sessionId: number, epreuveCode: string) => {
 export const corrigerIncident = (sessionId: number, epreuveCode: string, idIncident: number, codeAnonymat: string, noteQuart: number) => {
     return apiRequest<{ codeAnonymat: string, noteQuart: number }, APIReponseCorrectionIncident>('POST', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${idIncident}`, { codeAnonymat, noteQuart });
 }
+
+export const getSuggestionsIncident = (sessionId: number, epreuveCode: string, codePartiel: string) => {
+    return apiRequest<null, string[]>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions/${codePartiel}`);
+}

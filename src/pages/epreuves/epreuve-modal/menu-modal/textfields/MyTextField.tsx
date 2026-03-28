@@ -2,6 +2,7 @@ import { colors, TextField } from "@mui/material";
 
 interface MyTextFieldProps {
     type: string;
+    shrink?: boolean;
     sx?: object;
     label: string;
     value: string | number | undefined;
@@ -15,7 +16,10 @@ function MyTextField(props: MyTextFieldProps) {
 
     return (
         <TextField {...props}
+            type={props.type}
+            InputLabelProps={props.shrink !== undefined ? { shrink: props.shrink } : undefined}
             sx={{
+
                 bgcolor: colors.grey[100],
                 borderRadius: 1,
 
@@ -53,6 +57,8 @@ function MyTextField(props: MyTextFieldProps) {
                 "& input::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
                 "& input[type=number]": { MozAppearance: "textfield" },
 
-            }} />);
+            }}
+
+        />);
 }
 export default MyTextField;

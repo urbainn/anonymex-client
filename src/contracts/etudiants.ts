@@ -29,3 +29,4 @@ export const updateEtudiant = (numero: number, updateData: APIUpdateEtudiant) =>
 export const getEtudiant = (numero: number) => {
     return apiRequest<null, APIEtudiant>('GET', `/etudiants/${numero}`);
 }
+

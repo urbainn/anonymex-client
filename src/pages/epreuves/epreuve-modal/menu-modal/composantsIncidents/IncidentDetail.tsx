@@ -1,10 +1,10 @@
-import { Box, Button, Icon, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { InputAdornment, Stack, Typography, Menu, MenuItem } from "@mui/material";
 import React, { useEffect } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import type { APIIncident } from "../../../../../contracts/incidents";
+import { getSuggestionsIncident, corrigerIncident, type APIIncident } from "../../../../../contracts/incidents";
 import { URL_API_BASE } from "../../../../../utils/api";
-import { grey } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconRondV2 from "../../../../../components/IconesRondV2";
@@ -16,10 +16,16 @@ import MyTextField from "../textfields/MyTextField";
 import CircularProgress from '@mui/material/CircularProgress';
 import BoutonStandard from "../../components/BoutonStantard";
 
+
 interface IncidentDetailProps {
     incident: APIIncident;
     onClick: () => void;
     onClose: (id: number) => void;
+    ajouterIncident: (incident: APIIncident) => void;
+    retirerIncident: (idIncident: number) => void;
+    setOuvertSucces: (open: boolean) => void;
+    setOuvertEchec: (open: boolean) => void;
+    setMessageSnackbar: (message: string) => void;
 }
 
 
@@ -29,7 +35,12 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     const [noteValue, setNoteValue] = React.useState<number | undefined>(props.incident.noteQuart);
     const [fichier, setFichier] = React.useState<string>("");
     const [loading, setLoading] = React.useState(true);
+    const [suggestions, setSuggestions] = React.useState<string[]>([]);
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
+
+    const [envoiOK, setEnvoiOK] = React.useState<boolean>(false);
 
     const [errors, setErrors] = React.useState({
         note: "",
@@ -37,12 +48,32 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     });
 
     useEffect(() => {
-        console.log("Incident sélectionné 2 :", props.incident);
-    }, [props.incident]);
+        console.log("Valeur note & numero, " + noteValue + " & " + numero);
+    }, [noteValue, numero]);
 
+    const handleClickSuggestions = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
+    const handleCloseSuggestions = () => {
+        setAnchorEl(null);
+    }
 
+    async function getSuggestions(numero: string) {
+        if (numero === null || numero === undefined || numero.length <= 3) {
+            setSuggestions([]);
+            return;
+        }
+        const suggestions = await getSuggestionsIncident(props.incident.idSession, props.incident.codeEpreuve, numero);
+        console.log("Suggestions récupérées :", suggestions);
+        if (suggestions.data) {
+            setSuggestions(suggestions.data);
+        }
+    }
     useEffect(() => {
+
+        setSuggestions([]);
+
         if (!props.incident || !props.incident.idIncident) {
             console.error("Incident invalide :", props.incident);
             return;
@@ -51,10 +82,12 @@ export default function IncidentDetail(props: IncidentDetailProps) {
 
         const getFichier = async () => {
             const rep = await fetch(`${URL_API_BASE}/documents/incidents/${props.incident.idIncident}/scan.webp`);
-            console.log("Réponse de la requête pour le fichier de l'incident :", rep);
+            getSuggestions(props.incident.codeAnonymat ?? "");
+
             setFichier(rep.url);
             setNoteValue(props.incident.noteQuart);
             setNumero(props.incident.codeAnonymat);
+            console.log("Suggestions récupérées :", suggestions);
             setLoading(false);
         }
 
@@ -75,13 +108,52 @@ export default function IncidentDetail(props: IncidentDetailProps) {
         }
     };
 
-    function FormValide(numero: string | null, note: number | null) {
+
+
+    async function appelerAPI(numero: string | undefined, note: number | undefined) {
+        const res = await corrigerIncident(props.incident.idSession, props.incident.codeEpreuve, props.incident.idIncident, numero!, note!);
+        console.log("Résultat de la correction de l'incident :", res);
+        if (res.data?.success === true) {
+            props.onClose(props.incident.idIncident);
+            if (res.data?.incidents) {
+                res.data.incidents.forEach(incident => {
+                    props.ajouterIncident(incident);
+                });
+                props.retirerIncident(props.incident.idIncident);
+            }
+            else {
+                props.retirerIncident(props.incident.idIncident);
+            }
+            props.setOuvertSucces(true);
+            props.setMessageSnackbar("Incident corrigé avec succès !");
+        }
+        else {
+            if (res.data?.message) {
+                props.setMessageSnackbar(res.data.message);
+            }
+            else {
+                props.setMessageSnackbar("Échec de la correction de l'incident. Veuillez réessayer.");
+            }
+            if (res.data?.suggestions) {
+                setSuggestions(res.data.suggestions);
+            }
+            props.setOuvertEchec(true);
+        }
+    }
+
+    function FormValide(numero: string | undefined, note: number | undefined): boolean {
+        setErrors({
+            note: "",
+            numero: ""
+        });
+        console.log("Validation du formulaire avec note =", note, "et numéro =", numero);
+
         const newErrors = {
             note: "",
             numero: ""
         };
 
-        if (note === null) {
+        if (note === undefined || note === null) {
             newErrors.note = "La note est requise.";
         } else if (note < 0 || note > 20) {
             newErrors.note = "La note doit être comprise entre 0 et 20.";
@@ -89,53 +161,63 @@ export default function IncidentDetail(props: IncidentDetailProps) {
             newErrors.note = "La note doit être un nombre.";
         }
 
-        if (numero === null || numero.trim() === "") {
+        if (numero === null || numero === undefined || numero.trim() === "") {
             newErrors.numero = "Le numéro d'anonymat est requis.";
         } else if (numero.length > 6) {
             newErrors.numero = "Max 6 caractères.";
         }
 
         const hasError = newErrors.note || newErrors.numero;
-
         setErrors(newErrors);
 
         if (!hasError) {
-            // TODO Enregistrer les modifications (en attendant, on ferme le détail de l'incident).
-            props.onClose(props.incident.idIncident);
+            return true
+        }
+        return false;
+
+    }
+
+    async function envoiCorrection(numero: string | undefined, noteValue: number | undefined) {
+        if (FormValide(numero, noteValue)) {
+            await appelerAPI(numero, noteValue!);
         }
     }
 
+
+
+
     return (
-        <Stack gap={2}>
+
+        <Stack direction={"row"} justifyContent="space-between" alignItems="center" spacing={3}>
 
 
-            <Stack direction={"row"} justifyContent="space-between" alignItems="center"  >
-                <Stack width={"70%"}>
-                    <TransformWrapper  >
-                        {({ zoomIn, zoomOut, resetTransform }) => (
-                            <Stack direction={"column"} p={1}>
-                                <Stack gap={2} direction="row" justifyContent="space-between" alignItems="center" >
-                                    <Box onClick={props.onClick} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                                        <ArrowBackIosIcon />
-                                        <Typography variant="h6" fontWeight={500} color={grey[800]} >Retour</Typography>
-                                    </Box>
-                                    <Stack direction="row" gap={1} justifyContent="center">
-                                        <IconRondV2 onClick={() => zoomIn()}>
-                                            <ZoomInIcon />
-                                        </IconRondV2>
-                                        <IconRondV2 onClick={() => zoomOut()}>
-                                            <ZoomOutIcon />
-                                        </IconRondV2>
-                                        <IconRondV2 onClick={() => resetTransform()}>
-                                            <RestartAltIcon />
-                                        </IconRondV2>
-                                        <IconRondV2 onClick={() => handleViewFile(fichier)}>
-                                            <RemoveRedEyeIcon />
-                                        </IconRondV2>
-                                    </Stack>
+
+            <Stack width={"70%"}>
+                <TransformWrapper  >
+                    {({ zoomIn, zoomOut, resetTransform }) => (
+                        <Stack direction={"column"} p={1}>
+                            <Stack gap={2} direction="row" justifyContent="space-between" alignItems="center" mb={1} borderRadius={1}>
+                                <BoutonStandard height={30} color={blue[800]} onClick={props.onClick} icone={<ArrowBackIosIcon />}>
+                                    Retour
+                                </BoutonStandard>
+
+                                <Stack direction="row" gap={1} justifyContent="center">
+                                    <IconRondV2 onClick={() => zoomIn()}>
+                                        <ZoomInIcon />
+                                    </IconRondV2>
+                                    <IconRondV2 onClick={() => zoomOut()}>
+                                        <ZoomOutIcon />
+                                    </IconRondV2>
+                                    <IconRondV2 onClick={() => resetTransform()}>
+                                        <RestartAltIcon />
+                                    </IconRondV2>
+                                    <IconRondV2 onClick={() => handleViewFile(fichier)}>
+                                        <RemoveRedEyeIcon />
+                                    </IconRondV2>
                                 </Stack>
-
-                                <TransformComponent wrapperStyle={{ width: "100%", height: "470px", }}>
+                            </Stack>
+                            <Stack border={`2px solid ${grey[200]}`} borderRadius={1}  >
+                                <TransformComponent wrapperStyle={{ width: "100%", height: "470px", }} >
                                     {loading ? (
                                         <Stack width="100%" height="470px" justifyContent="center" alignItems="center">
                                             <CircularProgress />
@@ -150,25 +232,46 @@ export default function IncidentDetail(props: IncidentDetailProps) {
 
                                 </TransformComponent>
                             </Stack>
-                        )}
-                    </TransformWrapper>
+                        </Stack>
+                    )}
+                </TransformWrapper>
+            </Stack>
+
+            <Stack direction={"column"} width={"30%"} justifyContent={"center"} height={"100%"}>
+
+                <Stack pb={6}>
+                    <Typography variant="h6" color={grey[700]} fontWeight={400} >
+                        Corrections
+                    </Typography>
+                    <Typography variant="body2" color={grey[600]} >
+                        Modifiez la note et/ou le numéro d'anonymat associés à cet incident.
+                    </Typography>
                 </Stack>
 
-                <Stack direction={"column"} width={"30%"} spacing={2}>
+                <Stack spacing={2} >
                     <MyTextField
                         type="text"
                         label="Numéro Anonymat"
                         value={numero}
-                        onChange={(e) => setNumero(e.target.value)}
-                        error={!!errors.numero}
+                        onChange={(e) => {
+                            getSuggestions(e.target.value);
+                            const val = e.target.value;
+                            setNumero(val);
+                            setEnvoiOK(FormValide(val, noteValue));
+                        }} error={!!errors.numero}
                         helperText={errors.numero}
                     />
                     <Stack direction="row" alignItems="center" >
                         <MyTextField
                             type="number"
                             label="Note"
-                            value={noteValue ?? 0}
-                            onChange={(e) => setNoteValue(Number(e.target.value))}
+                            shrink={true}
+                            value={noteValue ?? undefined}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setNoteValue(Number(val));
+                                FormValide(numero, Number(val)) ? setEnvoiOK(true) : setEnvoiOK(false);
+                            }}
                             error={!!errors.note}
                             helperText={errors.note}
                             InputProps={{
@@ -184,17 +287,52 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                                         />
                                     </InputAdornment>
                                 ),
+                                min: 0,
+                                max: 20,
+
                             }}
 
                         />
 
                     </Stack>
-                    <BoutonStandard onClick={() => FormValide(numero ?? null, noteValue ?? null)}>
-                        Enregistrer
+                    <BoutonStandard disabled={!envoiOK} color={blue[500]} onClick={() => envoiCorrection(numero, noteValue)}>
+                        Corriger
                     </BoutonStandard>
+
+
+                    <BoutonStandard disabled={suggestions.length === 0} color={grey[500]} onClickParam={handleClickSuggestions}>
+                        Suggestions
+                    </BoutonStandard>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleCloseSuggestions}
+                        sx={{ width: "100%", "& .MuiPaper-root": { width: 150 } }}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center"
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center"
+                        }}
+
+                    >
+                        {suggestions.map((suggestion, index) => (
+                            <MenuItem
+                                key={index}
+                                onClick={() => { setNumero(suggestion); }}
+                                sx={{ justifyContent: "center", height: 30, backgroundColor: "transparent", fontSize: 20, fontWeight: 400 }}
+                            >
+                                {suggestion}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+
+
                 </Stack>
             </Stack>
-
         </Stack>
+
     );
 }

@@ -15,15 +15,18 @@ interface IncidentListeProps {
 
 export default function IncidentListe({ liste, onClick, selectedIncidentId }: IncidentListeProps) {
 
-    //const ref = useRef<HTMLDivElement | null>(null)
-    //const isOverflow = useIsOverflow(ref);
-    //console.log(isOverflow);
+    const nbIncidents = liste.length;
 
     return (
         <Stack spacing={2}>
-            <Typography variant='h6' color={grey[800]} >
-                Liste des incidents
-            </Typography>
+            <Stack>
+                <Typography variant='h6' color={grey[800]} >
+                    Liste des incidents
+                </Typography>
+                <Typography variant='body2' color={grey[600]} >
+                    {nbIncidents} incident{nbIncidents > 1 ? 's' : ''} enregistré{nbIncidents > 1 ? 's' : ''}
+                </Typography>
+            </Stack>
             <Stack spacing={2} height={450} overflow="scroll" sx={{ borderBottom: `2px solid ${grey[400]}`, pr: 2 }} >
                 {liste.map((incident) => (
 

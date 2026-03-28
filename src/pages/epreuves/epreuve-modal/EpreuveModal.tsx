@@ -37,9 +37,6 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
 
     // Gestion route pour ouvrir le modal sur un onglet précis
     useEffect(() => {
-         if (tab === "incidents"){
-            setNumeroOnglet(3);
-        }
         if (tab === "scan") {
             setNumeroOnglet(2);
         }
@@ -72,7 +69,6 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
                             {epreuve.statut <= 2 && <Tab label="Générer matériel d'examen" />}
                             {epreuve.statut === 3 && <Tab label="Scanner copies" />}
                             {epreuve.statut >= 4 && <Tab label="Exporter les notes" />}
-                            {epreuve.statut >= 3 && <Tab label="Incidents" />}
                         </Tabs>
                     </Stack>
                     <Stack width={"100%"} padding={2} height={"100%"} justifyContent={"center"}>
@@ -82,7 +78,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
                         {numeroOnglet === 2 && epreuve.statut <= 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} idSession={sessionId} codeEpreuve={epreuve.code} />}
                         {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />}
 
-                        {numeroOnglet === 3 && <MenuIncidents epreuve={epreuve} />}
+
 
                     </Stack>
                 </Stack>
