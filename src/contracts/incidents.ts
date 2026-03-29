@@ -38,5 +38,6 @@ export const corrigerIncident = (sessionId: number, epreuveCode: string, idIncid
 }
 
 export const getSuggestionsIncident = (sessionId: number, epreuveCode: string, codePartiel: string) => {
-    return apiRequest<null, string[]>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions/${codePartiel}`);
+    const q = encodeURIComponent(codePartiel);
+    return apiRequest<null, string[]>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions?code=${q}`);
 }

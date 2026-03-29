@@ -51,7 +51,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
 
     return (
         <BrowserRouter>
-            <Modal titre={epreuve.code} onClose={() => { fermer(); }} width="1000px" height="600px" newbgcolor={themeEpreuves.status[epreuve.statut] + '4F'} idSession={sessionId}>
+            <Modal titre={epreuve.code} onClose={() => { fermer(); }} width="1200px" height="650px" newbgcolor={themeEpreuves.status[epreuve.statut] + '4F'} idSession={sessionId}>
                 <Stack>
                     <Stack >
                         <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} textColor="primary"

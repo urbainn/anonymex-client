@@ -25,7 +25,7 @@ export default function EpreuvesFiltreCard({ titre, sousTexte, nombre, icone, se
                         }}
                     >
                         {icone && icone}
-                        {nombre && <Typography variant="h5" fontWeight={500} color="grey.800">{nombre}</Typography>}
+                        {nombre !== undefined && <Typography variant="h5" fontWeight={500} color="grey.800">{nombre}</Typography>}
                     </Stack>
 
                     <Stack padding={sousTexte ? 1.5 : 2.5} spacing={0}>
