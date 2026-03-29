@@ -9,7 +9,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import PrintDisabledIcon from '@mui/icons-material/PrintDisabled';
 import DoneIcon from '@mui/icons-material/Done';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
-import { memo, type JSX } from "react";
+import { type JSX } from "react";
 
 const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
     hour: '2-digit',
@@ -36,7 +36,7 @@ const statutInconnu = {
     color: themeEpreuves.status[0],
 };
 
-export const EpreuveCard = memo(function EpreuveCard(props: EpreuveCardProps): JSX.Element {
+export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.Element {
     const epreuve = props.epreuve;
     const statusData = epreuve.statut >= 1 && epreuve.statut <= 5 ? {
             label: EpreuveStatutNom[epreuve.statut],
@@ -55,8 +55,7 @@ export const EpreuveCard = memo(function EpreuveCard(props: EpreuveCardProps): J
                         <Stack direction="column" minWidth={0}>
                             <Stack direction="row" alignItems="center" spacing={1} fontWeight={400}>
                                 <Typography variant="h6">{epreuve.code}</Typography>
-                                <Typography variant="h6" fontWeight={500}>-</Typography>
-                                <Typography variant="h6" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{epreuve.nom}</Typography>
+                                <Typography variant="h6" fontWeight={400} noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>- {epreuve.nom}</Typography>
                             </Stack>
                             <Stack direction="row" spacing={2}>
                                 <Typography variant="body2">{epreuve.salles.join(', ')}</Typography>
@@ -83,6 +82,4 @@ export const EpreuveCard = memo(function EpreuveCard(props: EpreuveCardProps): J
             </CardActionArea>
         </Card>
     );
-}, (prevProps, nextProps) => {
-    return prevProps.epreuve === nextProps.epreuve && prevProps.onClick === nextProps.onClick;
-});
+};

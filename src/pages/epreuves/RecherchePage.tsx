@@ -74,17 +74,21 @@ export default function RecherchePage(): ReactElement {
                 return;
             }
 
-            setResultats(Array.isArray(response.data) ? response.data : [response.data]);
+            const resultatsTrouves = Array.isArray(response.data) ? response.data : [response.data];
+            setResultats(resultatsTrouves);
 
-            if (resultats.length !== 0) {
-                const res_epreuve = await Promise.all(resultats.map(epreuve => getEpreuve(+sessionId!, epreuve.code)));
+            if (resultatsTrouves.length === 0) {
+                setEpreuvesDetails([]);
+                return;
+            }
 
-                if (res_epreuve.some(res => res.status !== 200 || !res.data)) {
-                    setErreur("Erreur lors de la récupération des détails des épreuves");
-                    return;
-                } else if (res_epreuve.every(res => res.data)) {
-                    setEpreuvesDetails(res_epreuve.map(res => res.data!));
-                }
+            const res_epreuve = await Promise.all(resultatsTrouves.map(epreuve => getEpreuve(+sessionId!, epreuve.code)));
+
+            if (res_epreuve.some(res => res.status !== 200 || !res.data)) {
+                setErreur("Erreur lors de la récupération des détails des épreuves");
+                return;
+            } else if (res_epreuve.every(res => res.data)) {
+                setEpreuvesDetails(res_epreuve.map(res => res.data!));
             }
 
 
