@@ -1,81 +1,72 @@
 
 import { type GridColDef } from '@mui/x-data-grid';
-import IconesRondV2 from '../../../../../components/IconesRondV2';
-import { colors } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import type { APIConvocation } from '../../../../../contracts/convocations';
 
 
-
-interface StudentRow {
-    numEtu: number;
-    nom: string;
-    prenom: string;
-    salle: string;
-    codeAnonymat: string;
-    Note: number;
-}
-
-export const getColumns = (noteModifiable: boolean, hovered: string | null): GridColDef<StudentRow>[] => [
+export const getColumns = (noteModifiable: boolean, hovered: string | null): GridColDef<APIConvocation>[] => [
     {
-        field: 'numEtu',
-        headerName: 'Numéro Étudiant',
-        width: 150,
+        field: 'codeEpreuve',
+        headerName: 'Code Épreuve',
+        width: 200,
         hideable: false,
-    },
-    {
-        field: 'prenom',
-        headerName: 'Prénom',
-        width: 150,
-        editable: true,
-        hideable: false,
-    },
-    {
-        field: 'nom',
-        headerName: 'Nom',
-        width: 150,
-        editable: true,
-        hideable: false,
-    },
-    {
-        field: 'salle',
-        headerName: 'Salle',
-        width: 110,
-        editable: true,
-        hideable: false,
+        editable: false,
     },
     {
         field: 'codeAnonymat',
         headerName: 'Code Anonymat',
-        width: 160,
+        width: 200,
+        editable: false,
+        hideable: false,
+    },
+    {
+        field: 'codeSalle',
+        headerName: 'Code Salle',
+        width: 200,
+        editable: false,
+        hideable: false,
+    },
+    {
+        field: 'numeroEtudiant',
+        headerName: 'Numéro Étudiant',
+        width: 200,
+        editable: false,
+        hideable: false,
+    },
+    {
+        field: 'rang',
+        headerName: 'Rang',
+        type: 'number',
+        width: 100,
         editable: true,
         hideable: false,
     },
     {
-        field: 'Note',
+        field: 'noteQuart',
         headerName: 'Note',
         type: 'number',
-        width: 110,
-        editable: noteModifiable,
+        width: 100,
+        editable: true,
         hideable: false,
+
     },
 
-    /* 
-    {
-        field: 'actions',
-        type: 'actions',
-        width: 60,
-        getActions: (params) => {
-            console.log("hovered id:", hovered, "params id:", params.id);
-            if (hovered === params.id) {
+    /*
+{
+    field: 'actions',
+    type: 'actions',
+    width: 60,
+    getActions: (params) => {
+        console.log("hovered id:", hovered, "params id:", params.id);
+        if (hovered === params.id) {
 
-                return [
-                    <IconesRondV2 tooltip='supprimer' onClick={() => console.log("test")}>
-                        <DeleteIcon sx={{ color: colors.grey[700] }} fontSize="medium" />
-                    </IconesRondV2>,
-                ];
-            }
-            return [];
+            return [
+                <IconesRondV2 tooltip='supprimer' onClick={() => console.log("test")}>
+                    <DeleteIcon sx={{ color: colors.grey[700] }} fontSize="medium" />
+                </IconesRondV2>,
+            ];
         }
+        return [];
     }
-    */
+}
+*/
 ];

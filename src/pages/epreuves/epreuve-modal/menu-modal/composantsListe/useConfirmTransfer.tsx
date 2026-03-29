@@ -19,14 +19,14 @@ import { grey, red } from '@mui/material/colors';
 
 export function useConfirmTransfer() {
     const [ouvert, setOuvert] = useState(false);
-    const [students, setStudents] = useState<number[]>([]);
+    const [students, setStudents] = useState<string[]>([]);
     const [salle, setSalle] = useState<string>("");
     const [nbStudents, setNbStudents] = useState<number>(0);
 
-    const [resolver, setResolver] = useState<((value: number[], salle: string) => void) | null>(null);
+    const [resolver, setResolver] = useState<((value: string[], salle: string) => void) | null>(null);
 
 
-    const confirmTransfer = (students: number[], salle: string): Promise<number[]> => {
+    const confirmTransfer = (students: string[], salle: string): Promise<string[]> => {
         setStudents(students);
         setNbStudents(students.length);
         setSalle(salle);
@@ -37,12 +37,12 @@ export function useConfirmTransfer() {
         });
     };
 
-    const handleClose = (value: number[], salle: string) => {
+    const handleClose = (value: string[], salle: string) => {
         setOuvert(false);
         resolver?.(value, salle);
     };
 
-    const affichageListe = (etudiant: number): JSX.Element => {
+    const affichageListe = (etudiant: string): JSX.Element => {
 
         return <>
             <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="500">{`Numéro Étudiant: `}</Typography>

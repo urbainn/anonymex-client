@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, type GridToolbarProps, type ToolbarPropsOverrides } from '@mui/x-data-grid';
 import { useEffect, useState, type JSX } from 'react';
 import { frFR } from '@mui/x-data-grid/locales';
 
@@ -13,30 +13,33 @@ import { useConfirmTransfer } from './composantsListe/useConfirmTransfer';
 import { useGridApiRef } from '@mui/x-data-grid';
 import Header from './composantsListe/Header';
 
-interface StudentRow {
-    numEtu: number;
-    nom: string;
-    prenom: string;
-    salle: string;
-    codeAnonymat: string;
-    Note: number;
-}
+import type { APIListeConvocations, APIConvocation } from '../../../../contracts/convocations';
+import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert } from '../../../../contracts/convocations';
 
-interface HeaderProps {
-    selectedRows: StudentRow[];
-    handleDelete: (listeNumEtu: number[]) => void;
-    handleTransfer: (listeNumEtu: number[], salle: string) => void;
-    handleConvocations: (listeNumEtu: number[]) => void;
+import type { HeaderProps } from './composantsListe/Header';
+
+declare module "@mui/x-data-grid" {
+    interface ToolbarPropsOverrides {
+        selectedRows: APIConvocation[];
+        handleDelete: (listeNumEtu: string[]) => void;
+        handleTransfer: (listeNumEtu: string[], salle: string) => void;
+        handleConvocations: (listeNumEtu: string[]) => void;
+        setSalleFilter: (salle: string) => void;
+        salleFilter: string;
+        sallesUniques: string[];
+    }
 }
 
 interface MenuListeEtudiantsProps {
     menuColor?: string;
     statut: number;
+    idSession: number;
+    codeEpreuve: string;
 }
 
 
 
-function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
+function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
 
     const [noteModifiable, setNoteModifiable] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -45,7 +48,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
     const [salleFilter, setSalleFilter] = useState<string>("x");
     const [hovered, setHovered] = useState<string | null>(null);
 
-    const [selectedRows, setSelectedRows] = useState<StudentRow[]>([]);
+    const [selectedRows, setSelectedRows] = useState<APIConvocation[]>([]);
 
 
     const columns = getColumns(noteModifiable, hovered);
@@ -56,53 +59,28 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
 
 
 
-    const [rows, setRows] = useState<StudentRow[]>([
-        { numEtu: 12552, nom: "Dupont", prenom: "Jean", salle: "K111", codeAnonymat: "E12345", Note: 12 },
-        { numEtu: 23456, nom: "Martin", prenom: "Marie", salle: "K111", codeAnonymat: "E67890", Note: 15 },
-        { numEtu: 34567, nom: "Durand", prenom: "Paul", salle: "D404", codeAnonymat: "E54321", Note: 9 },
-        { numEtu: 45678, nom: "Lefevre", prenom: "Sophie", salle: "D404", codeAnonymat: "E09876", Note: 14 },
-        { numEtu: 56789, nom: "Moreau", prenom: "Luc", salle: "E505", codeAnonymat: "E11223", Note: 11 },
-        { numEtu: 67890, nom: "Simon", prenom: "Emma", salle: "E505", codeAnonymat: "E44556", Note: 13 },
-        { numEtu: 78901, nom: "Bernard", prenom: "Lucas", salle: "K111", codeAnonymat: "E77889", Note: 10 },
-        { numEtu: 89012, nom: "Thomas", prenom: "Chloé", salle: "K111", codeAnonymat: "E99001", Note: 16 },
-        { numEtu: 90123, nom: "Robert", prenom: "Hugo", salle: "D404", codeAnonymat: "E22334", Note: 8 },
-        { numEtu: 11234, nom: "Richard", prenom: "Léa", salle: "D404", codeAnonymat: "E55667", Note: 17 },
-        { numEtu: 12345, nom: "Petit", prenom: "Nathan", salle: "K111", codeAnonymat: "E88990", Note: 7 },
-        { numEtu: 13456, nom: "Dubois", prenom: "Manon", salle: "K111", codeAnonymat: "E10112", Note: 18 },
-        { numEtu: 14567, nom: "Morel", prenom: "Mathis", salle: "E505", codeAnonymat: "E13141", Note: 19 },
-        { numEtu: 15678, nom: "Girard", prenom: "Camille", salle: "E505", codeAnonymat: "E51617", Note: 6 },
-        { numEtu: 16789, nom: "Fournier", prenom: "Jules", salle: "D404", codeAnonymat: "E18191", Note: 20 },
-        { numEtu: 17890, nom: "Lemoine", prenom: "Sarah", salle: "D404", codeAnonymat: "E20212", Note: 5 },
-        { numEtu: 18901, nom: "Blanc", prenom: "Adrien", salle: "K111", codeAnonymat: "E22323", Note: 4 },
-        { numEtu: 19012, nom: "Guerin", prenom: "Inès", salle: "K111", codeAnonymat: "E24252", Note: 3 },
-        { numEtu: 20123, nom: "Muller", prenom: "Ethan", salle: "E505", codeAnonymat: "E26272", Note: 2 },
-        { numEtu: 21234, nom: "Henry", prenom: "Clara", salle: "E505", codeAnonymat: "E28292", Note: 1 },
-        { numEtu: 22345, nom: "Roussel", prenom: "Louis", salle: "D404", codeAnonymat: "E30302", Note: 0 },
-        { numEtu: 23756, nom: "Nicolas", prenom: "Lina", salle: "D404", codeAnonymat: "E32322", Note: 12 },
-        { numEtu: 24567, nom: "Mathieu", prenom: "Gabriel", salle: "K111", codeAnonymat: "E34342", Note: 14 },
-        { numEtu: 25678, nom: "Clement", prenom: "Juliette", salle: "K111", codeAnonymat: "E36362", Note: 16 },
-        { numEtu: 26789, nom: "Gauthier", prenom: "Maxime", salle: "E505", codeAnonymat: "E38382", Note: 18 },
-        { numEtu: 27890, nom: "Garcia", prenom: "Zoé", salle: "E505", codeAnonymat: "E40402", Note: 20 },
+    const [rows, setRows] = useState<APIConvocation[]>([]);
 
-    ]
-    );
+    useEffect(() => {
+        const fetchConvocations = async () => {
+            const res = await getConvocations(props.idSession, props.codeEpreuve);
+            if (res.data?.convocations) {
+                setRows(res.data?.convocations);
+                console.log("Convocations récupérées :", res.data.convocations);
+            }
+        };
 
-    const handleSaveRows = async (newRow: StudentRow, oldRows: StudentRow, params: any): Promise<StudentRow> => {
-        const result = await confirm(oldRows, newRow);
+        fetchConvocations();
+    }, [props.idSession, props.codeEpreuve, rows.length]);
 
-        if (result) {
 
-            setRows((rows) => rows.map((row) => (row.numEtu === result.numEtu ? result : row)));
-        }
 
-        return result;
-    }
 
     useEffect(() => {
         setNoteModifiable(props.statut >= 4);
     }, []);
 
-    const memeDico = (a: StudentRow, b: StudentRow): boolean => {
+    const memeDico = (a: APIConvocation, b: APIConvocation): boolean => {
         const keysA = Object.keys(a);
         const keysB = Object.keys(b);
 
@@ -110,41 +88,69 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
             return false;
         }
 
-        return keysA.every((key) => a[key as keyof StudentRow] === b[key as keyof StudentRow]);
+        return keysA.every((key) => a[key as keyof APIConvocation] === b[key as keyof APIConvocation]);
     }
 
-    const sallesUniques = Array.from(new Set(rows.map(row => row.salle)));
 
+    const sallesUniques = Array.from(new Set(rows.map(row => row.codeSalle)));
 
     const apiRef = useGridApiRef();
 
-    const handleDelete = async (listeNumEtu: number[]) => {
-
-        const result = await confirmDelete(listeNumEtu);
-        console.log("Résultat de la confirmation de suppression :", result);
+    const handleSaveRows = async (newRow: APIConvocation, oldRows: APIConvocation): Promise<APIConvocation> => {
+        const result = await confirm(oldRows, newRow);
         if (result) {
-            setRows((prevRows) => prevRows.filter((row) => !result.includes(row.numEtu)));
+            const res = await patchConvocation(props.idSession, props.codeEpreuve, result.codeAnonymat, { rang: newRow.rang, note_quart: newRow.noteQuart, code_salle: newRow.codeSalle });
+            if (res.status === 200) {
+                setRows((rows) => rows.map((row) => (row.numeroEtudiant === result.numeroEtudiant ? result : row)));
+            } else {
+                console.error("Erreur lors de la mise à jour de la convocation :", res);
+            }
+        }
+        return result;
+    }
+
+    const handleDelete = async (listeCodeAno: string[]) => {
+
+        const result = await confirmDelete(listeCodeAno);
+        console.log("Résultat de la confirmation de suppression :", result);
+        console.log("Suppression des étudiants avec les numéros d'anonymat :", listeCodeAno);
+        if (result) {
+            const res = await deleteConvocations(props.idSession, props.codeEpreuve, listeCodeAno);
+            console.log("Réponse de l'API après suppression :", res);
+            if (res.data?.success) {
+                console.log("Convocations supprimées avec succès");
+                setRows((prevRows) => prevRows.filter((row) => !result.includes(row.codeAnonymat)));
+            } else {
+                console.error("Erreur lors de la suppression des convocations" + res);
+            }
         }
     }
 
-    const handleTransfer = async (listeNumEtu: number[], salle: string) => {
-        const result = await confirmTransfer(listeNumEtu, salle);
+    const handleTransfer = async (listeCodeAno: string[], salle: string) => {
+        const result = await confirmTransfer(listeCodeAno, salle);
         console.log("Transfert des étudiants avec les numéros :", result);
 
         if (result) {
-            setRows((prevRows) => prevRows.map((row) =>
-                result.includes(row.numEtu)
-                    ? { ...row, salle: salle }
-                    : row
-            ));
+
+            console.log(`Transfert des étudiants avec le code anonymat ${listeCodeAno} vers la salle ${salle}`);
+            const res = await postConvocationsTransfert(props.idSession, props.codeEpreuve, { codesAnonymats: listeCodeAno, salleTransfert: salle });
+            console.log("Réponse de l'API après transfert :", res);
+            if (res.status === 200) {
+                setRows((prevRows) => prevRows.map((row) =>
+                    result.includes(row.codeAnonymat!)
+                        ? { ...row, codeSalle: salle }
+                        : row
+                ));
+            }
+
         }
 
         console.log("Résultat de la confirmation de transfert :", result);
 
     }
 
-    const handleConvocations = (listeNumEtu: number[]) => {
-        console.log("Génération des convocations pour les étudiants avec les numéros :", listeNumEtu);
+    const handleConvocations = (listeCodeAno: string[]) => {
+        console.log("Génération des convocations pour les étudiants avec les numéros :", listeCodeAno);
         // Logique de génération des convocations ici
     }
 
@@ -159,9 +165,21 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
             <Box sx={{ height: 500 }}>
 
                 <DataGrid
+
                     showToolbar
-                    slots={{ toolbar: Header } as any}
-                    slotProps={{ toolbar: { selectedRows, handleDelete, handleTransfer, handleConvocations, setSalleFilter, salleFilter, sallesUniques } as HeaderProps } as any}
+                    slots={{ toolbar: Header }}
+                    slotProps={{
+                        toolbar:
+                        {
+                            selectedRows,
+                            handleDelete,
+                            handleTransfer,
+                            handleConvocations,
+                            setSalleFilter,
+                            salleFilter,
+                            sallesUniques
+                        }
+                    }}
                     apiRef={apiRef}
                     sx={{
                         '& .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root': {
@@ -185,17 +203,17 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
                             backgroundColor: props.menuColor + '10',
                         },
                     }}
-                    getRowId={(row) => row.numEtu}
+                    getRowId={(row) => row.numeroEtudiant ?? 0}
                     loading={loading}
                     density='compact'
-                    rows={salleFilter === "x" ? rows : rows.filter(row => row.salle === salleFilter)}
+                    rows={salleFilter === "x" ? rows : rows.filter(row => row.codeSalle === salleFilter)}
                     columns={columns}
                     hideFooter
                     checkboxSelection
 
-                    processRowUpdate={(newRow, oldRow, params) =>
+                    processRowUpdate={(newRow, oldRow) =>
                         !memeDico(oldRow, newRow)
-                            ? handleSaveRows(newRow, oldRow, params)
+                            ? handleSaveRows(newRow, oldRow)
                             : oldRow
                     }
                     localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
@@ -209,7 +227,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
                     onRowSelectionModelChange={() => {
                         const selectedRowsMap = apiRef!.current!.getSelectedRows();;
                         const selectedRowsData = Array.from(selectedRowsMap.values());
-                        setSelectedRows(selectedRowsData as StudentRow[]);
+                        setSelectedRows(selectedRowsData as APIConvocation[]);
                         console.log("Toutes les lignes sélectionnées :", selectedRowsData);
                     }}
 
@@ -217,13 +235,6 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps): JSX.Element {
                 />
 
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, mb: 2 }}>
-
-
-
-
-
-
-
 
 
                     <Snackbar

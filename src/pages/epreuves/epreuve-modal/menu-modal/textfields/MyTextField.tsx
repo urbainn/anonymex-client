@@ -1,7 +1,7 @@
 import { colors, TextField } from "@mui/material";
 
 interface MyTextFieldProps {
-    type: string;
+    type?: string;
     shrink?: boolean;
     sx?: object;
     label: string;

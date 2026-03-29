@@ -19,13 +19,13 @@ import { grey, red } from '@mui/material/colors';
 
 export function useConfirmDelete() {
     const [ouvert, setOuvert] = useState(false);
-    const [students, setStudents] = useState<number[]>([]);
+    const [students, setStudents] = useState<string[]>([]);
     const [nbStudents, setNbStudents] = useState<number>(0);
 
-    const [resolver, setResolver] = useState<((value: number[]) => void) | null>(null);
+    const [resolver, setResolver] = useState<((value: string[]) => void) | null>(null);
 
 
-    const confirmDelete = (students: number[]): Promise<number[]> => {
+    const confirmDelete = (students: string[]): Promise<string[]> => {
         setStudents(students);
         setNbStudents(students.length);
         setOuvert(true);
@@ -35,12 +35,12 @@ export function useConfirmDelete() {
         });
     };
 
-    const handleClose = (value: number[]) => {
+    const handleClose = (value: string[]) => {
         setOuvert(false);
         resolver?.(value);
     };
 
-    const affichageListe = (etudiant: number): JSX.Element => {
+    const affichageListe = (etudiant: string): JSX.Element => {
 
         return <>
             <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="500">{`Numéro Étudiant: `}</Typography>

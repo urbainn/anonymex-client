@@ -1,11 +1,11 @@
-import {Divider, Stack, Typography } from '@mui/material';
+import { Divider, Stack, Typography } from '@mui/material';
 import React from 'react';
 import FichierListe from './composantsIncidents/FichierListe';
 import IncidentListe from './composantsIncidents/IncidentListe';
 import IncidentDetail from './composantsIncidents/IncidentDetail';
 import type { APIEpreuve } from '../../../../contracts/epreuves';
 
-
+/*
 // Les incidents de tests. les données ne sont pas finales.
 const ListeIncidents = [
     {
@@ -64,7 +64,7 @@ export default function MenuIncidents({ epreuve }: MenuIncidentsProps) {
                         }))}
                         onClick={(id) => setIncidentSelectionne(id!)}
                     />
-                    */}
+                    
                 </Stack>
 
                 {incidentSelectionne !== null && incident && (
@@ -94,3 +94,5 @@ export default function MenuIncidents({ epreuve }: MenuIncidentsProps) {
         </>
     )
 }
+
+*/

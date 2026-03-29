@@ -37,57 +37,75 @@ export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveMo
         setNumeroOnglet(newValue);
     };
 
-    // Gestion route pour ouvrir le modal sur un onglet précis
-    useEffect(() => {
-        if (tab === "presence") {
-            setNumeroOnglet(4);
-        }
-        if (tab === "scan") {
-            setNumeroOnglet(2);
-        }
-        if (tab === "etudiants") {
-            setNumeroOnglet(1);
-        }
-        if (tab === "details") {
-            setNumeroOnglet(0);
-        }
+    const tabs = [
+        {
+            label: "Details",
+            content: <DetailsEpreuve epreuve={epreuve} />
+        },
+        {
+            label: "Liste étudiants",
+            content: (
+                <MenuListeEtudiants
+                    codeEpreuve={epreuve.code}
+                    idSession={epreuve.session}
+                    statut={epreuve.statut}
+                    menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]}
+                />
+            )
+        },
 
-    }, [tab]);
+        ...(epreuve.statut <= 2 ? [{
+            label: "Générer matériel d'examen",
+            content: <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} idSession={sessionId} codeEpreuve={epreuve.code} />
+        }] : []),
+
+        ...(epreuve.statut === 3 ? [{
+            label: "Scanner copies",
+            content: <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />
+        }] : []),
+
+        ...(epreuve.statut >= 4 ? [{
+            label: "Exporter les notes",
+            content: <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} exportMode />
+        }] : []),
+
+        {
+            label: "Présence",
+            content: <MenuPresence epreuve={epreuve} />
+        },
+
+        ...(epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 ? [{
+            label: `Incidents (${nbIncidents})`,
+            content: <IncidentsComplets idSession={Number(sessionId)} epreuveCode={epreuve.code} />
+        }] : [])
+    ];
 
     return (
         <BrowserRouter>
             <Modal titre={epreuve.code} onClose={() => { fermer(); }} width="1200px" height="650px" newbgcolor={themeEpreuves.status[epreuve.statut] + '4F'} idSession={sessionId}>
                 <Stack>
                     <Stack >
-                        <Tabs variant="fullWidth" value={numeroOnglet} onChange={handleChange} textColor="primary"
+                        <Tabs
+                            variant="fullWidth"
+                            value={numeroOnglet}
+                            onChange={handleChange}
+                            textColor="primary"
                             sx={{
                                 width: '100%',
                                 bgcolor: themeEpreuves.status[epreuve.statut] + '4F',
                                 '& .MuiTab-root': { color: colors.grey[800] },
                                 '& .MuiTab-root.Mui-selected': { color: colors.grey[900] },
                                 '& .MuiTab-root:hover': { backgroundColor: themeEpreuves.status[epreuve.statut] + '20' },
-                                '& .MuiTabs-indicator': { backgroundColor: themeEpreuves.status[epreuve.statut] + 'FF' },
-
-                            }}>
-                            <Tab label="Details" />
-                            <Tab label="Liste étudiants" />
-                            {epreuve.statut <= 2 && <Tab label="Générer matériel d'examen" />}
-                            {epreuve.statut === 3 && <Tab label="Scanner copies" />}
-                            {epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 && <Tab label={`Incidents (${nbIncidents})`} />}
-                            {epreuve.statut >= 4 && <Tab label="Exporter les notes" />}
-                            <Tab label="Présence" />
+                                '& .MuiTabs-indicator': { backgroundColor: themeEpreuves.status[epreuve.statut] + 'FF' }
+                            }}
+                        >
+                            {tabs.map((tab, index) => (
+                                <Tab key={index} label={tab.label} />
+                            ))}
                         </Tabs>
                     </Stack>
-                    <Stack width={"100%"} padding={2} height={"100%"} justifyContent={"center"}>
-                        {numeroOnglet === 0 && <DetailsEpreuve epreuve={epreuve} />}
-                        {numeroOnglet === 1 && <MenuListeEtudiants statut={epreuve.statut} menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]} />}
-                        {numeroOnglet === 3 && <MenuPresence epreuve={epreuve} />}
-
-                        {numeroOnglet === 2 && epreuve.statut <= 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} idSession={sessionId} codeEpreuve={epreuve.code} />}
-                        {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />}
-                        {numeroOnglet === 3 && epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 && < IncidentsComplets idSession={Number(sessionId)} epreuveCode={epreuve.code} />}
-
-
+                    <Stack padding={2}>
+                        {tabs[numeroOnglet]?.content}
                     </Stack>
                 </Stack>
             </Modal >

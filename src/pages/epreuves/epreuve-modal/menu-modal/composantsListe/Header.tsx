@@ -1,9 +1,7 @@
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import { grey, red } from '@mui/material/colors';
-import { Delete, Height, Sort, Sync } from '@mui/icons-material';
-import { Box, colors, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, Switch, Toolbar, Typography } from '@mui/material';
+import { green, grey, red } from '@mui/material/colors';
+import { Delete } from '@mui/icons-material';
+import { Box, colors, IconButton, MenuItem, Select, Typography, Dialog, Stack } from '@mui/material';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import Visibility from '@mui/icons-material/Visibility';
 import { GridToolbarDivider } from '@mui/x-data-grid/internals';
@@ -11,46 +9,68 @@ import {
     QuickFilter,
     QuickFilterControl,
     FilterPanelTrigger,
-    ToolbarButton
 } from '@mui/x-data-grid';
+
 import FilterListIcon from '@mui/icons-material/FilterList';
+
 
 import SearchIcon from '@mui/icons-material/Search';
 import { useRef, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
+import type { GridToolbarProps } from '@mui/x-data-grid';
+import type { APIConvocation } from '../../../../../contracts/convocations';
+import MyTextField from '../textfields/MyTextField';
+import BoutonStandard from '../../components/BoutonStantard';
 
-interface StudentRow {
-    numEtu: number;
-    nom: string;
-    prenom: string;
-    salle: string;
-    codeAnonymat: string;
-    Note: number;
-}
-
-interface HeaderProps {
-    selectedRows: StudentRow[];
-    handleDelete: (listeNumEtu: number[]) => void;
-    handleTransfer: (listeNumEtu: number[], salle: string) => void;
-    handleConvocations: (listeNumEtu: number[]) => void;
+export interface HeaderProps {
+    selectedRows: APIConvocation[];
+    handleDelete: (listeNumEtu: string[]) => void;
+    handleTransfer: (listeNumEtu: string[], salle: string) => void;
+    handleConvocations: (listeNumEtu: string[]) => void;
     setSalleFilter: (salle: string) => void;
     salleFilter: string;
     sallesUniques: string[];
-
 }
 
+type Props = GridToolbarProps & HeaderProps;
 
-export default function Header(props: HeaderProps) {
+export default function Header(props: Props) {
+
     const [openSelect, SetOpenSelect] = useState(false);
+    const [openDialog, SetOpenDialog] = useState(false);
 
-
+    const [newSalle, setNewSalle] = useState<string>("");
     const inputRef = useRef<HTMLInputElement>(null);
+
+
+    const handleAjoutSalle = () => {
+        SetOpenDialog(true);
+    }
 
     return (
 
         <Box sx={{ display: 'flex', alignItems: 'center', height: 40, borderBottom: `1px solid ${grey[300]}`, width: '100%' }}>
+            <Dialog open={openDialog} onClose={() => SetOpenDialog(false)}>
+                <Stack p={2} spacing={2}>
+                    <Typography variant="h6">Ajouter une salle</Typography>
+                    <MyTextField
+                        label=''
+                        value={newSalle}
+                        onChange={(e) => setNewSalle(e.target.value)}
 
+                    />
+                    <Stack direction="row" spacing={2} >
+                        <BoutonStandard width={"100%"} color={red[300]} onClick={() => SetOpenDialog(false)}>Annuler</BoutonStandard>
+                        <BoutonStandard width={"100%"} color={green[300]} onClick={() => {
+                            SetOpenDialog(false);
+                            props.handleTransfer(props.selectedRows.map(row => row.codeAnonymat!), newSalle);
+                        }}>
+                            OK
+                        </BoutonStandard>
+                    </Stack>
+                </Stack>
+            </Dialog>
             <Box
                 sx={{
                     ml: 1,
@@ -99,7 +119,7 @@ export default function Header(props: HeaderProps) {
             <Tooltip title="Supprimer les étudiants sélectionnés">
                 <Button
                     disabled={props.selectedRows.length === 0}
-                    onClick={() => props.handleDelete(props.selectedRows.map(row => row.numEtu))}
+                    onClick={() => props.handleDelete(props.selectedRows.map(row => row.codeAnonymat!))}
                     sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
                     <Delete />
 
@@ -110,10 +130,11 @@ export default function Header(props: HeaderProps) {
             <Select
                 id="transfer-salle-select"
                 open={openSelect}
+                value=""
+                displayEmpty
                 onClose={() => SetOpenSelect(false)}
                 onOpen={() => SetOpenSelect(true)}
                 disabled={props.selectedRows.length === 0}
-                displayEmpty
                 renderValue={() => (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <SyncAltIcon fontSize="small" />
@@ -128,6 +149,9 @@ export default function Header(props: HeaderProps) {
                         padding: 1,
                         backgroundColor: 'white',
                     },
+                    '& input:focus': {
+                        backgroundColor: 'white',
+                    },
                     '& .MuiOutlinedInput-notchedOutline': {
                         border: 'none',
                     },
@@ -140,17 +164,40 @@ export default function Header(props: HeaderProps) {
                     '& .MuiOutlinedInput-root:hover': {
                         borderColor: 'grey.500',
                     },
+
                 }}
             >
                 {props.sallesUniques.map((salle) => (
-                    <MenuItem onClick={() => {
-                        props.handleTransfer(props.selectedRows.map(row => row.numEtu), salle);
-                        SetOpenSelect(false);
-                    }} >{salle}
-
-
+                    <MenuItem
+                        sx={{
+                            '&.Mui-selected': {
+                                backgroundColor: 'white',
+                            },
+                            '&.Mui-selected:hover': {
+                                backgroundColor: 'grey.100 !important',
+                            }
+                        }}
+                        onClick={() => {
+                            props.handleTransfer(props.selectedRows.map(row => row.codeAnonymat!), salle);
+                            SetOpenSelect(false);
+                        }} >
+                        {salle}
                     </MenuItem>
                 ))}
+                <MenuItem
+                    sx={{
+                        '&.Mui-selected': {
+                            backgroundColor: 'white',
+                        },
+                        '&.Mui-selected:hover': {
+                            backgroundColor: 'grey.100 !important',
+                        }
+                    }}
+                    onClick={() => {
+                        handleAjoutSalle();
+                    }}>
+                    Ajouter une salle
+                </MenuItem>
             </Select>
 
 
@@ -158,7 +205,7 @@ export default function Header(props: HeaderProps) {
             <Tooltip title="Voir la convocation d'un étudiant">
                 <Button
                     disabled={props.selectedRows.length !== 1}
-                    onClick={() => props.handleConvocations(props.selectedRows.map(row => row.numEtu))}
+                    onClick={() => props.handleConvocations(props.selectedRows.map(row => row.codeAnonymat!))}
                     sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
                     <Visibility />
                 </Button>
@@ -207,6 +254,7 @@ export default function Header(props: HeaderProps) {
                 {props.sallesUniques.map((salle) => (
                     <MenuItem sx={{ color: grey[800] }} key={salle} value={salle}>{salle}</MenuItem>
                 ))}
+
             </Select>
 
 

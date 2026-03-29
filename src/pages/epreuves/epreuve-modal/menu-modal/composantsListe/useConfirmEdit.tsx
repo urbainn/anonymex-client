@@ -16,24 +16,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import type { JSX } from '@emotion/react/jsx-runtime';
 import { grey, red } from '@mui/material/colors';
 
-interface StudentRow {
-    numEtu: number;
-    nom: string;
-    prenom: string;
-    salle: string;
-    codeAnonymat: string;
-    Note: number;
-}
+import type { APIConvocation } from '../../../../../contracts/convocations';
 
 export function useConfirmEdit() {
     const [ouvert, setOuvert] = useState(false);
-    const [oldVal, setOldVal] = useState<StudentRow | any>("");
-    const [newVal, setNewVal] = useState<StudentRow | any>("");
+    const [oldVal, setOldVal] = useState<APIConvocation | null>(null);
+    const [newVal, setNewVal] = useState<APIConvocation | null>(null);
 
-    const [resolver, setResolver] = useState<((value: StudentRow) => void) | null>(null);
+    const [resolver, setResolver] = useState<((value: APIConvocation) => void) | null>(null);
 
 
-    const confirm = (oldVal: StudentRow, newVal: StudentRow): Promise<StudentRow> => {
+    const confirm = (oldVal: APIConvocation, newVal: APIConvocation): Promise<APIConvocation> => {
         setOldVal(oldVal);
         setNewVal(newVal);
         setOuvert(true);
@@ -43,44 +36,47 @@ export function useConfirmEdit() {
         });
     };
 
-    const handleClose = (value: StudentRow) => {
+    const handleClose = (value: APIConvocation) => {
         setOuvert(false);
         resolver?.(value);
     };
 
-    const changedValues = (oldVal: StudentRow, newVal: StudentRow): { changes: Partial<StudentRow>, old: Partial<StudentRow> } => {
-        const old: Partial<StudentRow> = {};
-        const changes: Partial<StudentRow> = {};
+    function changedValues<T extends Record<string, number | string | undefined>>(oldVal: T, newVal: T) {
+        const changes: Partial<T> = {};
+        const old: Partial<T> = {};
 
-        (Object.keys(newVal) as (keyof StudentRow)[]).forEach((key) => {
+        (Object.keys(newVal) as (keyof T)[]).forEach((key) => {
             if (oldVal[key] !== newVal[key]) {
-                changes[key] = newVal[key] as any;
-                old[key] = oldVal[key] as any;
+                changes[key] = newVal[key];
+                old[key] = oldVal[key];
             }
-
         });
 
         return { changes, old };
     }
 
 
-    const affichageDico = (dico: StudentRow): JSX.Element => {
-
-        const change1 = changedValues(oldVal, newVal);
+    const affichageDico = (dico: APIConvocation | null): JSX.Element => {
+        if (dico === null) return <></>;
+        const change1 = changedValues(oldVal!, newVal!);
         console.log("Changements détectés :", change1);
 
         return <>
-            {Object.entries(dico).map(([cle, valeur]) => {
+            {Object.entries(dico || {}).map(([cle, valeur]) => {
+                console.log("valeur ", valeur);
                 if (change1.changes.hasOwnProperty(cle)) return (
                     <Stack sx={{ flexDirection: "row", alignItems: "center", width: "100%" }} key={cle}>
-                        <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="500">{`${cle}: `}</Typography>
-                        <Typography sx={{ color: grey[900] }} variant='h5' fontWeight="800" key={cle + "valeur"}>{` \u00A0${valeur}`}</Typography>
+                        {/* <Typography sx={{ color: grey[900] }} variant="h5" fontWeight="500">{`${cle}: `}</Typography> */}
+
+                        <Typography sx={{ color: grey[900] }} variant='h5' fontWeight="800" key={cle + "valeur"}>{` \u00A0${valeur === '' || valeur === undefined ? 'N/A' : valeur}`}</Typography>
                     </Stack>
                 );
-            })}
+            })
+            }
 
         </>;
     }
+
 
     return {
         confirm,
@@ -97,6 +93,7 @@ export function useConfirmEdit() {
 
                                 <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}>
                                     {affichageDico(oldVal!)}
+
                                     <CloseIcon sx={{ color: colors.red[700] }} fontSize="large" />
                                 </Stack>
                             </Stack>
@@ -106,8 +103,8 @@ export function useConfirmEdit() {
                                     Par :
                                 </Typography>
                                 <Stack direction="row" spacing={2} alignItems="center" alignContent={"center"} sx={{ pl: 1, pr: 1, borderRadius: 2 }}   >
-
                                     {affichageDico(newVal!)}
+
 
                                     <CheckIcon sx={{ color: colors.green[700] }} fontSize="large" />
                                 </Stack>
