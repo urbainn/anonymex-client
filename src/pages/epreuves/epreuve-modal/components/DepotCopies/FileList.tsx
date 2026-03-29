@@ -54,10 +54,10 @@ export function FileList(props: FileListProps) {
 
     return (
 
-        <Stack sx={{ overflow: "scroll" }} p={3} width={"100%"} spacing={1} >
+        <Stack sx={{ overflow: "scroll" }} p={3} width={"100%"} spacing={1} height={"450px"}>
             {Array.from(props.fichiers).map((file, index) => (
 
-                <Stack key={`${file.name}-${file.lastModified}-${file.size}`} direction="row" alignItems="center" spacing={1} p={1} >
+                <Stack key={index} direction="row" alignItems="center" spacing={1} p={1} >
 
                     {/* Affichage avant traitement */}
                     <Grow in={!props.debutTraitement} unmountOnExit>

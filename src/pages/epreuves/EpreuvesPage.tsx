@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useTransition, type ReactElement } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getEpreuves, type APIEpreuve, type APIListEpreuves } from "../../contracts/epreuves";
 import { Box, Divider, Snackbar, Stack, Typography, Alert, Button } from "@mui/material";
 import { useSnackbarGlobal } from "../../contexts/SnackbarContext";
@@ -16,6 +16,7 @@ import BoutonImportant from "./epreuve-modal/components/BoutonImportant";
 import { BordereauxModal } from "./epreuve-modal/BordereauxModal";
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import { ScanModal } from "./epreuve-modal/ScanModal"
+import { getIncidents } from "../../contracts/incidents";
 
 export type SortOption = "chronologique" | "inverse-chronologique";
 
@@ -51,6 +52,9 @@ export default function EpreuvesPage(): ReactElement {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)
     const [codeScan, setCodeScan] = useState<string>("");
 
+    // nbIncidents 
+    const [nbIncidents, setNbIncidents] = useState<number>(0);
+
     // Modal
     const { ouvrir } = useModal();
 
@@ -59,7 +63,7 @@ export default function EpreuvesPage(): ReactElement {
 
     // Paramètres d'URL
     const { sessionId } = useParams<{ sessionId: string }>();
-    
+
 
     // Charger les épreuves depuis l'API
     useEffect(() => {
@@ -86,11 +90,21 @@ export default function EpreuvesPage(): ReactElement {
         chargerEpreuves();
     }, [afficherErreur, sessionId]);
 
+    async function getNbIncidents(epreuveCode: string): Promise<number> {
+        if (sessionId) {
+            const res = await getIncidents(parseInt(sessionId), epreuveCode);
+            if (res.data && res.status === 200 && res.data.incidents) {
+                return res.data.incidents.length;
+            }
+        }
+        return 0;
+    }
 
     // lorsqu'une épreuve est cliquée : afficher modal
-    const handleEpreuveClick = useCallback((epreuve: APIEpreuve) => {
-        if (sessionId === undefined) return ;
-        ouvrir(<EpreuveModal epreuve={epreuve} sessionId={sessionId} tab={"details"} />);
+    const handleEpreuveClick = useCallback(async (epreuve: APIEpreuve) => {
+        if (sessionId === undefined) return;
+        const nbIncidents = await getNbIncidents(epreuve.code);
+        ouvrir(<EpreuveModal epreuve={epreuve} sessionId={sessionId} tab={"details"} nbIncidents={nbIncidents} />);
     }, [ouvrir, sessionId]);
 
     // lorsque le filtre de type d'épreuve change

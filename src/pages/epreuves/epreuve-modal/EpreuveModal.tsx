@@ -10,7 +10,7 @@ import Tab from "@mui/material/Tab";
 import DetailsEpreuve from "./menu-modal/MenuDetailsEpreuve";
 import MenuListeEtudiants from "./menu-modal/MenuListeEtudiants";
 import MenuGenererMatExam from "./menu-modal/MenuGenererMatExam";
-import MenuIncidents from "./menu-modal/MenuIncidents";
+import { IncidentsComplets } from "./menu-modal/composantsIncidents/IncidentsComplets";
 
 import { useState } from "react";
 import { colors, Stack } from "@mui/material";
@@ -24,9 +24,10 @@ export interface EpreuveModalProps {
     epreuve: APIEpreuve;
     sessionId: string;
     tab?: string | null;
+    nbIncidents?: number;
 }
 
-export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
+export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveModalProps) {
     const { fermer } = useModal();
 
     const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2 | 3>(0);
@@ -68,6 +69,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
                             <Tab label="Liste étudiants" />
                             {epreuve.statut <= 2 && <Tab label="Générer matériel d'examen" />}
                             {epreuve.statut === 3 && <Tab label="Scanner copies" />}
+                            {epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 && <Tab label={`Incidents (${nbIncidents})`} />}
                             {epreuve.statut >= 4 && <Tab label="Exporter les notes" />}
                         </Tabs>
                     </Stack>
@@ -77,7 +79,7 @@ export function EpreuveModal({ epreuve, sessionId, tab }: EpreuveModalProps) {
 
                         {numeroOnglet === 2 && epreuve.statut <= 2 && <MenuGenererMatExam menuColor={themeEpreuves.status[epreuve.statut]} idSession={sessionId} codeEpreuve={epreuve.code} />}
                         {numeroOnglet === 2 && epreuve.statut >= 3 && <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />}
-
+                        {numeroOnglet === 3 && epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 && < IncidentsComplets idSession={Number(sessionId)} epreuveCode={epreuve.code} />}
 
 
                     </Stack>

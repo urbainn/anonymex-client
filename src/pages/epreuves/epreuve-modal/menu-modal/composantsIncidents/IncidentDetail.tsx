@@ -197,7 +197,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                     {({ zoomIn, zoomOut, resetTransform }) => (
                         <Stack direction={"column"} p={1}>
                             <Stack gap={2} direction="row" justifyContent="space-between" alignItems="center" mb={1} borderRadius={1}>
-                                <BoutonStandard height={30} color={blue[800]} onClick={props.onClick} icone={<ArrowBackIosIcon />}>
+                                <BoutonStandard height={30} color={blue[300]} onClick={props.onClick} icone={<ArrowBackIosIcon />}>
                                     Retour
                                 </BoutonStandard>
 
@@ -243,9 +243,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                     <Typography variant="h6" color={grey[700]} fontWeight={400} >
                         Corrections
                     </Typography>
-                    <Typography variant="body2" color={grey[600]} >
-                        Modifiez la note et/ou le numéro d'anonymat associés à cet incident.
-                    </Typography>
+
                 </Stack>
 
                 <Stack spacing={2} >
