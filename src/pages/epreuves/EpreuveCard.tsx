@@ -43,6 +43,7 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
             icon: epreuveStatutIcons[epreuve.statut],
             color: themeEpreuves.status[epreuve.statut],
         } : statutInconnu;
+
     const formattedTime = timeFormatter.format(new Date(epreuve.date * 1000));
 
     return (
@@ -52,14 +53,12 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
 
                     <Stack padding={2} direction="row" alignItems="center" spacing={2} minWidth={0}>
                         <IconeRond icon={statusData.icon} bgcolor={alpha(statusData.color, 0.31)} />
-                        <Stack direction="column" minWidth={0}>
+                        <Stack direction="column" minWidth={0} spacing={0.2}>
                             <Stack direction="row" alignItems="center" spacing={1} fontWeight={400}>
                                 <Typography variant="h6">{epreuve.code}</Typography>
-                                <Typography variant="h6" fontWeight={400} noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>- {epreuve.nom}</Typography>
+                                <Typography variant="h6" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>- {epreuve.nom}</Typography>
                             </Stack>
-                            <Stack direction="row" spacing={2}>
-                                <Typography variant="body2">{epreuve.salles.join(', ')}</Typography>
-                            </Stack>
+                            <Typography fontSize={15} color="text.secondary">{epreuve.salles.join(', ')}</Typography>
                         </Stack>
                     </Stack>
 

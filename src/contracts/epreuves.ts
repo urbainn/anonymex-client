@@ -23,7 +23,8 @@ export const EpreuveSchema = z.object({
     duree: z.number().int().positive(), // durée en minutes
     copies: z.number().int().nonnegative().optional(), // nombre de copies déposées
     inscrits: z.number().int().positive().optional(), // nombre total de copies attendues
-    incidents: z.number().int().nonnegative().optional() // nombre d'incidents de lecture
+    incidents: z.number().int().nonnegative().optional(), // nombre d'incidents de lecture
+    nbPresents: z.number().int().nonnegative().optional() // nombre de présents, si saisi
 });
 
 export const ListEpreuvesSchema = z.object({
@@ -33,10 +34,16 @@ export const ListEpreuvesSchema = z.object({
 
 export const UpdateEpreuveSchema = EpreuveSchema.pick({ nom: true, salles: true, date: true, duree: true }).partial();
 
+export const SallesEpreuveSchema = z.array(z.object({
+    codeSalle: z.string(),
+    convocations: z.number().int().nonnegative()
+}));
+
 // --- Types ---
 export type APIEpreuve = z.infer<typeof EpreuveSchema>;
 export type APIUpdateEpreuve = z.infer<typeof UpdateEpreuveSchema>;
 export type APIListEpreuves = z.infer<typeof ListEpreuvesSchema>;
+export type APISallesEpreuve = z.infer<typeof SallesEpreuveSchema>;
 
 // --- Endpoints API ---
 export const getEpreuves = (sessionId: number) => {
@@ -49,6 +56,10 @@ export const updateEpreuve = (sessionId: number, epreuveCode: string, updateData
 
 export const getEpreuve = (sessionId: number, epreuveCode: string) => {
     return apiRequest<null, APIEpreuve>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}`);
+}
+
+export const getSallesEpreuve = (sessionId: number, epreuveCode: string) => {
+    return apiRequest<null, APISallesEpreuve>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/salles`);
 }
 
 /** Établit une connexion SSE pour suivre la progression d'un dépôt */
