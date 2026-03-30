@@ -86,14 +86,14 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
                 content: <MenuScanCopies codeUE={epreuveActive.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuveActive.statut]} />
             }] : []),
 
-            {
-                label: "Présence",
-                content: <MenuPresence epreuve={epreuveActive} salleDefault={salleDefault} />
-            },
-
             ...(epreuveActive.statut >= 3 && incidentsCount > 0 ? [{
                 label: `Incidents (${incidentsCount})`,
                 content: <IncidentsComplets idSession={Number(sessionId)} epreuveCode={epreuveActive.code} onIncidentCreated={handleIncidentCreated} onIncidentResolved={handleIncidentResolved} />
+            }] : []),
+
+            ...(epreuveActive.statut >= 3 ? [{
+                label: "Présence",
+                content: <MenuPresence epreuve={epreuveActive} />
             }] : [])
         ];
     }, [epreuveActive, handleIncidentCreated, handleIncidentResolved, incidentsCount, sessionId]);

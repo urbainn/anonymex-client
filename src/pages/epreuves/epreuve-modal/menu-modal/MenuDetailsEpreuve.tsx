@@ -137,7 +137,7 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, setSalleDef
 
         // Afficher chargement & erreur si besoin
 
-        const result = await updateEpreuve(epreuve.session, epreuve.code, { date: newVal })
+        const result = await updateEpreuve(epreuve.session, epreuve.code, { date_epreuve: Math.round(newVal / 60000) });
 
         if (result.status == 200) {
             console.log("Mise à jour de la date réussie");
@@ -165,7 +165,7 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, setSalleDef
         setModifHoraire(false);
 
         console.log("Sauvegarde de l'horaire :", date, "durée :", duree);
-        const result = await updateEpreuve(epreuve.session, epreuve.code, { date: date, duree: duree });
+        const result = await updateEpreuve(epreuve.session, epreuve.code, { date_epreuve: Math.round(date / 60000), duree: duree });
 
         if (result.status == 200) {
             console.log("Mise à jour de l'horaire réussie");

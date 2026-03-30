@@ -112,12 +112,17 @@ export default function MenuPresence({ epreuve, salleDefaultNumb }: MenuPresence
 
     return (
         <>
-            <Stack direction={"row"} spacing={8} justifyContent={'space-evenly'} alignItems={'stretch'} width={'100%'} padding={4}>
+            <Stack direction={"row"} spacing={4} justifyContent={'space-evenly'} alignItems={'stretch'} width={'100%'} padding={4}>
                 {/* Partie gauche du menu de présence (Input et confirmation ) */}
-                <Stack direction="column" spacing={2} alignItems="stretch" width={'40%'}>
-                    <Typography variant="body1" color="textSecondary" fontWeight={'regular'} alignSelf={'center'}>
-                        Nombre d'étudiants présents pour l'épreuve {epreuve.code} :
-                    </Typography>
+                <Stack direction="column" spacing={2} alignItems="stretch" width={'32%'}>
+                    <Box>
+                        <Typography variant="h5" fontWeight={'bold'}>
+                            Présents
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary" mb={1} alignSelf={'center'}>
+                            Renseignez le nombre d'étudiants présents lors de l'épreuve :
+                        </Typography>
+                    </Box>
 
                     {!showInput ? (
                         // Affichage du nombre de présents actuel si déjà renseigné
