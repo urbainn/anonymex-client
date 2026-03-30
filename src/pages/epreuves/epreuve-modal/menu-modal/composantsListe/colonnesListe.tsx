@@ -3,50 +3,61 @@ import { type GridColDef } from '@mui/x-data-grid';
 import type { APIConvocation } from '../../../../../contracts/convocations';
 
 
+
 export const getColumns = (noteModifiable: boolean, hovered: string | null): GridColDef<APIConvocation>[] => [
+
+
     {
-        field: 'codeEpreuve',
-        headerName: 'Code Épreuve',
-        width: 200,
-        hideable: false,
+        field: 'codeSalle',
+        headerName: 'Code Salle',
         editable: false,
+        hideable: false,
+        width: 150,
     },
     {
         field: 'codeAnonymat',
         headerName: 'Code Anonymat',
-        width: 200,
         editable: false,
         hideable: false,
-    },
-    {
-        field: 'codeSalle',
-        headerName: 'Code Salle',
-        width: 200,
-        editable: false,
-        hideable: false,
+        width: 150,
     },
     {
         field: 'numeroEtudiant',
         headerName: 'Numéro Étudiant',
-        width: 200,
         editable: false,
         hideable: false,
+        width: 150,
     },
+    {
+        field: 'nom',
+        headerName: 'Nom',
+        editable: false,
+        hideable: false,
+        width: 150,
+    },
+    {
+        field: 'prenom',
+        headerName: 'Prénom',
+        editable: false,
+        hideable: false,
+        width: 150,
+    },
+
     {
         field: 'rang',
         headerName: 'Rang',
         type: 'number',
-        width: 100,
         editable: true,
         hideable: false,
+        width: 100,
     },
     {
         field: 'noteQuart',
         headerName: 'Note',
         type: 'number',
-        width: 100,
         editable: true,
         hideable: false,
+        width: 100,
 
     },
 

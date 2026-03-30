@@ -28,10 +28,11 @@ export interface EpreuveModalProps {
     nbIncidents?: number;
 }
 
-export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveModalProps) {
+export function EpreuveModal({ epreuve, sessionId, nbIncidents }: EpreuveModalProps) {
     const { fermer } = useModal();
 
     const [numeroOnglet, setNumeroOnglet] = useState<0 | 1 | 2 | 3 | 4>(0);
+    const [salleDefault, setSalleDefault] = useState<string>("x");
 
     const handleChange = (_event: React.SyntheticEvent, newValue: 0 | 1 | 2 | 3 | 4) => {
         setNumeroOnglet(newValue);
@@ -40,7 +41,7 @@ export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveMo
     const tabs = [
         {
             label: "Details",
-            content: <DetailsEpreuve epreuve={epreuve} />
+            content: <DetailsEpreuve epreuve={epreuve} setNumeroOnglet={setNumeroOnglet} setSalleDefault={setSalleDefault} />
         },
         {
             label: "Liste étudiants",
@@ -50,6 +51,7 @@ export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveMo
                     idSession={epreuve.session}
                     statut={epreuve.statut}
                     menuColor={epreuve.statut == 1 ? undefined : themeEpreuves.status[epreuve.statut]}
+                    salleDefault={salleDefault}
                 />
             )
         },
@@ -66,7 +68,7 @@ export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveMo
 
         ...(epreuve.statut >= 4 ? [{
             label: "Exporter les notes",
-            content: <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} exportMode />
+            content: <MenuScanCopies codeUE={epreuve.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuve.statut]} />
         }] : []),
 
         {
@@ -74,7 +76,7 @@ export function EpreuveModal({ epreuve, sessionId, tab, nbIncidents }: EpreuveMo
             content: <MenuPresence epreuve={epreuve} />
         },
 
-        ...(epreuve.statut >= 3 && nbIncidents !== undefined && nbIncidents > 0 ? [{
+        ...(nbIncidents !== undefined && nbIncidents > 0 ? [{
             label: `Incidents (${nbIncidents})`,
             content: <IncidentsComplets idSession={Number(sessionId)} epreuveCode={epreuve.code} />
         }] : [])

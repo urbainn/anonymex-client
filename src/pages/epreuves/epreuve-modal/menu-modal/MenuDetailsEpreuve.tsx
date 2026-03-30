@@ -1,6 +1,6 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React, { useEffect } from "react";
-import { Stack, Divider, Button, colors } from "@mui/material";
+import { Stack, Divider, Button, colors, CircularProgress, Typography } from "@mui/material";
 import { EpreuveCaracteristique } from "./composantsEpreuves/EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
@@ -19,8 +19,15 @@ import { useSnackbarGlobal } from '../../../../contexts/SnackbarContext';
 
 import { themeEpreuves } from "../../../../theme/epreuves";
 
+import { getConvocations, postConvocationsTransfert } from "../../../../contracts/convocations";
+
+import { useConfirmTransfer } from "./composantsListe/useConfirmTransfer";
+
+
 export interface DetailsEpreuveProps {
     epreuve: APIEpreuve;
+    setNumeroOnglet: (value: 0 | 1 | 2 | 3 | 4) => void;
+    setSalleDefault: (value: string) => void;
 }
 
 function calcHoraires(date: number, dureeMinutes: number): string {
@@ -41,7 +48,7 @@ function formatDate(date: number): string {
 
 
 
-function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
+function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault }: DetailsEpreuveProps) {
 
     const [modifEpreuve, setModifEpreuve] = React.useState<boolean>(false);
     const [modifDate, setModifDate] = React.useState<boolean>(false);
@@ -62,15 +69,39 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
 
     const [valIntermediaireDate, setValIntermediaireDate] = React.useState<number>(0);
-
     const [valIntermediaireDuree, setValIntermediaireDuree] = React.useState<number>(0);
     const [valIntermediaireHoraireDebut, setValIntermediaireHoraireDebut] = React.useState<number>(0);
+
+    const [salles, setSalles] = React.useState<{ nom: string, nbEtudiants: number }[]>([]);
+    const [loadingSalles, setLoadingSalles] = React.useState<boolean>(true);
+
     const { afficherErreur } = useSnackbarGlobal()
 
+    const { confirmTransfer, confirmModalTransfer } = useConfirmTransfer();
+
     useEffect(() => {
-        console.log("Duree minutes mise à jour :", dureeMinutes);
-        console.log("Date épreuve mise à jour :", new Date(dateEpreuve));
-    }, [dateEpreuve, dureeMinutes]);
+        const fetchConvocations = async () => {
+            setLoadingSalles(true);
+            const res = await getConvocations(epreuve.session, epreuve.code);
+            if (res.data?.convocations) {
+                console.log("Convocations récupérées :", res.data.convocations);
+                const sallesMap: { [key: string]: number } = {};
+                res.data.convocations.forEach((convocation) => {
+                    if (sallesMap[convocation.codeSalle]) {
+                        sallesMap[convocation.codeSalle]++;
+                    } else {
+                        sallesMap[convocation.codeSalle] = 1;
+                    }
+                });
+                setSalles(Object.entries(sallesMap).map(([nom, nbEtudiants]) => ({ nom, nbEtudiants })));
+                setLoadingSalles(false);
+            }
+        };
+
+        fetchConvocations();
+        console.log("Salles calculées :", salles);
+    }, [epreuve.session, epreuve.code]);
+
 
     const handleModifEpreuve = () => {
         setModifEpreuve(true);
@@ -161,11 +192,68 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
 
     */}
 
+    const handleTransfert = async (sallesDepart: string[], salleArrivee: string) => {
+
+        const nbEtudiants = salles[0].nbEtudiants;
+
+        const result = await confirmTransfer(nbEtudiants, salleArrivee);
+
+        console.log("Salle de départ :", sallesDepart);
+        console.log("Salle d'arrivée :", salleArrivee);
+
+        if (result) {
+
+            const res = await postConvocationsTransfert(epreuve.session, epreuve.code, { sallesDepart: sallesDepart, salleTransfert: salleArrivee });
+            console.log("Réponse de l'API après transfert :", res);
+            if (res.data?.success) {
+                console.log(`Transfert des étudiants des salles ${sallesDepart} vers la salle ${salleArrivee} réussi`);
+                setSalles((prevSalles) => {
+                    return prevSalles.map((salle) => {
+                        if (sallesDepart[0] === salle.nom) {
+                            const nb = salle.nbEtudiants;
+
+                            return {
+                                ...salle,
+                                nbEtudiants: salle.nbEtudiants - nb
+                            };
+                        }
+
+                        if (salleArrivee === salle.nom) {
+                            const salleDepart = prevSalles.find(s => s.nom === sallesDepart[0]);
+                            const nb = salleDepart?.nbEtudiants ?? 0;
+
+                            return {
+                                ...salle,
+                                nbEtudiants: salle.nbEtudiants + nb
+                            };
+                        }
+
+                        return salle;
+                    });
+                });
+
+            }
+            console.log("Résultat de la confirmation de transfert :", result);
+
+        }
+    };
+
+    const handleAjout = () => {
+        console.log("Ajout demandé");
+    }
+
+    const handleDetails = (salle: string) => {
+        console.log("Détails demandés pour la salle :", salle);
+        setSalleDefault(salle);
+        setNumeroOnglet(1);
+    }
 
 
     return (
 
         <>
+            {confirmModalTransfer}
+
             <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
             <ModalConfirmationChangementsHoraire ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} ancien={{ date: dateEpreuve, duree: dureeMinutes }} nouveau={{ date: valIntermediaireHoraireDebut, duree: valIntermediaireDuree }} />
 
@@ -190,12 +278,22 @@ function DetailsEpreuve({ epreuve }: DetailsEpreuveProps) {
                     <Stack sx={{ height: 35 }} >
                         <TypoSousTitre >Cliquez pour afficher la composition</TypoSousTitre>
                     </Stack>
-                    <Stack spacing={1} pt={3} maxHeight={400} overflow="auto">
+                    <Stack spacing={1} pt={3} height={400} overflow="auto" pr={2}>
+                        {loadingSalles ? (
+                            <CircularProgress />
+                        ) : salles.length === 0 ? (
+                            <Typography variant="body1" color={colors.grey[700]}>
+                                Aucune salle trouvée pour cette épreuve.
+                            </Typography>
+                        ) : (
+                            salles.map((salle) => (
+                                (salle.nbEtudiants > 0) && (
+                                    <EpreuveSallesCompo key={salle.nom} salle={salle.nom} sallesDispo={salles} nbEtudiants={salle.nbEtudiants} nbEtuMMax={epreuve.inscrits ? epreuve.inscrits : 0} color={themeEpreuves.status[epreuve.statut]} onTransfert={handleTransfert} onAjouter={handleAjout} onDetails={handleDetails} />
+                                )
+                            ))
+                        )
+                        }
 
-                        <EpreuveSallesCompo salle="Amphi 5.05" nbEtudiants={252} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
-                        <EpreuveSallesCompo salle="Amphi 5.03" nbEtudiants={130} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
-                        <EpreuveSallesCompo salle="Amphi 36.3" nbEtudiants={60} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
-                        <EpreuveSallesCompo salle="Amphi 36.01" nbEtudiants={14} nbEtuMMax={252} color={themeEpreuves.status[epreuve.statut]} />
                     </Stack>
                 </Stack>
             </Stack>

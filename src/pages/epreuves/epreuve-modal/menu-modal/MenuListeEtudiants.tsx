@@ -13,10 +13,9 @@ import { useConfirmTransfer } from './composantsListe/useConfirmTransfer';
 import { useGridApiRef } from '@mui/x-data-grid';
 import Header from './composantsListe/Header';
 
-import type { APIListeConvocations, APIConvocation } from '../../../../contracts/convocations';
+import type { APIConvocation } from '../../../../contracts/convocations';
 import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert } from '../../../../contracts/convocations';
 
-import type { HeaderProps } from './composantsListe/Header';
 
 declare module "@mui/x-data-grid" {
     interface ToolbarPropsOverrides {
@@ -35,6 +34,7 @@ interface MenuListeEtudiantsProps {
     statut: number;
     idSession: number;
     codeEpreuve: string;
+    salleDefault: string;
 }
 
 
@@ -45,11 +45,10 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     const [loading, setLoading] = useState(false);
     const [tooltipOpen, setTooltipOpen] = useState(false);
 
-    const [salleFilter, setSalleFilter] = useState<string>("x");
+    const [salleFilter, setSalleFilter] = useState<string>(props.salleDefault);
     const [hovered, setHovered] = useState<string | null>(null);
 
     const [selectedRows, setSelectedRows] = useState<APIConvocation[]>([]);
-
 
     const columns = getColumns(noteModifiable, hovered);
 
@@ -63,15 +62,17 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
 
     useEffect(() => {
         const fetchConvocations = async () => {
+            setLoading(true);
             const res = await getConvocations(props.idSession, props.codeEpreuve);
             if (res.data?.convocations) {
                 setRows(res.data?.convocations);
                 console.log("Convocations récupérées :", res.data.convocations);
             }
+            setLoading(false);
         };
 
         fetchConvocations();
-    }, [props.idSession, props.codeEpreuve, rows.length]);
+    }, [props.idSession, props.codeEpreuve]);
 
 
 
@@ -127,7 +128,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     }
 
     const handleTransfer = async (listeCodeAno: string[], salle: string) => {
-        const result = await confirmTransfer(listeCodeAno, salle);
+        const result = await confirmTransfer(listeCodeAno.length, salle);
         console.log("Transfert des étudiants avec les numéros :", result);
 
         if (result) {
@@ -137,7 +138,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
             console.log("Réponse de l'API après transfert :", res);
             if (res.status === 200) {
                 setRows((prevRows) => prevRows.map((row) =>
-                    result.includes(row.codeAnonymat!)
+                    listeCodeAno.includes(row.codeAnonymat!)
                         ? { ...row, codeSalle: salle }
                         : row
                 ));
@@ -207,7 +208,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
                     loading={loading}
                     density='compact'
                     rows={salleFilter === "x" ? rows : rows.filter(row => row.codeSalle === salleFilter)}
-                    columns={columns}
+                    columns={columns.filter(col => col.field !== 'idSession' && col.field !== 'codeEpreuve')}
                     hideFooter
                     checkboxSelection
 

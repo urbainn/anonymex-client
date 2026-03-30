@@ -6,9 +6,10 @@ import Tooltip from '@mui/material/Tooltip';
 
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 
-interface IconRondV2Props {
+interface IconRondV2Props<T = void> {
     children: React.ReactElement<SvgIconProps>;
     onClick?: () => void;
+    onClickParam?: (arg: T) => void;
     color?: string;
     hoverColor?: string;
     sx?: object;
@@ -16,7 +17,7 @@ interface IconRondV2Props {
     text?: string;
 }
 
-function IconRondV2(props: IconRondV2Props) {
+function IconRondV2<T>(props: IconRondV2Props<T>) {
 
     return (
 
@@ -34,7 +35,13 @@ function IconRondV2(props: IconRondV2Props) {
                     ...props.sx
                 }}
 
-                onClick={props.onClick}
+                onClick={(e) => {
+                    if (props.onClick) {
+                        props.onClick();
+                    } else if (props.onClickParam) {
+                        props.onClickParam(e as T);
+                    }
+                }}
 
             >
                 <Box display="flex" fontSize="small" sx={{ color: "grey.800" }} >

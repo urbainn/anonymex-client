@@ -11,6 +11,7 @@ interface MenuGenererMatExamProps {
     menuColor?: string;
     idSession: string;
     codeEpreuve: string;
+
 }
 
 function MenuGenererMatExam(props: MenuGenererMatExamProps) {

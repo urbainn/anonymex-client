@@ -19,16 +19,14 @@ import { grey, red } from '@mui/material/colors';
 
 export function useConfirmTransfer() {
     const [ouvert, setOuvert] = useState(false);
-    const [students, setStudents] = useState<string[]>([]);
     const [salle, setSalle] = useState<string>("");
     const [nbStudents, setNbStudents] = useState<number>(0);
 
-    const [resolver, setResolver] = useState<((value: string[], salle: string) => void) | null>(null);
+    const [resolver, setResolver] = useState<((nbEtudiants: number, salle: string) => void) | null>(null);
 
 
-    const confirmTransfer = (students: string[], salle: string): Promise<string[]> => {
-        setStudents(students);
-        setNbStudents(students.length);
+    const confirmTransfer = (nbEtudiants: number, salle: string): Promise<string[]> => {
+        setNbStudents(nbEtudiants);
         setSalle(salle);
         setOuvert(true);
 
@@ -37,9 +35,9 @@ export function useConfirmTransfer() {
         });
     };
 
-    const handleClose = (value: string[], salle: string) => {
+    const handleClose = (nbEtudiants: number, salle: string) => {
         setOuvert(false);
-        resolver?.(value, salle);
+        resolver?.(nbEtudiants, salle);
     };
 
     const affichageListe = (etudiant: string): JSX.Element => {
@@ -76,10 +74,10 @@ export function useConfirmTransfer() {
                             </Stack>
                         </Stack>
                         <Stack direction="row" spacing={4}>
-                            <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { handleClose(students, salle); }}>
+                            <Button variant="contained" sx={{ bgcolor: colors.blue[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { handleClose(nbStudents, salle); }}>
                                 Confirmer le changement
                             </Button>
-                            <Button variant="contained" sx={{ bgcolor: colors.red[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { handleClose([], ""); }}>
+                            <Button variant="contained" sx={{ bgcolor: colors.red[100], color: colors.grey[900], py: 1, boxShadow: 'none', '&:hover': { boxShadow: 'none' } }} onClick={() => { handleClose(0, ""); }}>
                                 Annuler
                             </Button>
                         </Stack>

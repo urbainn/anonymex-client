@@ -94,6 +94,7 @@ export default function EpreuvesPage(): ReactElement {
     // lorsqu'une épreuve est cliquée : afficher modal
     const handleEpreuveClick = useCallback(async (epreuve: APIEpreuve) => {
         if (sessionId === undefined) return;
+        console.log("Épreuve cliquée :", epreuve);
         ouvrir(<EpreuveModal epreuve={epreuve} sessionId={sessionId} nbIncidents={epreuve.incidents} />);
     }, [ouvrir, sessionId]);
 
