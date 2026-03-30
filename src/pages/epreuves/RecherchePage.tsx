@@ -3,7 +3,7 @@ import SearchBar from '../../components/SearchBar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Alert, Chip, Snackbar } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getRechercheHeure, getRechercheSalle, getRechercheSalleHeure } from '../../contracts/recherche';
 import { getEpreuve, type APIEpreuve } from '../../contracts/epreuves';
 import { formatterDateEntiere } from '../../utils/dateUtils';
@@ -118,12 +118,21 @@ export default function RecherchePage(): ReactElement {
         void fetchData();
     }, [fetchData, sessionId, type, value1]);
 
+
+    // Navigation pour revenir à la liste des épreuves de la session
+    const navigate = useNavigate();
+
+    const handleBackEpreuve = useCallback(() => {
+        navigate(`/sessions/${sessionId}/epreuves`);
+    }, [navigate, sessionId]);
+
     console.log("Résultats de la recherche fetchData :", resultats);
 
     return (
         <>
             <Stack gap={2} m={4} alignItems={'center'} boxSizing={'border-box'}>
-                <SearchBar sessionId={+sessionId!} />
+                <SearchBar sessionId={+sessionId!} handleBack={handleBackEpreuve} nomHandleBack={`Retour à la session ${sessionId}`} />;
+                
 
                 <Stack direction="column" alignItems="flex-start" spacing={4} mt={4}>
 
