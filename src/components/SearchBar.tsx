@@ -358,7 +358,7 @@ function SearchBar(props: SearchBarProps) {
                                                         <Stack direction="row" spacing={1} alignItems="center">
                                                             <MeetingRoom fontSize="small"/>
                                                             <Typography variant="body2">
-                                                                <b>Salle</b> : TD36
+                                                                <b>Salle</b> : TD.36
                                                             </Typography>
                                                         </Stack>
 

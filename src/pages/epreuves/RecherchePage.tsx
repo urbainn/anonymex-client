@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition, type ReactElement } from 'react';
 import SearchBar from '../../components/SearchBar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -7,12 +7,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getRechercheEtudiant, getRechercheHeure, getRechercheSalle, getRechercheSalleHeure } from '../../contracts/recherche';
 import { getEpreuve, type APIEpreuve } from '../../contracts/epreuves';
 import { formatterDateEntiere } from '../../utils/dateUtils';
-import Check from '@mui/icons-material/Check';
-import { DoDisturb, Public } from '@mui/icons-material';
+import { AssignmentTurnedIn, History, HourglassEmpty, Print, PrintDisabled, Public, Schedule, UploadFile } from '@mui/icons-material';
 import { EpreuveCard } from './EpreuveCard';
 import { EpreuveModal } from './epreuve-modal/EpreuveModal';
 import { useModal } from '../../contexts/ModalContext';
 import { useEpreuvesCache } from '../../contexts/EpreuvesCacheContext';
+
+const STATUS = {
+    NON_IMPRIME: 1,
+    IMPRIME: 2,
+    ATTENTE_DEPOT: 3,
+    DEPOT_COMPLET: 4,
+    NOTES_EXPORTEES: 5
+} as const;
 
 export default function RecherchePage(): ReactElement {
 
@@ -32,6 +39,12 @@ export default function RecherchePage(): ReactElement {
 
     // Liste des épreuves de la recherche avec leurs détails complets
     const [epreuvesDetails, setEpreuvesDetails] = useState<APIEpreuve[]>([]);
+
+    // Filtre d'affichage des épreuves
+    const [filter, setFilter] = useState<'all' | 'avenir' | 'passe'>('all');
+
+    // Sous filtre des épreuves
+    const [subFilter, setSubFilter] = useState<number| null>(null);
 
     // Modal
     const { ouvrir } = useModal();
@@ -65,7 +78,7 @@ export default function RecherchePage(): ReactElement {
                     }
                     response = await getRechercheSalleHeure(+sessionId, value1, value2);
                     break;
-                
+
                 case "etudiant":
                     response = await getRechercheEtudiant(+sessionId, value1);
                     break;
@@ -122,6 +135,31 @@ export default function RecherchePage(): ReactElement {
         void fetchData();
     }, [fetchData, sessionId, type, value1]);
 
+    const { epreuvesFiltrees, statutMap } = useMemo(() => {
+
+        const map = new Map<number, number>();
+
+        const res = epreuvesDetails.filter(epreuve => {
+
+            map.set(epreuve.statut, (map.get(epreuve.statut) ?? 0) + 1);
+
+            if (filter === 'avenir') {
+                if (epreuve.statut !== STATUS.NON_IMPRIME && epreuve.statut !== STATUS.IMPRIME) return false;
+            }
+
+            if (filter === 'passe') {
+                if (epreuve.statut !== STATUS.ATTENTE_DEPOT && epreuve.statut !== STATUS.DEPOT_COMPLET && epreuve.statut !== STATUS.NOTES_EXPORTEES) return false;
+            }
+
+            if (subFilter !== null && epreuve.statut !== subFilter) return false;
+
+            return true;
+        });
+
+        return { epreuvesFiltrees: res, statutMap: map };
+
+    }, [epreuvesDetails, filter, subFilter]);
+
 
     // Navigation pour revenir à la liste des épreuves de la session
     const navigate = useNavigate();
@@ -135,8 +173,8 @@ export default function RecherchePage(): ReactElement {
     return (
         <>
             <Stack gap={2} m={4} alignItems={'center'} boxSizing={'border-box'}>
-                <SearchBar sessionId={+sessionId!} handleBack={handleBackEpreuve} nomHandleBack={`Retour à la session ${sessionId}`} />;
-                
+                <SearchBar sessionId={+sessionId!} handleBack={handleBackEpreuve} nomHandleBack={`Retour à la session ${sessionId}`} />
+
 
                 <Stack direction="column" alignItems="flex-start" spacing={4} mt={4}>
 
@@ -147,25 +185,83 @@ export default function RecherchePage(): ReactElement {
 
 
                     {/* Affichage des différents types de tri possibles */}
-                    <Stack direction="row" spacing={2}>
-                        <Chip icon={<Public />} label={`Tous (${epreuvesDetails.length})`} color="primary" onClick={() => { }} />
-                        <Chip icon={<DoDisturb />} label="Non imprimé (0)" color="default" onClick={() => { }} />
-                        <Chip icon={<Check />} label="Imprimé (0)" color="default" onClick={() => { }} />
+                    <Stack direction="row" spacing={2} flexWrap="wrap">
+
+                        {/* Toutes les épreuves*/}
+                        <Chip
+                            icon={<Public />}
+                            label={`Tous (${epreuvesDetails.length})`}
+                            color={filter === 'all' ? 'primary' : 'default'}
+                            onClick={() => {
+                                setFilter('all');
+                                setSubFilter(null);
+                            }}
+                        />
+
+                        <Chip
+                            icon={<Schedule />}
+                            label={`À venir (${(statutMap.get(1) ?? 0) + (statutMap.get(2) ?? 0)})`}
+                            color={filter === 'avenir' ? 'primary' : 'default'}
+                            onClick={() => {
+                                setFilter('avenir');
+                                setSubFilter(null);
+                            }}
+                        />
+
+                        <Chip
+                            icon={<History />}
+                            label={`Passées (${(statutMap.get(3) ?? 0) + (statutMap.get(4) ?? 0) + (statutMap.get(5) ?? 0)})`}
+                            color={filter === 'passe' ? 'primary' : 'default'}
+                            onClick={() => {
+                                setFilter('passe');
+                                setSubFilter(null);
+                            }}
+                        />
+
+                        {/* Affichage des sous-filtres pour les épreuves à venir */}
+                        {filter === 'avenir' && (
+                            <Stack direction="row" spacing={2}>
+                                <Chip
+                                    icon={<PrintDisabled />}
+                                    label={`Non imprimé (${statutMap.get(1) ?? 0})`}
+                                    color={subFilter === 1 ? 'primary' : 'default'}
+                                    onClick={() => setSubFilter(1)}
+                                />
+                                <Chip
+                                    icon={<Print />}
+                                    label={`Imprimé (${statutMap.get(2) ?? 0})`}
+                                    color={subFilter === 2 ? 'primary' : 'default'}
+                                    onClick={() => setSubFilter(2)}
+                                />
+                            </Stack>
+                        )}
+
+                        {filter === 'passe' && (
+                            <Stack direction="row" spacing={2}>
+                                <Chip icon={<HourglassEmpty />} label={`Attente (${statutMap.get(3) ?? 0})`} color={subFilter === 3 ? 'primary' : 'default'} onClick={() => setSubFilter(3)} />
+                                <Chip icon={<UploadFile />} label={`Dépôt (${statutMap.get(4) ?? 0})`} color={subFilter === 4 ? 'primary' : 'default'} onClick={() => setSubFilter(4)} />
+                                <Chip icon={<AssignmentTurnedIn />} label={`Notes (${statutMap.get(5) ?? 0})`} color={subFilter === 5 ? 'primary' : 'default'} onClick={() => setSubFilter(5)} />
+                            </Stack>
+                        )}
+
                     </Stack>
 
-                    {/* Affichage des résultats de la recherche (WIP) */}
-                    <Stack direction="column" spacing={2} width={'100%'}>
-                        {epreuvesDetails.length === 0 ? (
-                            <Typography variant="body1" color="textSecondary">
+                    {/* Affichage des résultats de la recherche */}
+                    <Stack width={'100%'} spacing={2}>
+                        {epreuvesFiltrees.length === 0 ? (
+                            <Alert severity="info" sx={{ width: '100%' }}>
                                 Aucun résultat trouvé pour cette recherche.
-                            </Typography>
+                            </Alert>
                         ) : (
-                            epreuvesDetails.map((epreuve) => (
-                                <EpreuveCard key={epreuve.code + epreuve.date} epreuve={epreuve} onClick={handleEpreuveClick} />
+                            epreuvesFiltrees.map((epreuve) => (
+                                <EpreuveCard
+                                    key={epreuve.code + epreuve.date}
+                                    epreuve={epreuve}
+                                    onClick={handleEpreuveClick}
+                                />
                             ))
                         )}
                     </Stack>
-
                 </Stack>
 
                 {erreur && (
