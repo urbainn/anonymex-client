@@ -1,11 +1,11 @@
 import { useState, type ReactElement } from 'react';
-import { TextField, Stack, Button, Tooltip, Autocomplete, Divider, IconButton, Box, Snackbar, Alert } from '@mui/material';
+import { TextField, Stack, Button, Tooltip, Autocomplete, Divider, IconButton, Box, Snackbar, Alert, Popover, Typography } from '@mui/material';
 
 import LeftArrow from '@mui/icons-material/ArrowBackIosNew';
 
 import { useNavigate } from 'react-router-dom';
 import { getRecherche } from '../contracts/recherche';
-import { FormatListBulleted, StickyNote2, MeetingRoom, AccessTime, Person, Construction, Search } from '@mui/icons-material';
+import { StickyNote2, MeetingRoom, AccessTime, Person, Construction, Search, Description, Info } from '@mui/icons-material';
 import { getEpreuve, type APIEpreuve } from '../contracts/epreuves';
 import { formatterDateEntiere } from '../utils/dateUtils';
 import { BordereauxModal } from '../pages/epreuves/epreuve-modal/BordereauxModal';
@@ -72,6 +72,12 @@ function SearchBar(props: SearchBarProps) {
     // Afficher snackbar de succès après le scan
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)
     const [codeScan, setCodeScan] = useState<string>("");
+
+    // Ancre pour le popover de la liste des catégories
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    // Icone de recherche (pour le tooltip)
+    const [highlightedOption, setHighlightedOption] = useState<RechercheResultat | null>(null);
 
     // Liste des résultats de recherche (change a chaque action de recherche)
     const [resultats, setResultats] = useState<RechercheResultat[] | null>(null);
@@ -253,6 +259,8 @@ function SearchBar(props: SearchBarProps) {
                             </Box>
                         );
                     }}
+
+                    // Gère les résultats de la recherche à chaque changement de l'input
                     onInputChange={(_, newInputValue) => {
                         setInputValue(newInputValue);
 
@@ -268,6 +276,7 @@ function SearchBar(props: SearchBarProps) {
                         }
                     }}
 
+                    // Gère le clic sur un résultat de recherche
                     onChange={(_, value) => {
                         if (value && typeof value !== 'string') {
                             handleClickResultat(value);
@@ -277,6 +286,12 @@ function SearchBar(props: SearchBarProps) {
                         }
 
                     }}
+
+                    // Récupère l'élément survolé pour le tooltip de l'icône de recherche
+                    onHighlightChange={(_, option) => {
+                        setHighlightedOption(option);
+                    }}
+
                     renderInput={(params) => (
                         <TextField
                             {...params}
@@ -289,18 +304,87 @@ function SearchBar(props: SearchBarProps) {
                                             {params.InputProps.endAdornment}
 
                                             <Tooltip title="Rechercher">
-                                                <IconButton sx={{ p: '10px' }} aria-label="search" >
+                                                <IconButton sx={{ p: '10px' }} aria-label="search" 
+                                                    onClick={() => {
+                                                        if (highlightedOption) {
+                                                            handleClickResultat(highlightedOption);
+                                                            setInputValue("");
+                                                            setResultats(null);
+                                                        }
+                                                    }}>
                                                     <Search />
                                                 </IconButton>
                                             </Tooltip>
 
                                             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
 
-                                            <Tooltip title="Afficher la liste">
-                                                <IconButton sx={{ p: '10px' }} aria-label="search">
-                                                    <FormatListBulleted />
+                                            <Tooltip title="Afficher l'aide rapide">
+                                                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                                                    <Info />
                                                 </IconButton>
                                             </Tooltip>
+
+                                            {/* Popover de l'aide rapide */}
+                                            <Popover
+                                                open={Boolean(anchorEl)}
+                                                anchorEl={anchorEl}
+                                                onClose={() => setAnchorEl(null)}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'right',
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        p: 2,
+                                                        maxWidth: 320,
+                                                        borderRadius: 2,
+                                                        backgroundColor: 'background.paper',
+                                                        boxShadow: 3
+                                                    }}
+                                                >
+                                                    <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                                                        Aide rapide
+                                                    </Typography>
+
+                                                    <Stack spacing={1.2}>
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <Description fontSize="small" />
+                                                            <Typography variant="body2">
+                                                                <b>Épreuve</b> : HAI…
+                                                            </Typography>
+                                                        </Stack>
+
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <MeetingRoom fontSize="small"/>
+                                                            <Typography variant="body2">
+                                                                <b>Salle</b> : TD36
+                                                            </Typography>
+                                                        </Stack>
+
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <AccessTime fontSize="small"/>
+                                                            <Typography variant="body2">
+                                                                <b>Horaire</b> : hier, 20h…
+                                                            </Typography>
+                                                        </Stack>
+
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <Person fontSize="small"/>
+                                                            <Typography variant="body2">
+                                                                <b>Étudiant</b> : 2201234
+                                                            </Typography>
+                                                        </Stack>
+
+                                                        <Stack direction="row" spacing={1} alignItems="center">
+                                                            <Construction fontSize="small" />
+                                                            <Typography variant="body2">
+                                                                <b>Actions</b> : bordereau, copies, session
+                                                            </Typography>
+                                                        </Stack>
+                                                    </Stack>
+                                                </Box>
+                                            </Popover>
                                         </>
                                     ),
                                 },
