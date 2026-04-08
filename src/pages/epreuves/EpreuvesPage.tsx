@@ -29,7 +29,8 @@ export default function EpreuvesPage(): ReactElement {
     const { epreuves: listeEpreuves, estChargement, erreurChargement } = useEpreuvesCache();
 
     // Filtres et tri
-    const [typeEpreuve, setTypeEpreuve] = useState<'passees' | 'aVenir'>('aVenir');
+    const [typeEpreuve, setTypeEpreuve] = useState<'passees' | 'aVenir'>
+        (listeEpreuves.epreuvesAvenir.length > 0 ? 'aVenir' : 'passees');
     const [filtreStatut, setFiltreStatut] = useState<number | null>(null); // null => tout afficher
     //const [optionTri] = useState<SortOption>("chronologique");
 
@@ -163,23 +164,24 @@ export default function EpreuvesPage(): ReactElement {
                     </Box>
                     <Box sx={{ width: '35%' }}>
                         { /* FILTRES ET OPTIONS DE TRI */}
-                        <Stack spacing={2}>
-                            <Typography variant="h5" paddingTop={3} fontWeight={700}>Afficher</Typography>
-                            <EpreuvesFiltreCard couleur={green[300]} titre="Épreuves à venir" nombre={listeEpreuves.epreuvesAvenir.length} selectionne={typeEpreuve === 'aVenir'} onClick={() => handleTypeEpreuveChange('aVenir')} />
-                            <EpreuvesFiltreCard couleur={blue[300]} titre="Épreuves passées" nombre={listeEpreuves.epreuvesPassees.length} selectionne={typeEpreuve === 'passees'} onClick={() => handleTypeEpreuveChange('passees')} />
-                        </Stack>
+                        {listeEpreuves.epreuvesAvenir.length > 0 && listeEpreuves.epreuvesPassees.length > 0 && (
+                            <Stack spacing={2} paddingBottom={2} paddingTop={3}>
+                                <Typography variant="h5" fontWeight={700}>Afficher</Typography>
+                                <EpreuvesFiltreCard couleur={green[300]} titre="Épreuves à venir" nombre={listeEpreuves.epreuvesAvenir.length} selectionne={typeEpreuve === 'aVenir'} onClick={() => handleTypeEpreuveChange('aVenir')} />
+                                <EpreuvesFiltreCard couleur={blue[300]} titre="Épreuves passées" nombre={listeEpreuves.epreuvesPassees.length} selectionne={typeEpreuve === 'passees'} onClick={() => handleTypeEpreuveChange('passees')} />
+                            </Stack>
+                        )}
 
-                        <Stack spacing={2}>
-                            <Typography variant="h5" paddingTop={5} fontWeight={700}>Filtrer</Typography>
+                        <Stack spacing={2} paddingTop={3}>
+                            <Typography variant="h5" fontWeight={700}>Filtrer</Typography>
                             <EpreuvesFiltreCard couleur={grey[400]} titre="Tout afficher" sousTexte="Aucun filtre, toutes les épreuves." icone={<Folder sx={{ color: grey[700] }} fontSize="large" />} selectionne={filtreStatut === null} onClick={() => handleStatutChange(null)} />
                             {statutMap.get(1) && <EpreuvesFiltreCard couleur={themeEpreuves.status[1]} titre="Matériel non imprimé" sousTexte="Examens pour lesquels le matériel n'a pas été imprimé." nombre={statutMap.get(1)} selectionne={filtreStatut === 1} onClick={() => handleStatutChange(1)} />}
                             {statutMap.get(2) && <EpreuvesFiltreCard couleur={themeEpreuves.status[2]} titre="Materiel imprimé" sousTexte="Examens pour lesquels le matériel a été imprimé." nombre={statutMap.get(2)} selectionne={filtreStatut === 2} onClick={() => handleStatutChange(2)} />}
-                            {statutMap.get(3) && <EpreuvesFiltreCard couleur={themeEpreuves.status[3]} titre="En attente de dépot" sousTexte="Examens en attente de dépôt des copies." nombre={statutMap.get(3)} selectionne={filtreStatut === 3} onClick={() => handleStatutChange(3)} />}
+                            {statutMap.get(6) && <EpreuvesFiltreCard couleur={themeEpreuves.status[6]} titre="Présences non saisies" sousTexte="Examens en attente de saisie des présences." nombre={statutMap.get(6)} selectionne={filtreStatut === 6} onClick={() => handleStatutChange(6)} />}
+                            {statutMap.get(3) && <EpreuvesFiltreCard couleur={themeEpreuves.status[3]} titre="Présences saisies" sousTexte="Examens en attente de dépôt des copies." nombre={statutMap.get(3)} selectionne={filtreStatut === 3} onClick={() => handleStatutChange(3)} />}
                             {statutMap.get(4) && <EpreuvesFiltreCard couleur={themeEpreuves.status[4]} titre="Dépot complet" sousTexte="Examens pour lesquels toutes les copies ont été déposées." nombre={statutMap.get(4)} selectionne={filtreStatut === 4} onClick={() => handleStatutChange(4)} />}
                             {statutMap.get(5) && <EpreuvesFiltreCard couleur={themeEpreuves.status[5]} titre="Notes exportées" sousTexte="Afficher les examens pour lesquels les notes ont été exportées." nombre={statutMap.get(5)} selectionne={filtreStatut === 5} onClick={() => handleStatutChange(5)} />}
                         </Stack>
-
-
 
                         <Stack spacing={2}>
                             <Typography variant="h5" paddingTop={5} fontWeight={700}>Actions</Typography>

@@ -23,6 +23,7 @@ const epreuveStatutIcons: Record<EpreuveStatut, JSX.Element> = {
     3: <HourglassTopIcon />,
     4: <DocumentScannerIcon />,
     5: <DoneIcon />,
+    6: <HourglassTopIcon />,
 }
 
 type EpreuveCardProps = {
@@ -38,11 +39,11 @@ const statutInconnu = {
 
 export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.Element {
     const epreuve = props.epreuve;
-    const statusData = epreuve.statut >= 1 && epreuve.statut <= 5 ? {
-            label: EpreuveStatutNom[epreuve.statut],
-            icon: epreuveStatutIcons[epreuve.statut],
-            color: themeEpreuves.status[epreuve.statut],
-        } : statutInconnu;
+    const statusData = epreuve.statut >= 1 && epreuve.statut <= 6 ? {
+        label: EpreuveStatutNom[epreuve.statut],
+        icon: epreuveStatutIcons[epreuve.statut],
+        color: themeEpreuves.status[epreuve.statut],
+    } : statutInconnu;
 
     const formattedTime = timeFormatter.format(new Date(epreuve.date * 1000));
 

@@ -26,18 +26,22 @@ export type APIPartielIncident = z.infer<typeof PartielIncidentSchema>;
 export interface APIReponseCorrectionIncident { success: boolean, message?: string, incidents?: APIIncident[], suggestions?: string[] }
 
 export const getIncident = (sessionId: number, epreuveCode: string, incidentId: number) => {
-    return apiRequest<null, APIIncident>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${incidentId}`);
+    return apiRequest<null, APIIncident>
+        ('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${incidentId}`);
 }
 
 export const getIncidents = (sessionId: number, epreuveCode: string) => {
-    return apiRequest<null, APIListIncidents>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents`);
+    return apiRequest<null, APIListIncidents>
+        ('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents`);
 }
 
 export const corrigerIncident = (sessionId: number, epreuveCode: string, idIncident: number, codeAnonymat: string, noteQuart: number) => {
-    return apiRequest<{ codeAnonymat: string, noteQuart: number }, APIReponseCorrectionIncident>('POST', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${idIncident}`, { codeAnonymat, noteQuart });
+    return apiRequest<{ codeAnonymat: string, noteQuart: number }, APIReponseCorrectionIncident>
+        ('POST', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${idIncident}`, { codeAnonymat, noteQuart });
 }
 
 export const getSuggestionsIncident = (sessionId: number, epreuveCode: string, codePartiel: string) => {
     const q = encodeURIComponent(codePartiel);
-    return apiRequest<null, string[]>('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions?code=${q}`);
+    return apiRequest<null, string[]>
+        ('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions?code=${q}`);
 }
