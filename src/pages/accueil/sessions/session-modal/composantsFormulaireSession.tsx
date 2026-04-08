@@ -47,10 +47,10 @@ export function SessionChampDate(
 }
 
 export function SessionModalBouton(
-    { label, loading, disabled, startIcon, endIcon, outlined, onClick }: { label: string; loading?: boolean; disabled?: boolean; startIcon?: React.ReactNode; endIcon?: React.ReactNode; padding?: string; outlined?: boolean; onClick?: () => void }
+    { label, loading, disabled, startIcon, endIcon, outlined, color, onClick }: { label: string; loading?: boolean; disabled?: boolean; startIcon?: React.ReactNode; endIcon?: React.ReactNode; padding?: string; outlined?: boolean; color?: "primary" | "secondary" | "success" | "error" | "info" | "warning"; onClick?: () => void }
 ) {
     return (
-        <Button type={onClick ? "button" : "submit"} variant={outlined ? "outlined" : "contained"} size="medium" color="primary"
+        <Button type={onClick ? "button" : "submit"} variant={outlined ? "outlined" : "contained"} size="medium" color={color? color : "primary"}
             sx={{padding: 1}} startIcon={startIcon} endIcon={endIcon} disabled={disabled || loading}
             loading={loading} disableElevation onClick={onClick}
         >

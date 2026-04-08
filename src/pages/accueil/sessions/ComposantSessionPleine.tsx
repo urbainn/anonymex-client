@@ -1,4 +1,4 @@
-import { Divider, Stack, Typography } from "@mui/material";
+import { Alert, Divider, Snackbar, Stack, Typography } from "@mui/material";
 import { ButtonGererSession, CarteDeSession } from "./composantsSession";
 import { Add, Archive, Download } from "@mui/icons-material";
 import theme from "../../../theme/theme";
@@ -18,6 +18,8 @@ type Props = {
 export default function ComposantSessionPleine({listeSessions, fetchSessions}: Props) {
 
     const [modalOpen, setModalOpen] = useState(false);
+
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     console.log("ComposantSessionPleine fetchSessions remonté est = ", fetchSessions);
 
@@ -50,6 +52,7 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
                                 nom={session.nom}
                                 nombreStatut={session.statut}
                                 fetchSessions={fetchSessions}
+                                setMessageSuccess={setSuccessMessage}
                             />
                         ))}
                     </Stack>
@@ -78,6 +81,14 @@ export default function ComposantSessionPleine({listeSessions, fetchSessions}: P
 
             {modalOpen && (
                 <SessionParentEtape onClose={() => setModalOpen(false)} />
+            )}
+
+            {successMessage && (
+                <Snackbar open={!!successMessage} autoHideDuration={6000} onClose={() => setSuccessMessage(null)}>
+                    <Alert severity="success" sx={{ width: '100%' }}>
+                        {successMessage}
+                    </Alert>
+                </Snackbar>
             )}
         </>
     );

@@ -1,7 +1,8 @@
 import react from 'react';
 import { Modal } from '../../../../../components/Modal';
 import { deleteSession } from '../../../../../contracts/sessions';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Stack } from '@mui/material';
+import { SessionModalBouton } from '../composantsFormulaireSession';
 
 type Props = {
     session: {
@@ -35,15 +36,16 @@ export default function ModalSuppressionSession({ session, onClose, onSuccess }:
     return (
         <>
             <Modal onClose={onClose} titre={`Supprimer "${session.nom} - ${session.annee}" ?`} newbgcolor="#FFA8A4" width='600px'>
-                <Typography variant="body1" sx={{ margin: 2 }}>
-                    Cette session et toutes ses épreuves seront définitivement supprimées après un délai de 3 jours.
-                    Êtes-vous sûr de vouloir continuer ?
-                </Typography>
+                <Stack component="form" onSubmit={handleDelete} justifyContent={'space-between'} flexDirection={'column'} gap={2} margin={4}>
 
-                <Box display="flex" justifyContent="flex-end" gap={2} margin={3}>
-                    <Button onClick={onClose} color="inherit">Annuler</Button>
-                    <Button onClick={handleDelete} disabled={isLoading} variant="contained" color="error">Supprimer</Button>
-                </Box>
+                    <Typography variant="body1">
+                        Cette session et toutes ses épreuves seront définitivement supprimées instantanément.
+                        Êtes-vous sûr de vouloir continuer ?
+                    </Typography>
+
+                    <SessionModalBouton label="Supprimer la session" loading={isLoading} color="error" />
+
+                </Stack>
             </Modal>
         </>
     )
