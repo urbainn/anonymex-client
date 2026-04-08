@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useTransition, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 import SearchBar from '../../components/SearchBar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -33,9 +33,6 @@ export default function RecherchePage(): ReactElement {
 
     // Erreur snackbar
     const [erreur, setErreur] = useState<string | null>(null);
-
-    // Résultats de la recherche
-    const [resultats, setResultats] = useState<APIEpreuve[]>([]);
 
     // Liste des épreuves de la recherche avec leurs détails complets
     const [epreuvesDetails, setEpreuvesDetails] = useState<APIEpreuve[]>([]);
@@ -94,7 +91,6 @@ export default function RecherchePage(): ReactElement {
             }
 
             const resultatsTrouves = Array.isArray(response.data) ? response.data : [response.data];
-            setResultats(resultatsTrouves);
 
             if (resultatsTrouves.length === 0) {
                 setEpreuvesDetails([]);
@@ -133,7 +129,7 @@ export default function RecherchePage(): ReactElement {
         }
 
         void fetchData();
-    }, [fetchData, sessionId, type, value1]);
+    }, [sessionId, type, value1]);
 
     const { epreuvesFiltrees, statutMap } = useMemo(() => {
 
@@ -168,7 +164,7 @@ export default function RecherchePage(): ReactElement {
         navigate(`/sessions/${sessionId}/epreuves`);
     }, [navigate, sessionId]);
 
-    console.log("Résultats de la recherche fetchData :", resultats);
+    console.log("Résultats de la recherche filtrés :", epreuvesFiltrees);
 
     return (
         <>

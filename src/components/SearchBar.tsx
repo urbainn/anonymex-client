@@ -224,7 +224,6 @@ function SearchBar(props: SearchBarProps) {
 
                                     '&:hover': {
                                         backgroundColor: 'rgba(0,0,0,0.05)',
-                                        transform: 'translateX(4px)',
                                     },
                                 }}
                             >
