@@ -21,6 +21,7 @@ type Props = {
     nom: string;
     nombreStatut: SessionsStatut;
     fetchSessions: () => Promise<void>;
+    setMessageSuccess?: (message: string) => void;
 };
 
 type ModalState =
@@ -37,11 +38,11 @@ const Statut: CouleurStatut = {
     3: ["#D8A2A3", 'En suppression', AutoDeleteIcon]
 };
 
-export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Props): React.ReactElement {
+export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions, setMessageSuccess}: Props): React.ReactElement {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-    const [activeModal, setActiveModal] = useState<ModalState>(null)
+    const [activeModal, setActiveModal] = useState<ModalState>(null);
     
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -102,12 +103,13 @@ export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Pr
 
                     <MenuItem onClick={() => {
                         handleClose();
-                        setActiveModal({type: "archivageSession", sessionId: id, sessionName: nom, sessionYear: parseInt(annee)});
+                        //setActiveModal({type: "archivageSession", sessionId: id, sessionName: nom, sessionYear: parseInt(annee)});
+                        // TODO : Implémenter la fonctionnalité de téléchargement de l'archive de la session
                     }}>
                         <ListItemIcon>
                             <ArchiveIcon fontSize="small" />
                         </ListItemIcon>
-                        Archiver la session
+                        Télécharger l'archive
                     </MenuItem>
                     
                     <MenuItem onClick={() => {
@@ -130,7 +132,7 @@ export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Pr
                     annee: activeModal.sessionYear
                 }} 
                 onClose={() => {setActiveModal(null);}} 
-                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions(); setMessageSuccess?.("Session modifiée avec succès !");}} 
                 />
             )}
             {activeModal && activeModal.type === "archivageSession" && (
@@ -141,7 +143,7 @@ export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Pr
                     annee: activeModal.sessionYear
                 }} 
                 onClose={() => {setActiveModal(null);}} 
-                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions(); setMessageSuccess?.("Session archivée avec succès !");}} 
                 />
             )}
             {activeModal && activeModal.type === "suppressionSession" && (
@@ -152,7 +154,7 @@ export function CarteDeSession({id, annee, nom, nombreStatut, fetchSessions}: Pr
                     annee: activeModal.sessionYear
                 }} 
                 onClose={() => {setActiveModal(null);}} 
-                onSuccess={() => {setActiveModal(null); fetchSessions();}} 
+                onSuccess={() => {setActiveModal(null); fetchSessions(); setMessageSuccess?.("Session supprimée avec succès !");}} 
                 />
             )}
         </>
