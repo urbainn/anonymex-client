@@ -15,9 +15,11 @@ import { EpreuveModal } from "./epreuve-modal/EpreuveModal";
 import BoutonImportant from "./epreuve-modal/components/BoutonImportant";
 import { BordereauxModal } from "./epreuve-modal/BordereauxModal";
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
+import GroupIcon from '@mui/icons-material/Group';
 import { ScanModal } from "./epreuve-modal/ScanModal"
 import { useEpreuvesCache } from "../../contexts/EpreuvesCacheContext";
 import SessionParentEtape from "../accueil/sessions/session-modal/creer-session/SessionParentEtape";
+import { URL_API_BASE } from "../../utils/api";
 
 export type SortOption = "chronologique" | "inverse-chronologique";
 
@@ -126,6 +128,12 @@ export default function EpreuvesPage(): ReactElement {
         setOuvertModalScan(true);
     }
 
+    const documentUrl = URL_API_BASE + `/documents/session/${sessionId}/correspondance?format?=csv`;
+
+    const handleCorrespondance = () => {
+        window.open(documentUrl, "_blank");
+    }
+
     if (!sessionId) return <Typography variant="h5" color="error">ID de session manquant dans l'URL.</Typography>;
 
     const aucuneEpreuveRetournee = !estChargement
@@ -187,6 +195,7 @@ export default function EpreuvesPage(): ReactElement {
                             <Typography variant="h5" paddingTop={5} fontWeight={700}>Actions</Typography>
                             <BoutonImportant color={teal[400]} titre="Imprimer les bordereaux" icone={<Download sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleImprimerBordereaux()} />
                             <BoutonImportant color={lightGreen[400]} titre="Déposer des scans" icone={<DocumentScannerIcon sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleScan()} />
+                            <BoutonImportant color={lightGreen[400]} titre="Correspondance étudiant" icone={<GroupIcon sx={{ color: grey[800] }} fontSize="large" />} onClick={() => handleCorrespondance()} />
                         </Stack>
                         <BordereauxModal ouvert={ouvertModal} onFermer={() => setOuvertModal(false)} />
                         <ScanModal setSuccess={setOpenSnackbar} idSession={sessionId} ouvert={ouvertModalScan} setOuvertModalScan={setOuvertModalScan} setCodeScan={setCodeScan} />
