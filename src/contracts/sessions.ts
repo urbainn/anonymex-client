@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { apiRequest } from "../utils/api";
+import type { APIBoolResponse } from "./common";
 
 export type SessionsStatut = 0 | 1 | 2 | 3;
 
@@ -48,5 +49,5 @@ export const updateSession = (id: number, updateData: APIUpdateSession) => {
 }
 
 export const deleteSession = (id: number) => {
-    return apiRequest<null, { message: string }>('DELETE', `/sessions/${id}`);
+    return apiRequest<null, APIBoolResponse>('DELETE', `/sessions/${id}`);
 }
