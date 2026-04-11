@@ -128,7 +128,7 @@ export default function EpreuvesPage(): ReactElement {
         setOuvertModalScan(true);
     }
 
-    const documentUrl = URL_API_BASE + `/documents/session/${sessionId}/correspondance?format?=csv`;
+    const documentUrl = URL_API_BASE + `/documents/session/${sessionId}/correspondance?format=csv`;
 
     const handleCorrespondance = () => {
         window.open(documentUrl, "_blank");
