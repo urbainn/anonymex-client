@@ -14,7 +14,7 @@ import { useGridApiRef } from '@mui/x-data-grid';
 import Header from './composantsListe/Header';
 
 import type { APIConvocation } from '../../../../contracts/convocations';
-import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert } from '../../../../contracts/convocations';
+import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert, getConvocationsSupplementaires } from '../../../../contracts/convocations';
 
 
 declare module "@mui/x-data-grid" {
@@ -64,10 +64,25 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
         const fetchConvocations = async () => {
             setLoading(true);
             const res = await getConvocations(props.idSession, props.codeEpreuve);
+            //const convoSupp = await getConvocationsSupplementaires(props.idSession, props.codeEpreuve);
+
             if (res.data?.convocations) {
-                setRows(res.data?.convocations);
+                setRows(res.data.convocations);
+                setRows((prevRows) => {
+                    prevRows.forEach(row => {
+                        if (row.noteQuart !== undefined) {
+                            row.noteQuart = row.noteQuart / 4;
+                        }
+                    });
+                    return prevRows;
+                });
                 console.log("Convocations récupérées :", res.data.convocations);
             }
+            {/* 
+            if (convoSupp.data?.convocations) {
+                setRows((prevRows) => [...prevRows, ...convoSupp.data!.convocations]);
+            }
+            */}
             setLoading(false);
         };
 
@@ -100,9 +115,10 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     const handleSaveRows = async (newRow: APIConvocation, oldRows: APIConvocation): Promise<APIConvocation> => {
         const result = await confirm(oldRows, newRow);
         if (result) {
-            const res = await patchConvocation(props.idSession, props.codeEpreuve, result.codeAnonymat, { rang: newRow.rang, note_quart: newRow.noteQuart, code_salle: newRow.codeSalle });
+            const res = await patchConvocation(props.idSession, props.codeEpreuve, result.codeAnonymat, { rang: newRow.rang, note_quart: newRow.noteQuart ? newRow.noteQuart * 4 : undefined, code_salle: newRow.codeSalle });
             if (res.status === 200) {
                 setRows((rows) => rows.map((row) => (row.numeroEtudiant === result.numeroEtudiant ? result : row)));
+                console.log("Convocation mise à jour avec succès :", res);
             } else {
                 console.error("Erreur lors de la mise à jour de la convocation :", res);
             }
@@ -209,7 +225,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
                     density='compact'
                     rows={salleFilter === "x" ? rows : rows.filter(row => row.codeSalle === salleFilter)}
                     columns={columns.filter(col => col.field !== 'idSession' && col.field !== 'codeEpreuve')}
-                    
+
                     checkboxSelection
 
                     processRowUpdate={(newRow, oldRow) =>
