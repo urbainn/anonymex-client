@@ -32,7 +32,6 @@ export function IncidentsComplets({ idSession, epreuveCode, onIncidentCreated, o
                 console.log("Incidents récupérés :", response);
                 if (response.data?.incidents) {
                     setAllIncidents(response.data.incidents);
-                    console.log("Incidents enregistrés dans le state :", response.data.incidents.length);
                 }
             } catch (error) {
                 console.error("Erreur lors de la récupération des incidents :", error);

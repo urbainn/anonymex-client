@@ -32,7 +32,7 @@ interface IncidentDetailProps {
 export default function IncidentDetail(props: IncidentDetailProps) {
 
     const [numero, setNumero] = React.useState<string | undefined>(props.incident.codeAnonymat);
-    const [noteValue, setNoteValue] = React.useState<number | undefined>(props.incident.noteQuart);
+    const [noteQuart, setNoteQuart] = React.useState<number | undefined>(props.incident.noteQuart);
     const [fichier, setFichier] = React.useState<string>("");
     const [loading, setLoading] = React.useState(true);
     const [suggestions, setSuggestions] = React.useState<string[]>([]);
@@ -48,8 +48,8 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     });
 
     useEffect(() => {
-        console.log("Valeur note & numero, " + noteValue + " & " + numero);
-    }, [noteValue, numero]);
+        console.log("Valeur note & numero, " + noteQuart + " & " + numero);
+    }, [noteQuart, numero]);
 
     const handleClickSuggestions = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -85,7 +85,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
             getSuggestions(props.incident.codeAnonymat ?? "");
 
             setFichier(rep.url);
-            setNoteValue(props.incident.noteQuart);
+            setNoteQuart(props.incident.noteQuart);
             setNumero(props.incident.codeAnonymat);
             console.log("Suggestions récupérées :", suggestions);
             setLoading(false);
@@ -141,12 +141,8 @@ export default function IncidentDetail(props: IncidentDetailProps) {
         }
     }
 
-    function FormValide(numero: string | undefined, note: number | undefined): boolean {
-        setErrors({
-            note: "",
-            numero: ""
-        });
-        console.log("Validation du formulaire avec note =", note, "et numéro =", numero);
+    function formulaireEstValide(numero: string | undefined, note: number | undefined): boolean {
+        setErrors({ note: "", numero: "" });
 
         const newErrors = {
             note: "",
@@ -178,7 +174,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     }
 
     async function envoiCorrection(numero: string | undefined, noteValue: number | undefined) {
-        if (FormValide(numero, noteValue)) {
+        if (formulaireEstValide(numero, noteValue)) {
             await appelerAPI(numero, noteValue!);
         }
     }
@@ -239,13 +235,6 @@ export default function IncidentDetail(props: IncidentDetailProps) {
 
             <Stack direction={"column"} width={"30%"} justifyContent={"center"} height={"100%"}>
 
-                <Stack pb={6}>
-                    <Typography variant="h6" color={grey[700]} fontWeight={400} >
-                        Corrections
-                    </Typography>
-
-                </Stack>
-
                 <Stack spacing={2} >
                     <MyTextField
                         type="text"
@@ -255,7 +244,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                             getSuggestions(e.target.value);
                             const val = e.target.value;
                             setNumero(val);
-                            setEnvoiOK(FormValide(val, noteValue));
+                            setEnvoiOK(formulaireEstValide(val, noteQuart));
                         }} error={!!errors.numero}
                         helperText={errors.numero}
                     />
@@ -264,11 +253,15 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                             type="number"
                             label="Note"
                             shrink={true}
-                            value={noteValue ?? undefined}
+                            value={noteQuart !== undefined ? (noteQuart / 4).toString() : ""}
                             onChange={(e) => {
                                 const val = e.target.value;
-                                setNoteValue(Number(val));
-                                FormValide(numero, Number(val)) ? setEnvoiOK(true) : setEnvoiOK(false);
+                                setNoteQuart(Number(val) * 4);
+                                if (formulaireEstValide(numero, Number(val))) {
+                                    setEnvoiOK(true);
+                                } else {
+                                    setEnvoiOK(false);
+                                }
                             }}
                             error={!!errors.note}
                             helperText={errors.note}
@@ -277,23 +270,22 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                                     <InputAdornment position="end">
                                         <KeyboardArrowUpIcon
                                             sx={{ cursor: "pointer" }}
-                                            onClick={() => setNoteValue((prev) => prev !== undefined ? Math.min(prev + 1, 20) : 0)}
+                                            onClick={() => setNoteQuart((prev) => prev !== undefined ? Math.min(prev + 1, 80) : 0)}
                                         />
                                         <KeyboardArrowDownIcon
                                             sx={{ cursor: "pointer" }}
-                                            onClick={() => setNoteValue((prev) => prev !== undefined ? Math.max(prev - 1, 0) : 0)}
+                                            onClick={() => setNoteQuart((prev) => prev !== undefined ? Math.max(prev - 1, 0) : 0)}
                                         />
                                     </InputAdornment>
                                 ),
                                 min: 0,
-                                max: 20,
-
+                                max: 80
                             }}
 
                         />
 
                     </Stack>
-                    <BoutonStandard disabled={!envoiOK} color={blue[500]} onClick={() => envoiCorrection(numero, noteValue)}>
+                    <BoutonStandard disabled={!envoiOK} color={blue[500]} onClick={() => envoiCorrection(numero, noteQuart)}>
                         Corriger
                     </BoutonStandard>
 

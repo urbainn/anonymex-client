@@ -141,6 +141,13 @@ export function DepotLayout(props: DepotLayoutProps) {
                 body: formData,
             });
 
+            if (!response.ok) {
+                console.error("Erreur lors de l'envoi du fichier :", response.statusText);
+                afficherErreur(`Erreur lors de l'envoi du fichier ${fichier.name} : ${response.statusText}`);
+                setErreurs(prev => [...prev, i]);
+                continue;
+            }
+
             const info = await response.json();
 
             await appelerAPI(info, i);
