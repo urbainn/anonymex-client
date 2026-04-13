@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
-import { green, grey, red } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { Delete } from '@mui/icons-material';
-import { Box, colors, IconButton, MenuItem, Select, Typography, Dialog, Stack } from '@mui/material';
+import { Box, colors, IconButton, MenuItem, Select, Typography } from '@mui/material';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import Visibility from '@mui/icons-material/Visibility';
 import { GridToolbarDivider } from '@mui/x-data-grid/internals';
@@ -20,8 +20,7 @@ import { Tooltip } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
 import type { GridToolbarProps } from '@mui/x-data-grid';
 import type { APIConvocation } from '../../../../../contracts/convocations';
-import MyTextField from '../textfields/MyTextField';
-import BoutonStandard from '../../components/BoutonStantard';
+import DialogRechercheSalle from './DialogRechercheSalle';
 
 export interface HeaderProps {
     selectedRows: APIConvocation[];
@@ -40,7 +39,6 @@ export default function Header(props: Props) {
     const [openSelect, SetOpenSelect] = useState(false);
     const [openDialog, SetOpenDialog] = useState(false);
 
-    const [newSalle, setNewSalle] = useState<string>("");
     const inputRef = useRef<HTMLInputElement>(null);
 
 
@@ -51,26 +49,13 @@ export default function Header(props: Props) {
     return (
 
         <Box sx={{ display: 'flex', alignItems: 'center', height: 40, borderBottom: `1px solid ${grey[300]}`, width: '100%' }}>
-            <Dialog open={openDialog} onClose={() => SetOpenDialog(false)}>
-                <Stack p={2} spacing={2}>
-                    <Typography variant="h6">Ajouter une salle</Typography>
-                    <MyTextField
-                        label=''
-                        value={newSalle}
-                        onChange={(e) => setNewSalle(e.target.value)}
-
-                    />
-                    <Stack direction="row" spacing={2} >
-                        <BoutonStandard width={"100%"} color={red[300]} onClick={() => SetOpenDialog(false)}>Annuler</BoutonStandard>
-                        <BoutonStandard width={"100%"} color={green[300]} onClick={() => {
-                            SetOpenDialog(false);
-                            props.handleTransfer(props.selectedRows.map(row => row.codeAnonymat!), newSalle);
-                        }}>
-                            OK
-                        </BoutonStandard>
-                    </Stack>
-                </Stack>
-            </Dialog>
+            <DialogRechercheSalle
+                open={openDialog}
+                onClose={() => SetOpenDialog(false)}
+                onSelectSalle={(salle) => {
+                    props.handleTransfer(props.selectedRows.map(row => row.codeAnonymat!), salle);
+                }}
+            />
             <Box
                 sx={{
                     ml: 1,
@@ -169,6 +154,7 @@ export default function Header(props: Props) {
             >
                 {props.sallesUniques.map((salle) => (
                     <MenuItem
+                        key={salle}
                         sx={{
                             '&.Mui-selected': {
                                 backgroundColor: 'white',
@@ -194,6 +180,7 @@ export default function Header(props: Props) {
                         }
                     }}
                     onClick={() => {
+                        SetOpenSelect(false);
                         handleAjoutSalle();
                     }}>
                     Ajouter une salle

@@ -147,17 +147,6 @@ export default function MenuPresence({ epreuve, salleDefaultNumb }: MenuPresence
             throw new Error(message);
         }
 
-        // On retire localement la convocation désormais associée.
-        setListeConvoc((prev) => {
-            const next: APIConvocationsSupplementairesMap = {};
-
-            for (const [salle, convocations] of Object.entries(prev)) {
-                next[salle] = convocations.filter((convoc) => convoc.codeAnonymat !== codeAnonymat);
-            }
-
-            return next;
-        });
-
         setAnonymatErrors(null);
     }
 

@@ -23,6 +23,10 @@ export const getSalle = (code: string) => {
     return apiRequest<null, APISalle>('GET', `/salles/${code}`);
 }
 
+export const chercherSalles = (query: string) => {
+    return apiRequest<null, APIListSalles>('GET', `/salles/search?query=${encodeURIComponent(query)}`);
+}
+
 export const deleteSalle = (code: string) => {
     return apiRequest<null, APIBoolResponse>('DELETE', `/salles/${code}`);
 }
