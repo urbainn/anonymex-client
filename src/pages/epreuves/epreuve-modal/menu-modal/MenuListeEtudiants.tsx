@@ -128,7 +128,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
 
         const res = await patchConvocation(props.idSession, props.codeEpreuve, result.codeAnonymat, {
             rang: result.rang,
-            note_quart: result.noteQuart ? result.noteQuart * 4 : undefined,
+            note_quart: result.noteQuart !== undefined ? result.noteQuart * 4 : undefined,
             code_salle: result.codeSalle
         });
 
