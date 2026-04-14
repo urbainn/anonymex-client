@@ -15,6 +15,7 @@ import Header from './composantsListe/Header';
 
 import type { APIConvocation } from '../../../../contracts/convocations';
 import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert } from '../../../../contracts/convocations';
+import { URL_API_BASE } from '../../../../utils/api';
 
 
 declare module "@mui/x-data-grid" {
@@ -186,8 +187,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     }
 
     const handleConvocations = (listeCodeAno: string[]) => {
-        console.log("Génération des convocations pour les étudiants avec les numéros :", listeCodeAno);
-        // Logique de génération des convocations ici
+        window.open(URL_API_BASE + `/documents/session/${props.idSession}/epreuve/${props.codeEpreuve}/coupons.pdf?codes=${listeCodeAno.join(",")}`, "_blank");
     }
 
 

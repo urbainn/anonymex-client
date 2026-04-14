@@ -2,8 +2,7 @@ import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { APIIncident } from '../../../../../contracts/incidents';
-import { grey, red } from "@mui/material/colors";
-import { useState } from "react";
+import { red } from "@mui/material/colors";
 
 type IncidentType = "resolu" | "non resolu";
 
@@ -63,7 +62,7 @@ function IncidentCard(props: IncidentCardProps) {
                             fontWeight="bold"
                             color={isResolved ? "#000000d4" : red[500]}
                         >
-                            {props.incident.titre} [{props.incident.idIncident}]
+                            {props.incident.titre}
                         </Typography>
 
                         <Typography variant="body2" color="text.secondary">
