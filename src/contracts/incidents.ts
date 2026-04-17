@@ -45,3 +45,8 @@ export const getSuggestionsIncident = (sessionId: number, epreuveCode: string, c
     return apiRequest<null, string[]>
         ('GET', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/suggestions?code=${q}`);
 }
+
+export const deleteIncident = (sessionId: number, epreuveCode: string, idIncident: number) => {
+    return apiRequest<null, APIReponseCorrectionIncident>
+        ('DELETE', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${idIncident}`);
+}

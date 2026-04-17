@@ -31,8 +31,7 @@ export default function EpreuvesPage(): ReactElement {
     const { epreuves: listeEpreuves, estChargement, erreurChargement } = useEpreuvesCache();
 
     // Filtres et tri
-    const [typeEpreuve, setTypeEpreuve] = useState<'passees' | 'aVenir'>
-        ('aVenir');
+    const [typeEpreuve, setTypeEpreuve] = useState<'passees' | 'aVenir'>('aVenir');
     const [filtreStatut, setFiltreStatut] = useState<number | null>(null); // null => tout afficher
     //const [optionTri] = useState<SortOption>("chronologique");
 
@@ -65,6 +64,16 @@ export default function EpreuvesPage(): ReactElement {
     useEffect(() => {
         if (erreurChargement) afficherErreur("Impossible de charger les épreuves : " + erreurChargement);
     }, [afficherErreur, erreurChargement]);
+
+    useEffect(() => {
+        const hasAvenir = listeEpreuves.epreuvesAvenir.length > 0;
+        const hasPassees = listeEpreuves.epreuvesPassees.length > 0;
+
+        if (!hasAvenir && !hasPassees) return;
+        if ((typeEpreuve === 'aVenir' && hasAvenir) || (typeEpreuve === 'passees' && hasPassees)) return;
+
+        setTypeEpreuve(hasAvenir ? 'aVenir' : 'passees');
+    }, [listeEpreuves.epreuvesAvenir.length, listeEpreuves.epreuvesPassees.length, typeEpreuve]);
 
 
     // lorsqu'une épreuve est cliquée : afficher modal
@@ -172,7 +181,7 @@ export default function EpreuvesPage(): ReactElement {
                     </Box>
                     <Box sx={{ width: '35%' }}>
                         { /* FILTRES ET OPTIONS DE TRI */}
-                        {true && (
+                        {listeEpreuves.epreuvesAvenir.length > 0 && listeEpreuves.epreuvesPassees.length > 0 && (
                             <Stack spacing={2} paddingBottom={2} paddingTop={3}>
                                 <Typography variant="h5" fontWeight={700}>Afficher</Typography>
                                 <EpreuvesFiltreCard couleur={green[300]} titre="Épreuves à venir" nombre={listeEpreuves.epreuvesAvenir.length} selectionne={typeEpreuve === 'aVenir'} onClick={() => handleTypeEpreuveChange('aVenir')} />
