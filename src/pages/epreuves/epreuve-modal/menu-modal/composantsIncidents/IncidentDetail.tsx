@@ -1,4 +1,4 @@
-import { InputAdornment, Stack, Typography, Menu, MenuItem } from "@mui/material";
+import { InputAdornment, Stack, Menu, MenuItem } from "@mui/material";
 import React, { useEffect } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
