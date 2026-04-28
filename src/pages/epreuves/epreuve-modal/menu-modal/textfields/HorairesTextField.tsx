@@ -66,7 +66,7 @@ function HorairesTextField({ date, dureeMinutes, fonctionSave }: HoraireTextFiel
 
         console.log("Date debut:", dateDebut.valueOf(), "Date fin:", dateFin.valueOf());
 
-    }, []);
+    }, [date, dureeMinutes]);
 
 
 

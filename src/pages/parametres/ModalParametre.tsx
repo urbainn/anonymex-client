@@ -124,7 +124,7 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
                                 { label: "Compte / Profil" },
                                 { label: "Bordereaux"},
                                 { label: "Sauvegarde"},
-                            ].map((tab, _) => (
+                            ].map((tab) => (
                                 <Tab
                                     key={tab.label}
                                     label={tab.label}

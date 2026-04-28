@@ -129,7 +129,7 @@ export default function RecherchePage(): ReactElement {
         }
 
         void fetchData();
-    }, [sessionId, type, value1]);
+    }, [fetchData, sessionId, type, value1]);
 
     const { epreuvesFiltrees, statutMap } = useMemo(() => {
 

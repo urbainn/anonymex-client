@@ -59,7 +59,8 @@ export default function IncidentDetail(props: IncidentDetailProps) {
         setAnchorEl(null);
     }
 
-    async function getSuggestions(numero: string) {
+    const getSuggestions = React.useCallback(async (numero: string) => {
+
         if (numero === null || numero === undefined || numero.length <= 3) {
             setSuggestions([]);
             return;
@@ -69,7 +70,8 @@ export default function IncidentDetail(props: IncidentDetailProps) {
         if (suggestions.data) {
             setSuggestions(suggestions.data);
         }
-    }
+    }, [props.incident.codeEpreuve, props.incident.idSession]);
+    
     useEffect(() => {
 
         setSuggestions([]);

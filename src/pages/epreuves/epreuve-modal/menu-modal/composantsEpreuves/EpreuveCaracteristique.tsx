@@ -11,7 +11,7 @@ interface EpreuveCaracteristiqueProps {
     sousTitre?: string;
     fonctionModif: () => void;
     modif: boolean;
-    AdaptedTextField?: (props: any) => JSX.Element;
+    AdaptedTextField?: () => JSX.Element;
     color?: string;
 }
 
