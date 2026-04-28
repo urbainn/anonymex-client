@@ -2,8 +2,7 @@ import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { APIIncident } from '../../../../../contracts/incidents';
-import { grey, red } from "@mui/material/colors";
-import { useState } from "react";
+import { red } from "@mui/material/colors";
 
 type IncidentType = "resolu" | "non resolu";
 

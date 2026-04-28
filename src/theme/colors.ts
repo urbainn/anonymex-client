@@ -1,4 +1,4 @@
-import { indigo, grey, blue } from '@mui/material/colors';
+import { grey, blue } from '@mui/material/colors';
 
 export const appColors = {
     primary: {

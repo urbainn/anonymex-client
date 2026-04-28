@@ -1,11 +1,10 @@
-import { colors, Menu, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { colors, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/Menu';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 
 import IconRondV2 from "../../../../../components/IconesRondV2";
 
-import { Add } from "@mui/icons-material";
 import { useState } from "react";
 
 interface EpreuveSallesCompoProps {
@@ -26,7 +25,7 @@ function couleurPourcentage(nbEtudiants: number, nbEtuMMax: number, color?: stri
 }
 
 
-function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax, color, onTransfert, onAjouter, onDetails, sallesDispo }: EpreuveSallesCompoProps) {
+function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax, color, onTransfert, onDetails, sallesDispo }: EpreuveSallesCompoProps) {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);

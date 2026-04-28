@@ -2,7 +2,6 @@ import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import TestsAPI from './pages/TestsAPI'
 import EpreuvesPage from './pages/epreuves/EpreuvesPage'
-import TestsComponents from './pages/TestsComponents'
 import PageInscription from './pages/authentification/signup/PageInscription'
 import PageConnexion from './pages/authentification/login/PageConnexion'
 import PageSession from './pages/accueil/PageAccueil'
@@ -30,7 +29,7 @@ function App() {
       <Route path="/tests" element={<TestsAPI />} />
 
       { /* Tests Composants */}
-      <Route path="/tests2" element={<TestsComponents />} />
+  
 
     </Routes>
   )

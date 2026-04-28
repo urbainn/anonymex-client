@@ -16,7 +16,7 @@ import { useConfirmTransfer } from "./composantsListe/useConfirmTransfer";
 import BoutonStandard from "../components/BoutonStantard";
 import { URL_API_BASE } from "../../../../utils/api";
 import { themeEpreuves } from "../../../../theme/epreuves";
-import { BackupTable, FileDownload } from "@mui/icons-material";
+import { FileDownload } from "@mui/icons-material";
 import { useEpreuvesCache } from "../../../../contexts/EpreuvesCacheContext";
 
 export interface DetailsEpreuveProps {
@@ -64,7 +64,6 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
     const [valIntermediaireHoraireDebut, setValIntermediaireHoraireDebut] = React.useState<number>(0);
 
     const [salles, setSalles] = React.useState<{ codeSalle: string, convocations: number }[]>([]);
-    const [reimportOuvert, setReimportOuvert] = React.useState<boolean>(false);
 
     const { afficherErreur } = useSnackbarGlobal()
     const { patchEpreuve } = useEpreuvesCache();
@@ -219,17 +218,11 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
         window.open(url, '_blank');
     }
 
-    const handleReimport = () => {
-        setReimportOuvert(true);
-    }
 
     return (
 
         <>
             {confirmModalTransfer}
-            {reimportOuvert && (
-                {}
-            )}
             <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
             <ModalConfirmationChangementsHoraire ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} ancien={{ date: dateEpreuve, duree: dureeMinutes }} nouveau={{ date: valIntermediaireHoraireDebut, duree: valIntermediaireDuree }} />
 

@@ -41,16 +41,14 @@ interface MenuListeEtudiantsProps {
 
 function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
 
-    const [noteModifiable, setNoteModifiable] = useState(false);
     const [loading, setLoading] = useState(false);
     const [tooltipOpen, setTooltipOpen] = useState(false);
 
     const [salleFilter, setSalleFilter] = useState<string>(props.salleDefault);
-    const [hovered] = useState<string | null>(null);
 
     const [selectedRows, setSelectedRows] = useState<APIConvocation[]>([]);
 
-    const columns = getColumns(noteModifiable, hovered);
+    const columns = getColumns();
 
     const { confirm, confirmModalEdit } = useConfirmEdit();
     const { confirmDelete, confirmModalDelete } = useConfirmDelete();
@@ -89,12 +87,6 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
         fetchConvocations();
     }, [props.idSession, props.codeEpreuve]);
 
-
-
-
-    useEffect(() => {
-        setNoteModifiable(props.statut >= 4);
-    }, []);
 
     const memeDico = (a: APIConvocation, b: APIConvocation): boolean => {
         const keysA = Object.keys(a);

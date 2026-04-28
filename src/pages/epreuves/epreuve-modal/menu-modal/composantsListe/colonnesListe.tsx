@@ -4,7 +4,7 @@ import type { APIConvocation } from '../../../../../contracts/convocations';
 
 
 
-export const getColumns = (noteModifiable: boolean, hovered: string | null): GridColDef<APIConvocation>[] => [
+export const getColumns = (): GridColDef<APIConvocation>[] => [
 
 
     {

@@ -2,28 +2,15 @@ import { type ReactElement, useState, useEffect } from "react";
 import {
 	Alert,
 	Button,
-	Card,
-	CardContent,
 	CircularProgress,
 	Stack,
 	Typography,
 } from "@mui/material";
 import {
 	type APIEpreuve,
-	EpreuveStatutNom,
 	getEpreuves
 } from "../contracts/epreuves";
 
-import ClearIcon from '@mui/icons-material/Clear';
-import { grey } from "@mui/material/colors";
-import theme from "../theme/theme";
-import { themeEpreuves } from "../theme/epreuves";
-import { EpreuveCard } from "./epreuves/EpreuveCard";
-
-function formatDate(value: Date | string): string {
-	const dateValue = typeof value === "string" ? new Date(value) : value;
-	return dateValue.toLocaleString();
-}
 
 function TestsAPI(): ReactElement {
 	const [loading, setLoading] = useState(false);
@@ -75,9 +62,7 @@ function TestsAPI(): ReactElement {
 					<>
 
 						<Stack spacing={1} width={600}>
-							{epreuves.map((epreuve) => (
-								<></>// <EpreuveCard key={epreuve.code + '-' + epreuve.nom} {...epreuve} />
-							))}
+							{/* Afficher les épreuves*/}
 							{!loading && epreuves.length === 0 && (
 								<Typography variant="body2" color="text.secondary">
 									Aucune épreuve à afficher.
