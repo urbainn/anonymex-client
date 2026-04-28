@@ -189,9 +189,9 @@ export default function Header(props: Props) {
 
 
             <GridToolbarDivider />
-            <Tooltip title="Voir la convocation d'un étudiant">
+            <Tooltip title="Voir les feuilles d'identification">
                 <Button
-                    disabled={props.selectedRows.length !== 1}
+                    disabled={props.selectedRows.length === 0}
                     onClick={() => props.handleConvocations(props.selectedRows.map(row => row.codeAnonymat!))}
                     sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
                     <Visibility />

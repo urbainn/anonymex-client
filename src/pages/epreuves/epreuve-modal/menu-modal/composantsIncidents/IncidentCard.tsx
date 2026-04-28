@@ -62,7 +62,7 @@ function IncidentCard(props: IncidentCardProps) {
                             fontWeight="bold"
                             color={isResolved ? "#000000d4" : red[500]}
                         >
-                            {props.incident.titre} [{props.incident.idIncident}]
+                            {props.incident.titre}
                         </Typography>
 
                         <Typography variant="body2" color="text.secondary">

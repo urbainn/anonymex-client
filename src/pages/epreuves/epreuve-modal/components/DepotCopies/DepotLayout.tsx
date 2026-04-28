@@ -47,7 +47,7 @@ export function DepotLayout(props: DepotLayoutProps) {
     const [numPage, setPage] = useState<number[]>([]);
     const [totalPages, setTotalPages] = useState<number[]>([]);
     const [numFichier, setNumFichier] = useState<number>(0);
-    const [erreurs, setErreurs] = useState<number[]>([]);
+    const [erreurs, setErreurs] = useState<Record<number, string>>({});
 
     // Confirmation de fin
     const [afficherConfirmation, setAfficherConfirmation] = useState<boolean>(false);
@@ -83,8 +83,8 @@ export function DepotLayout(props: DepotLayoutProps) {
         setNumFichier(0);
         setPage([]);
         setTotalPages([]);
-        setIncidentOuvert(null);
-        setErreurs([]);
+        setAfficherConfirmation(false);
+        setErreurs({});
         setLoading(false);
         setIncidents([]);
         setAfficherConfirmation(false);
@@ -130,7 +130,7 @@ export function DepotLayout(props: DepotLayoutProps) {
             afficherErreur("Code UE manquant, veuillez entrer le code UE associé au fichier");
             return;
         }
-        setErreurs([]);
+        setErreurs({});
         setLoading(true);
         setNumFichier(0);
         setPage([]);
@@ -150,7 +150,8 @@ export function DepotLayout(props: DepotLayoutProps) {
             if (!response.ok) {
                 console.error("Erreur lors de l'envoi du fichier :", response.statusText);
                 afficherErreur(`Erreur lors de l'envoi du fichier ${fichier.name} : ${response.statusText}`);
-                setErreurs(prev => [...prev, i]);
+                setErreurs(prev => { return {...prev, [i] : response.statusText}});
+                console.log("erreurs : ", erreurs);
                 continue;
             }
 
@@ -259,8 +260,14 @@ export function DepotLayout(props: DepotLayoutProps) {
 
             // En cas d'erreur lors du traitement du dépôt, on affiche un message d'erreur et on ferme la connexion SSE
             evtSource.onerror = function (event) {
-                console.error(`Erreur lors du dépôt ${depotID} :`, event);
-                setErreurs(prev => [...prev, i]);
+                console.error(`Erreur lors du dépôt ${depotID} :`, (event as MessageEvent).data);
+               
+                    const info = ("data" in event && typeof event.data === "string") ?
+                        JSON.parse(event.data)?.message?? "Une erreur est survenue." :  
+                        "Impossible de lire le fichier.";
+                    console.log("Info : ", info);
+                    
+                setErreurs(prev => { return {...prev, [i]: info}});
                 evtSource.close();
                 resolve(false);
             };

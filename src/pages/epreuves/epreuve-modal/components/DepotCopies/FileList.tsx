@@ -5,6 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { useEffect } from "react";
 
 interface FileListProps {
     fichiers: FileList;
@@ -13,10 +14,15 @@ interface FileListProps {
     totalPages: number[];
     numFichier: number;
     debutTraitement: boolean;
-    erreurs: number[];
+    erreurs: Record<number, string>;
 }
 
 export function FileList(props: FileListProps) {
+
+    
+    useEffect(() => {
+        console.log(props.erreurs);
+     }, [props.erreurs])
 
     const handleViewFile = (file: File) => {
         const fileURL = URL.createObjectURL(file);
@@ -90,13 +96,13 @@ export function FileList(props: FileListProps) {
                     </Grow>
 
 
-                    <Grow in={!props.erreurs.includes(index) && props.debutTraitement && props.numFichier > index} unmountOnExit>
+                    <Grow in={!(index in props.erreurs) && props.debutTraitement && props.numFichier > index} unmountOnExit>
                         <IconButton>
                             <CheckIcon sx={{ color: grey[600] }} />
                         </IconButton>
                     </Grow>
 
-                    <Grow in={props.erreurs.includes(index)} unmountOnExit>
+                    <Grow in={(index in props.erreurs)} unmountOnExit>
                         <IconButton>
                             <ErrorOutlineIcon />
                         </IconButton>
@@ -116,13 +122,13 @@ export function FileList(props: FileListProps) {
                             </Typography>
                         )}
 
-                        {props.erreurs.includes(index) && (
+                        {(index in props.erreurs) && (
                             <Typography variant="body2" color="error">
-                                Erreur lors du traitement de ce fichier.
+                                {props.erreurs[index]}
                             </Typography>
                         )}
 
-                        <Collapse in={props.debutTraitement && !props.erreurs.includes(index)}  >
+                        <Collapse in={props.debutTraitement && !(index in props.erreurs)}  >
                             <Box sx={{ display: 'flex', alignItems: 'center' }} mt={0.5}>
                                 <Box sx={{ width: '100%', mr: 1 }}>
                                     <LinearProgress variant="determinate" value={calcProgress(index)} />

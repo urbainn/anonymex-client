@@ -47,6 +47,7 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
     } : statutInconnu;
 
     const formattedTime = timeFormatter.format(new Date(epreuve.date));
+    const incidents = epreuve.incidents ?? 0;
 
     return (
         <Card variant="outlined" sx={{ backgroundColor: grey[50], borderRadius: 2 }} >
@@ -66,6 +67,9 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
 
                     <Stack flexGrow={1} />
                     <Stack direction="column" spacing={1} padding={2} alignItems="flex-end" >
+                        {incidents > 0 &&
+                            <Chip label={`${incidents} incident${incidents > 1 ? 's' : ''}`} size="small" color="warning" />
+                        }
                         <Chip label={statusData.label} size="small" sx={{ bgcolor: alpha(statusData.color, 0.56) }} />
                     </Stack>
 

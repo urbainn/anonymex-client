@@ -36,7 +36,6 @@ export function DropZone(props: DropZoneProps) {
 
     const [animate, setAnimate] = useState<boolean>(false);
 
-
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setAnimate(true);
@@ -119,8 +118,8 @@ export function DropZone(props: DropZoneProps) {
                 onDragLeave={() => setAnimate(false)}
                 onClick={() => props.inputRef.current?.click()}
                 sx={{
-                    width: "100%",
-                    height: "200px",
+                    width: props.fichiers ? "100%" : "75%",
+                    height: props.fichiers ? "200px" : "300px",
 
                     border: `2px dashed ${grey[500]}`,
                     display: "flex",
@@ -137,7 +136,8 @@ export function DropZone(props: DropZoneProps) {
                     },
                     animationPlayState: "paused",
                     animation: animate ? `${fadeInFadeOut} 2s ease-in-out infinite` : "none",
-
+                    transition: "height 0.3s ease, width 0.3s ease",
+                
                 }}
             >
                 <Stack direction="column" alignItems="center" spacing={1}>
