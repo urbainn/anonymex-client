@@ -33,7 +33,7 @@ export function ScanModal(props: ScanModalProps) {
                 direction={"column"}
             >
 
-                <DepotLayout isModal={true} idSession={props.idSession} handleClose={handleClose} />
+                <DepotLayout handleTraitement={() => {}} traitement={false} isModal={true} idSession={props.idSession} handleClose={handleClose} />
 
             </Stack >
 

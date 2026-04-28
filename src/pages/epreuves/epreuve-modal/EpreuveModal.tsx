@@ -33,9 +33,12 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
     const incidentsCount = epreuveActive?.incidents ?? 0;
     const [salleDefault, setSalleDefault] = useState<string>("x");
     const [salleDefaultNumb, setSalleDefaultNumb] = useState<number>(0);
+    const [debutTraitement, setDebutTraitement] = useState<boolean>(false);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setNumeroOnglet(newValue);
+        if (!debutTraitement) {
+            setNumeroOnglet(newValue);
+        }
     };
 
     const appliquerDeltaIncidents = useCallback((delta: number) => {
@@ -49,6 +52,11 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
     const handleIncidentResolved = useCallback(() => {
         appliquerDeltaIncidents(-1);
     }, [appliquerDeltaIncidents]);
+
+    const handleTraitement = (bool: boolean) => {
+        setDebutTraitement(bool);
+    };
+
 
     const tabs = useMemo(() => {
         if (!epreuveActive) return [];
@@ -78,7 +86,7 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
 
             ...(epreuveActive.statut === 3 || epreuveActive.statut === 6 ? [{
                 label: "Scanner copies",
-                content: <MenuScanCopies codeUE={epreuveActive.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuveActive.statut]} onIncidentCreated={handleIncidentCreated} onIncidentResolved={handleIncidentResolved} />
+                content: <MenuScanCopies traitement={debutTraitement} handleTraitement={handleTraitement} codeUE={epreuveActive.code} idSession={sessionId} menuColor={themeEpreuves.status[epreuveActive.statut]} onIncidentCreated={handleIncidentCreated} onIncidentResolved={handleIncidentResolved} />
             }] : []),
 
             ...(epreuveActive.statut >= 3 && incidentsCount > 0 ? [{
@@ -91,7 +99,7 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
                 content: <MenuPresence epreuve={epreuveActive} salleDefaultNumb={salleDefaultNumb} />
             }] : [])
         ];
-    }, [epreuveActive, handleIncidentCreated, handleIncidentResolved, incidentsCount, sessionId, salleDefault, salleDefaultNumb]);
+    }, [debutTraitement, epreuveActive, handleIncidentCreated, handleIncidentResolved, incidentsCount, sessionId, salleDefault, salleDefaultNumb]);
 
     useEffect(() => {
         if (!tab) return;
@@ -113,7 +121,7 @@ export function EpreuveModal({ codeEpreuve, sessionId, tab }: EpreuveModalProps)
     }
 
     return (
-        <Modal titre={epreuveActive.code} onClose={() => { fermer(); }} width="1200px" height="650px" newbgcolor={themeEpreuves.status[epreuveActive.statut] + '4F'}>
+        <Modal titre={epreuveActive.code} onClose={() => { fermer(); }} width="1200px" height="650px" newbgcolor={themeEpreuves.status[epreuveActive.statut] + '4F'} DebutTraitement={debutTraitement}>
             <Stack>
                 <Stack >
                     <Tabs

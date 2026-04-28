@@ -7,7 +7,7 @@ const ANIMATION_DUREE = 200;
 /**
  * Modal, avec backdrop, centrage et entête
  */
-export function Modal({ children, onClose, titre, width, height, newbgcolor }: { children: React.ReactNode; onClose?: () => void; titre: string, width?: string, height?: string, newbgcolor?: string }) {
+export function Modal({ children, onClose, titre, width, height, newbgcolor, DebutTraitement }: { children: React.ReactNode; onClose?: () => void; titre: string, width?: string, height?: string, newbgcolor?: string, DebutTraitement?: boolean }) {
     const [isVisible, setIsVisible] = useState(false);
     const closeTimeoutRef = useRef<number | null>(null);
 
@@ -25,13 +25,15 @@ export function Modal({ children, onClose, titre, width, height, newbgcolor }: {
     }, []);
 
     const handleClose = () => {
-        if (!isVisible) {
-            return;
+        if (!DebutTraitement) {
+            if (!isVisible) {
+                return;
+            }
+            setIsVisible(false);
+            closeTimeoutRef.current = window.setTimeout(() => {
+                onClose?.();
+            }, ANIMATION_DUREE);
         }
-        setIsVisible(false);
-        closeTimeoutRef.current = window.setTimeout(() => {
-            onClose?.();
-        }, ANIMATION_DUREE);
     };
 
     return (

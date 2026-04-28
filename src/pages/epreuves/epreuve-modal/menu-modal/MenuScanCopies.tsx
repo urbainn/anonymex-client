@@ -8,10 +8,11 @@ interface MenuScanCopiesProps {
     idSession: string;
     onIncidentCreated?: () => void;
     onIncidentResolved?: () => void;
+    traitement: boolean;
+    handleTraitement: (bool: boolean) => void;
 }
 
 export function MenuScanCopies(props: MenuScanCopiesProps) {
-
 
     return (
         <Stack
@@ -20,7 +21,7 @@ export function MenuScanCopies(props: MenuScanCopiesProps) {
             justifyContent="center"
             direction={"column"}
         >
-            <DepotLayout isModal={false} codeUE={props.codeUE} idSession={props.idSession} onIncidentCreated={props.onIncidentCreated} onIncidentResolved={props.onIncidentResolved} />
+            <DepotLayout handleTraitement={props.handleTraitement} traitement={props.traitement}  isModal={false} codeUE={props.codeUE} idSession={props.idSession} onIncidentCreated={props.onIncidentCreated} onIncidentResolved={props.onIncidentResolved} />
         </Stack>
     );
 }

@@ -22,6 +22,8 @@ interface DepotLayoutProps {
     setSuccess?: (success: boolean) => void;
     onIncidentCreated?: () => void;
     onIncidentResolved?: () => void;
+    handleTraitement: (bool: boolean) => void;
+    traitement: boolean;
 }
 
 export function DepotLayout(props: DepotLayoutProps) {
@@ -45,7 +47,6 @@ export function DepotLayout(props: DepotLayoutProps) {
     const [numPage, setPage] = useState<number[]>([]);
     const [totalPages, setTotalPages] = useState<number[]>([]);
     const [numFichier, setNumFichier] = useState<number>(0);
-    const [debutTraitement, setDebutTraitement] = useState<boolean>(false);
     const [erreurs, setErreurs] = useState<number[]>([]);
 
     // Confirmation de fin
@@ -59,6 +60,9 @@ export function DepotLayout(props: DepotLayoutProps) {
     // Contexte pour afficher les messages d'erreur
     const { afficherErreur } = useSnackbarGlobal();
 
+    useEffect(() => {
+        console.log("traitement", props.traitement);
+    }, [props.traitement]);
 
     // Si un codeUE est passé en props (ouverture depuis une UE), on le préremplit
     useEffect(() => {
@@ -73,15 +77,17 @@ export function DepotLayout(props: DepotLayoutProps) {
 
     // Réinitialiser le champ de fichier et l'état associé
     const handleReset = () => {
+        console.log("Reset du dépôt de copies");
+        props.handleTraitement(false);
         setFichiers(null);
         setNumFichier(0);
         setPage([]);
         setTotalPages([]);
-        setDebutTraitement(false);
-        setAfficherConfirmation(false);
+        setIncidentOuvert(null);
         setErreurs([]);
         setLoading(false);
         setIncidents([]);
+        setAfficherConfirmation(false);
 
         if (inputRef.current) {
             inputRef.current.value = "";
@@ -129,7 +135,7 @@ export function DepotLayout(props: DepotLayoutProps) {
         setNumFichier(0);
         setPage([]);
         setTotalPages([]);
-        setDebutTraitement(true);
+        props.handleTraitement(true);
         let i = 0;
         for (const fichier of Array.from(fichiers)) {
 
@@ -301,7 +307,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                     )}
 
                     <Stack spacing={2} height="100%" alignItems="center">
-                        {!debutTraitement ? (
+                        {!props.traitement ? (
                             <>
                                 <DropZone inputRef={inputRef} setFichiers={setFichiers} fichiers={fichiers} />
                                 <Collapse in={!!fichiers} sx={{ width: "100%", transition: "width 0.3s ease" }}>
@@ -363,7 +369,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                                     numPage={numPage}
                                     totalPages={totalPages}
                                     numFichier={numFichier}
-                                    debutTraitement={debutTraitement}
+                                    debutTraitement={props.traitement}
                                     erreurs={erreurs}
                                 />
                             )}
