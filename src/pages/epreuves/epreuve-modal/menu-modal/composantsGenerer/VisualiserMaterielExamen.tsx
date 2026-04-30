@@ -20,7 +20,7 @@ interface PDFPageProps {
 
 const Documents: Record<number, string> = {
     1: "Bordereaux",
-    2: "Coupons d'identification",
+    2: "Feuille d'identification",
     3: "Listes d'émargement"
 };
 

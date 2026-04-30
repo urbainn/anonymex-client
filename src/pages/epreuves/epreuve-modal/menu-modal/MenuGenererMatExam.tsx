@@ -62,7 +62,7 @@ function MenuGenererMatExam(props: MenuGenererMatExamProps) {
                 <Typography variant="h6" marginBottom={5} fontWeight={500} > Choisissez un document à télécharger </Typography>
                 <Stack direction="column" spacing={2} alignItems="center" >
                     <ItemMaterielExamen titre="Bordereaux" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[0]} handleClick={handleClickBordereaux} icone={<LocalPrintshopIcon sx={{ color: colors.grey[800] }} />} />
-                    <ItemMaterielExamen titre="Coupons d'identification" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[1]} handleClick={handleClickCoupons} icone={<GroupIcon sx={{ color: colors.grey[800] }} />} />
+                    <ItemMaterielExamen titre="Feuille d'identification" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[1]} handleClick={handleClickCoupons} icone={<GroupIcon sx={{ color: colors.grey[800] }} />} />
                     <ItemMaterielExamen titre="Listes d'émargement" sousTitre="Telechargé le 19/02/2025" color={props.menuColor + "1F"} termine={documentTelecharge[2]} handleClick={handleClickListes} icone={<ContactEmergencyIcon sx={{ color: colors.grey[800] }} />} />
                 </Stack>
             </Stack>
