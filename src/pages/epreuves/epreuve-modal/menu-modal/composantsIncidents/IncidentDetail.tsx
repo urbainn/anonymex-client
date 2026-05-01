@@ -89,10 +89,9 @@ export default function IncidentDetail(props: IncidentDetailProps) {
             setFichier(rep.url);
             setNoteQuart(props.incident.noteQuart);
             setNumero(props.incident.codeAnonymat);
-            console.log("Suggestions récupérées :", suggestions);
             setLoading(false);
         }
-
+        
         try {
             getFichier();
         } catch (error) {
@@ -100,7 +99,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
             setLoading(false);
         }
 
-    }, [getSuggestions, suggestions, props.incident]);
+    }, [getSuggestions, props.incident]);
 
 
     const handleViewFile = (url: string) => {
