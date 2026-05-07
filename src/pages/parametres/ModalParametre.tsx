@@ -1,10 +1,8 @@
 import React from "react";
 import { Modal } from "../../components/Modal";
 import { Alert, Snackbar, Stack, Tab, Tabs } from "@mui/material";
-import { updateUtilisateur } from "../../contracts/utilisateurs";
-import PageParametreBordereaux from "./PageParametreBordereaux";
-import PageParametreSauvegarde from "./PageParametreSauvegarde";
-import PageParametreProfil from "./PageParametreProfil";
+import SectionParametresCharteGraphique from "./ParametresCharteGraphique";
+import SectionParametresSauvegarde from "./ParametresSauvegardes";
 
 type ModalParametreProps = {
     onClose: () => void;
@@ -12,26 +10,8 @@ type ModalParametreProps = {
 
 export default function ModalParametre({ onClose }: ModalParametreProps) {
 
-    const handlers = [
-        handleProfil,
-        handleBordereaux,
-        handleSauvegarde
-    ];
-
-    // Paramètres généraux
-    const [prenom, setPrenom] = React.useState("");
-    const [nom, setNom] = React.useState("");
-
     // Erreur
     const [error, setError] = React.useState<string | null>(null);
-
-    // Paramètres de sauvegarde
-    const [chemin, setChemin] = React.useState("");
-    const [apiKey, setApiKey] = React.useState("");
-
-    // Paramètres des bordereaux
-    const [logoFac, setLogoFac] = React.useState<File | null>(null);
-    const [logoUniv, setLogoUniv] = React.useState<File | null>(null);
 
     // Snackbar de succès
     const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
@@ -45,60 +25,9 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
         setSuccessMessage(null);
     }
 
-    async function handleModifications(index: number) {
-        setError(null);
-
-        try {
-            await handlers[index]();
-        } catch {
-            setError("Une erreur est survenue");
-        }
-    }
-
-    async function handleProfil() {
-        if (!prenom && !nom) {
-            setError("Veuillez remplir au moins un des champs.");
-            return;
-        }
-
-        const donnees: { prenom?: string; nom?: string } = {};
-
-        if (prenom) donnees.prenom = prenom;
-        if (nom) donnees.nom = nom;
-
-        const response = await updateUtilisateur(0, donnees);
-
-        if (response.status !== 200) {
-            setError(response.error || "Erreur inconnue");
-            return;
-        }
-
-        setSuccessMessage("Paramètres mis à jour avec succès");
-    }
-
-    async function handleBordereaux() {
-        if (!logoFac && !logoUniv) {
-            setError("Veuillez sélectionner au moins un logo à mettre à jour.");
-            return;
-        }
-
-        // TODO: appel API
-        setSuccessMessage("Logos mis à jour avec succès");
-    }
-
-    async function handleSauvegarde() {
-        if (!chemin && !apiKey) {
-            setError("Veuillez remplir au moins un des champs.");
-            return;
-        }
-
-        // TODO: appel API
-        setSuccessMessage("Paramètres de sauvegarde mis à jour avec succès");
-    }
-
     return (
         <>
-           <Modal titre={"Paramètres"} onClose={onClose} width="900px">
+            <Modal titre={"Paramètres"} onClose={onClose} width="900px">
                 <Stack direction="row" width="100%">
 
                     {/* Menu de navigation entre les sections de paramètres */}
@@ -121,9 +50,8 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
                             }}
                         >
                             {[
-                                { label: "Compte / Profil" },
-                                { label: "Bordereaux"},
-                                { label: "Sauvegarde"},
+                                { label: "Charte Graphique" },
+                                { label: "Sauvegardes" },
                             ].map((tab) => (
                                 <Tab
                                     key={tab.label}
@@ -131,14 +59,7 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
                                     sx={{
                                         alignItems: "center",
                                         textTransform: "none",
-                                        px: 2,
-                                        py: 1,
                                         minHeight: 48,
-
-                                        "&:hover": {
-                                            backgroundColor: "action.hover",
-                                        },
-
                                         "&.Mui-selected": {
                                             backgroundColor: "action.selected",
                                             fontWeight: 600,
@@ -150,42 +71,20 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
                     </Stack>
 
                     {/* Contenu de l'onglet sélectionné */}
-                    <Stack width={"100%"}>
+                    <Stack width={"100%"} height="600px" padding={3} overflow="auto">
                         {tabSelectionnee === 0 && (
-                            <PageParametreProfil 
-                                setNom={setNom} 
-                                setPrenom={setPrenom} 
-                                onSauvegarder={() => handleModifications(0)} 
-                                prenom={prenom} 
-                                nom={nom}
-                            />
+                            <SectionParametresCharteGraphique />
                         )}
 
                         {tabSelectionnee === 1 && (
-                            <PageParametreBordereaux 
-                                logoFac={logoFac}
-                                logoUniv={logoUniv} 
-                                setLogoFac={setLogoFac} 
-                                setLogoUniv={setLogoUniv}
-                                onSubmit={() => handleModifications(1)}
-                            />
-                        )}
-
-                        {tabSelectionnee === 2 && (
-                            <PageParametreSauvegarde 
-                                setChemin={setChemin} 
-                                setApiKey={setApiKey} 
-                                chemin={chemin} 
-                                apiKey={apiKey} 
-                                onSubmit={() => handleModifications(2)}
-                            />
+                            <SectionParametresSauvegarde />
                         )}
                     </Stack>
                 </Stack>
 
-           </Modal>
+            </Modal>
 
-           {error && (
+            {error && (
                 <Snackbar
                     open={!!error}
                     message={error}
@@ -194,7 +93,7 @@ export default function ModalParametre({ onClose }: ModalParametreProps) {
                 >
                     <Alert severity="error">{error}</Alert>
                 </Snackbar>
-           )}
+            )}
 
             {successMessage && (
                 <Snackbar

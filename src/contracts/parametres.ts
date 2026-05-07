@@ -1,0 +1,27 @@
+import { z } from "zod";
+import { apiRequest } from "../utils/api";
+
+// --- Schémas ---
+export const ParametresCharteGraphiqueSchema = z.object({
+    logoUniversite: z.string().nullable(),
+    logoFaculte: z.string().nullable(),
+});
+
+export const ParametresSauvegardeSchema = z.object({
+    actif: z.boolean(),
+    intervalleMinutes: z.number().int().positive(),
+    chemin: z.string()
+});
+
+// --- Types ---
+export type APIParametresCharteGraphique = z.infer<typeof ParametresCharteGraphiqueSchema>;
+export type APIParametresSauvegarde = z.infer<typeof ParametresSauvegardeSchema>;
+
+// --- Endpoint API ---
+export const getParametresCharteGraphique = async () => {
+    return apiRequest<null, APIParametresCharteGraphique>('GET', `/parametres/charte-graphique`);
+}
+
+export const getParametresSauvegarde = async () => {
+    return apiRequest<null, APIParametresSauvegarde>('GET', `/parametres/sauvegarde`);
+}

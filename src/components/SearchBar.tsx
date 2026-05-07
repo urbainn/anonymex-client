@@ -96,7 +96,7 @@ function SearchBar(props: SearchBarProps) {
 
         switch (option.type) {
             // Epreuve
-            case 0:
+            case 0: {
                 const epreuve = await getEpreuve(props.sessionId, option.code);
 
                 if (epreuve.status === 200 && epreuve.data) {
@@ -104,7 +104,7 @@ function SearchBar(props: SearchBarProps) {
                     props.onResultClick?.(res_epreuve);
                 }
                 break;
-
+            }
             // Salle
             case 1:
                 navigate(`/sessions/${props.sessionId}/recherche/salle/${option.codeSalle}`);
