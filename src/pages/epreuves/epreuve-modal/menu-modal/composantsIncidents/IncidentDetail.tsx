@@ -83,7 +83,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
         console.log("Récupération du fichier de l'incident N°" + props.incident.idIncident);
 
         const getFichier = async () => {
-            const rep = await fetch(`${URL_API_BASE}/documents/incidents/${props.incident.idIncident}/scan.webp`);
+            const rep = await fetch(`${URL_API_BASE}/documents/scans/${props.incident.idSession}/incidents/${props.incident.idIncident}/scan.webp`);
             getSuggestions(props.incident.codeAnonymat ?? "");
 
             setFichier(rep.url);
