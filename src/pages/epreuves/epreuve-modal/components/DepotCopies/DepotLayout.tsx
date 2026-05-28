@@ -12,6 +12,7 @@ import { URL_API_BASE } from "../../../../../utils/api";
 import IncidentListe from "../../menu-modal/composantsIncidents/IncidentListe";
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
 import IncidentDetails from "../../menu-modal/composantsIncidents/IncidentDetail";
+import { useEpreuvesCache } from "../../../../../contexts/EpreuvesCacheContext";
 
 interface DepotLayoutProps {
     isModal: boolean;
@@ -27,6 +28,8 @@ interface DepotLayoutProps {
 }
 
 export function DepotLayout(props: DepotLayoutProps) {
+
+    const { patchEpreuve } = useEpreuvesCache();
 
     // Reference pour le champ de fichier (input)
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -58,7 +61,7 @@ export function DepotLayout(props: DepotLayoutProps) {
     const [messageSnackbar, setMessageSnackbar] = useState<string>("");
 
     // Contexte pour afficher les messages d'erreur
-    const { afficherErreur } = useSnackbarGlobal();
+    const { afficherErreur,  } = useSnackbarGlobal();
 
     useEffect(() => {
         console.log("traitement", props.traitement);
@@ -240,9 +243,21 @@ export function DepotLayout(props: DepotLayoutProps) {
             // Si le dépôt est traité avec succès, on affiche un message de succès et on ferme la connexion SSE
             evtSource.addEventListener("ok", function (event) {
                 console.log(`Dépôt ${depotID} traité avec succès :`, event.data);
+                const info = JSON.parse(event.data);
+                if (info.nbDepots && info.nbDepots > 0) {
+                    // Mettre à jour le nombre de dépôts traités
+                    patchEpreuve(codeUE, { copies: info.nbDepots });
+                }
                 evtSource.close();
 
                 resolve(true);
+            });
+
+            // Dépot complet pour l'épreuve !
+            evtSource.addEventListener("complete", function (event) {
+                console.log(`Dépôt ${depotID} complet :`, event.data);
+                // Mettre à jour l'épreuve dans le cache
+                patchEpreuve(codeUE, { statut: 4 });                
             });
 
             evtSource.addEventListener("incident", function (event) {

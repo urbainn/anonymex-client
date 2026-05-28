@@ -1,6 +1,6 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React, { useEffect } from "react";
-import { Stack, Divider, colors, Typography } from "@mui/material";
+import { Button, Divider, Dialog, DialogActions, DialogContent, DialogTitle, Stack, colors, Typography, TextField } from "@mui/material";
 import { EpreuveCaracteristique } from "./composantsEpreuves/EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
@@ -58,6 +58,9 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
 
     const [ouvrirModalDate, setOuvrirModalDate] = React.useState<boolean>(false);
     const [ouvrirModalHoraire, setOuvrirModalHoraire] = React.useState<boolean>(false);
+    const [ouvrirModalAjout, setOuvrirModalAjout] = React.useState<boolean>(false);
+    const [salleAjout, setSalleAjout] = React.useState<string>("");
+    const [nbConvocationsSupplementaires, setNbConvocationsSupplementaires] = React.useState<string>("");
 
     const [valIntermediaireDate, setValIntermediaireDate] = React.useState<number>(0);
     const [valIntermediaireDuree, setValIntermediaireDuree] = React.useState<number>(0);
@@ -204,8 +207,10 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
         }
     };
 
-    const handleAjout = () => {
-        setNumeroOnglet(3);
+    const handleAjout = (salle: string) => {
+        setSalleAjout(salle);
+        setNbConvocationsSupplementaires("");
+        setOuvrirModalAjout(true);
     }
 
     const handleDetails = (salle: string) => {
@@ -218,11 +223,60 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
         window.open(url, '_blank');
     }
 
+    const handleCloseAjout = () => {
+        setOuvrirModalAjout(false);
+        setNbConvocationsSupplementaires("");
+        setSalleAjout("");
+    };
+
+    const handleConfirmAjout = () => {
+        const nbCoupons = Number(nbConvocationsSupplementaires.trim());
+
+        if (!Number.isInteger(nbCoupons) || nbCoupons <= 0) {
+            return;
+        }
+
+        const url = `${URL_API_BASE}/documents/session/${epreuve.session}/epreuve/${epreuve.code}/salle/${salleAjout}/creer-coupons-supplementaires?nbCoupons=${nbCoupons}`;
+        handleCloseAjout();
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
 
     return (
 
         <>
             {confirmModalTransfer}
+            <Dialog open={ouvrirModalAjout} onClose={handleCloseAjout} fullWidth maxWidth="xs">
+                <DialogTitle sx={{ fontWeight: 700 }}>Créer des convocations supplémentaires</DialogTitle>
+                <DialogContent>
+                    <Stack spacing={2} sx={{ pt: 1 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Salle concernée : {salleAjout}
+                        </Typography>
+                        <TextField
+                            autoFocus
+                            fullWidth
+                            label="Nombre de convocations supplémentaires"
+                            type="number"
+                            value={nbConvocationsSupplementaires}
+                            onChange={(event) => setNbConvocationsSupplementaires(event.target.value)}
+                            inputProps={{ min: 1, step: 1 }}
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2.5 }}>
+                    <Button onClick={handleCloseAjout} color="inherit">
+                        Annuler
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleConfirmAjout}
+                        disabled={!Number.isInteger(Number(nbConvocationsSupplementaires.trim())) || Number(nbConvocationsSupplementaires.trim()) <= 0}
+                    >
+                        Valider
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <ModalConfirmationChangements ouvert={ouvrirModalDate} setOuvert={setOuvrirModalDate} handleSave={handleSaveDate} oldVal={dateEpreuve} newVal={valIntermediaireDate} type="date" />
             <ModalConfirmationChangementsHoraire ouvert={ouvrirModalHoraire} setOuvert={setOuvrirModalHoraire} handleSave={handleSaveHoraire} ancien={{ date: dateEpreuve, duree: dureeMinutes }} nouveau={{ date: valIntermediaireHoraireDebut, duree: valIntermediaireDuree }} />
 
@@ -230,8 +284,18 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
             <Stack spacing={4} direction="row" p={2} >
                 <Stack width={"40%"} spacing={3}>
                     <EpreuveCaracteristique titre="Épreuve à venir" sousTitre={nomEpreuve} fonctionModif={handleModifEpreuve} modif={modifEpreuve} color={couleurStatusEpreuve} />
-                    <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve)} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} color={couleurStatusEpreuve} />
-                    <EpreuveCaracteristique titre="Horaires" sousTitre={calcHoraires(dateEpreuve, dureeMinutes)} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField date={dateEpreuve} dureeMinutes={dureeMinutes} fonctionSave={confirmSaveHoraire} />)} color={couleurStatusEpreuve} />
+                    {epreuve.statut <= 2 ? (
+                        <>
+                            <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve)} fonctionModif={handleModifDate} modif={modifDate} AdaptedTextField={() => (<DateTextField date={dateEpreuve} fonctionSave={confirmSaveDate} />)} color={couleurStatusEpreuve} />
+                            <EpreuveCaracteristique titre="Horaires" sousTitre={calcHoraires(dateEpreuve, dureeMinutes)} fonctionModif={handleModifHoraire} modif={modifHoraire} AdaptedTextField={() => (<HorairesTextField date={dateEpreuve} dureeMinutes={dureeMinutes} fonctionSave={confirmSaveHoraire} />)} color={couleurStatusEpreuve} />
+                        </>
+                    ) : (
+                        <>
+                            <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve) + ', ' + calcHoraires(dateEpreuve, dureeMinutes)} color={couleurStatusEpreuve} modif={false} fonctionModif={() => {}} />
+                            <EpreuveCaracteristique titre="Notes saisies" sousTitre={epreuve.copies + ' / ' + (epreuve.nbPresents ?? epreuve.copiesTotal ?? '?')} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} color={couleurStatusEpreuve} />
+                        </>
+                    )}
+
                     <EpreuveCaracteristique titre="Nombre inscrits" sousTitre={nbInscritsEpreuve} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} color={couleurStatusEpreuve} />
                     <Stack spacing={1}>
                         {/*<BoutonStandard onClick={handleReimport} height={50} color={couleurStatusEpreuve} icone={<BackupTable sx={{ color: colors.grey[800] }} />}>

@@ -15,6 +15,7 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import MyTextField from "../textfields/MyTextField";
 import CircularProgress from '@mui/material/CircularProgress';
 import BoutonStandard from "../../components/BoutonStantard";
+import { useEpreuvesCache } from "../../../../../contexts/EpreuvesCacheContext";
 
 
 interface IncidentDetailProps {
@@ -30,6 +31,8 @@ interface IncidentDetailProps {
 
 
 export default function IncidentDetail(props: IncidentDetailProps) {
+
+    const { patchEpreuve } = useEpreuvesCache();
 
     const [numero, setNumero] = React.useState<string | undefined>(props.incident.codeAnonymat);
     const [noteQuart, setNoteQuart] = React.useState<number | undefined>(props.incident.noteQuart);
@@ -114,26 +117,32 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     async function appelerAPI(numero: string | undefined, note: number | undefined) {
         const res = await corrigerIncident(props.incident.idSession, props.incident.codeEpreuve, props.incident.idIncident, numero!, note!);
         console.log("Résultat de la correction de l'incident :", res);
+        if (res.data?.incidents) {
+            res.data.incidents.forEach(incident => {
+                props.ajouterIncident(incident);
+            });
+            props.setMessageSnackbar("Nouvel incident créé suite à la correction (duplication).");
+        }
+        
         if (res.data?.success === true) {
             props.onClose(props.incident.idIncident);
-            if (res.data?.incidents) {
-                res.data.incidents.forEach(incident => {
-                    props.ajouterIncident(incident);
-                });
-                props.retirerIncident(props.incident.idIncident);
-            }
-            else {
-                props.retirerIncident(props.incident.idIncident);
-            }
+            props.retirerIncident(props.incident.idIncident);
             props.setOuvertSucces(true);
             props.setMessageSnackbar("Incident corrigé avec succès !");
+
+            if (res.data?.estComplet) {
+                // Mettre à jour l'épreuve dans le cache
+                patchEpreuve(props.incident.codeEpreuve, { statut: 4 });
+            }
         }
         else {
-            if (res.data?.message) {
-                props.setMessageSnackbar(res.data.message);
-            }
-            else {
-                props.setMessageSnackbar("Échec de la correction de l'incident. Veuillez réessayer.");
+            if (res.data?.incidents === undefined) {
+                if (res.data?.message) {
+                    props.setMessageSnackbar(res.data.message);
+                }
+                else {
+                    props.setMessageSnackbar("Échec de la correction de l'incident. Veuillez réessayer.");
+                }
             }
             if (res.data?.suggestions) {
                 setSuggestions(res.data.suggestions);

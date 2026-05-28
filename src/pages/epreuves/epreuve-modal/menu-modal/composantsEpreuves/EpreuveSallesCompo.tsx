@@ -6,6 +6,7 @@ import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import IconRondV2 from "../../../../../components/IconesRondV2";
 
 import { useState } from "react";
+import { Add } from "@mui/icons-material";
 
 interface EpreuveSallesCompoProps {
     salle: string;
@@ -25,7 +26,7 @@ function couleurPourcentage(nbEtudiants: number, nbEtuMMax: number, color?: stri
 }
 
 
-function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax, color, onTransfert, onDetails, sallesDispo }: EpreuveSallesCompoProps) {
+function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax, color, onTransfert, onAjouter, onDetails, sallesDispo }: EpreuveSallesCompoProps) {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -70,7 +71,7 @@ function EpreuveSallesCompo({ salle, nbEtudiants, nbEtuMMax, color, onTransfert,
                         </MenuItem>
                     ))}
                 </Menu>
-                {/*<IconRondV2 onClickParam={() => onAjouter(salle)} sx={{ bgcolor: color + "60", '&:hover': { bgcolor: color + "AF" } }} children={<Add />} tooltip="Ajouter étudiants" />*/}
+                {<IconRondV2 onClickParam={() => onAjouter(salle)} sx={{ bgcolor: color + "60", '&:hover': { bgcolor: color + "AF" } }} children={<Add />} tooltip="Créer des codes supplémentaires" />}
                 <IconRondV2 onClickParam={() => onDetails(salle)} sx={{ bgcolor: color + "60", '&:hover': { bgcolor: color + "AF" } }} children={<MenuIcon />} tooltip="Liste des étudiants" />
             </Stack>
 
