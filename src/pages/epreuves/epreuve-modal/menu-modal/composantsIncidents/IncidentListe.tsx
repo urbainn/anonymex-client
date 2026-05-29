@@ -10,10 +10,11 @@ import { grey } from '@mui/material/colors';
 interface IncidentListeProps {
     liste: APIIncident[];
     onClick: (incident: APIIncident) => void;
+    onDeleteIncident?: (incident: APIIncident) => void; // Ajout
     selectedIncidentId: number | null;
 }
 
-export default function IncidentListe({ liste, onClick, selectedIncidentId }: IncidentListeProps) {
+export default function IncidentListe({ liste, onClick, onDeleteIncident,selectedIncidentId }: IncidentListeProps) {
 
     const nbIncidents = liste.length;
 
@@ -34,6 +35,7 @@ export default function IncidentListe({ liste, onClick, selectedIncidentId }: In
                         key={incident.idIncident}
                         incident={incident}
                         onClick={onClick}
+                        onDelete={onDeleteIncident} // Ajout
                         selected={incident.idIncident === selectedIncidentId}
                     />
                 ))}

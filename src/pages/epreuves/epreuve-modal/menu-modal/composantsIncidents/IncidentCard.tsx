@@ -1,6 +1,8 @@
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import type { APIIncident } from '../../../../../contracts/incidents';
 import { red } from "@mui/material/colors";
 
@@ -9,6 +11,7 @@ type IncidentType = "resolu" | "non resolu";
 interface IncidentCardProps {
     incident: APIIncident;
     onClick: (incident: APIIncident) => void;
+    onDelete?: (incident: APIIncident) => void; // Ajout de la fonction de suppression si nécessaire
     type?: IncidentType;
     selected: boolean;
 }
@@ -34,6 +37,7 @@ function IncidentCard(props: IncidentCardProps) {
                 height: 70,
                 border: 'none',
                 transition: 'background-color 0.3s ease',
+                position: 'relative', // Nécessaire pour placer la croix
             }}
         >
             <CardActionArea
@@ -56,7 +60,7 @@ function IncidentCard(props: IncidentCardProps) {
                         {isResolved ? <CheckCircleIcon /> : <ErrorIcon fontSize="large" sx={{ color: red[300] }} />}
                     </Stack>
 
-                    <Stack >
+                    <Stack sx={{ pr: props.onDelete ? 5 : 2 }}>
                         <Typography
                             variant="subtitle1"
                             fontWeight="bold"
@@ -71,6 +75,29 @@ function IncidentCard(props: IncidentCardProps) {
                     </Stack>
                 </Stack>
             </CardActionArea>
+
+            {/* Croix de suppression en position absolue */}
+            {props.onDelete && (
+                <IconButton
+                    size="small"
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: red[300],
+                        zIndex: 2, // S'assure que le clic n'est pas intercepté par CardActionArea
+                        '&:hover': { color: red[600], backgroundColor: 'rgba(211, 47, 47, 0.04)' }
+                    }}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Empêche de déclencher le onClick de la carte
+                        e.preventDefault();
+                        props.onDelete!(props.incident);
+                    }}
+                >
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            )}            
         </Card>
     );
 }
