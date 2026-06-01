@@ -181,7 +181,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     }
 
     const handleConvocations = (listeCodeAno: string[]) => {
-        window.open(URL_API_BASE + `/documents/session/${props.idSession}/epreuve/${props.codeEpreuve}/coupons.pdf?codes=${listeCodeAno.join(",")}`, "_blank");
+        window.open(URL_API_BASE + `/documents/session/${props.idSession}/epreuve/${props.codeEpreuve}/convocations-scans.pdf?codes=${listeCodeAno.join(",")}`, "_blank");
     }
 
 
