@@ -51,7 +51,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
 
     const columns = getColumns();
 
-    const { confirm, confirmModalEdit } = useConfirmEdit();
+    const { confirm, confirmModalEdit, showSuccess, showError, snackbarEdit } = useConfirmEdit();
     const { confirmDelete, confirmModalDelete } = useConfirmDelete();
     const { confirmTransfer, confirmModalTransfer } = useConfirmTransfer();
 
@@ -118,21 +118,23 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
         if (!result) {
             return oldRows;
         }
-
+        console.log("=====>", result.noteQuart);
         const res = await patchConvocation(props.idSession, props.codeEpreuve, result.codeAnonymat, {
             rang: result.rang,
-            note_quart: result.noteQuart !== undefined ? result.noteQuart * 4 : undefined,
+            note_quart: (result.noteQuart !== undefined && result.noteQuart !== null)  ? result.noteQuart * 4 : undefined,
             code_salle: result.codeSalle
         });
 
         if (res.status === 200) {
             setRows((rows) => rows.map((row) => (row.numeroEtudiant === result.numeroEtudiant ? result : row)));
-            console.log("Convocation mise à jour avec succès :", res);
+            console.log("Convocation/note mise à jour avec succès :", res);
+            showSuccess("Convocation/note modifiée avec succès");
+            return result;
         } else {
-            console.error("Erreur lors de la mise à jour de la convocation :", res);
+            console.error("Erreur lors de la mise à jour de la convocation/note :", res);
+            showError("Erreur lors de la modification de la convocation/note");
+            return oldRows;
         }
-
-        return result;
     }
 
     const handleDelete = async (listeCodeAno: string[]) => {
@@ -188,6 +190,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
             {confirmModalDelete}
             {confirmModalEdit}
             {confirmModalTransfer}
+            {snackbarEdit}
 
 
             <Box sx={{ height: 570 }}>

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import type { APIConvocation } from '../../../../../contracts/convocations';
 import ModalConfirmationBase from '../composantsEpreuves/ModalConfirmationBase';
+import { Snackbar, Alert } from '@mui/material';
+import type { SnackbarCloseReason } from '@mui/material/Snackbar';
+import type { SyntheticEvent } from 'react';
 
 type LibellesChampsConvocation = Partial<Record<keyof APIConvocation, string>>;
 
@@ -36,6 +39,11 @@ export function useConfirmEdit() {
 
     const [resolver, setResolver] = useState<((value: APIConvocation | null) => void) | null>(null);
 
+    // Snackbar states
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
 
     const confirm = (
         oldVal: APIConvocation,
@@ -59,6 +67,23 @@ export function useConfirmEdit() {
         setLibellesChamps({});
     };
 
+    const handleSnackbarClose = (_: Event | SyntheticEvent, reason?: SnackbarCloseReason) => {
+        if (reason === 'clickaway') return;
+        setSnackbarOpen(false);
+    };
+
+    const showSuccess = (message: string) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+    };
+
+    const showError = (message: string) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+    };
+
     const changements = getChangements(oldVal, newVal);
     const ancienTexte = changements.length > 0
         ? changements.map(({ champ, ancien }) => `${libellesChamps[champ] ?? String(champ)}: ${ancien}`).join(' | ')
@@ -70,6 +95,8 @@ export function useConfirmEdit() {
 
     return {
         confirm,
+        showSuccess,
+        showError,
         confirmModalEdit:
             <ModalConfirmationBase
                 ouvert={ouvert}
@@ -86,7 +113,18 @@ export function useConfirmEdit() {
                 nouveauValeur={nouveauTexte}
                 texteConfirmation="Confirmer la modification"
                 texteAnnulation="Annuler"
-            />
-
+            />,
+        snackbarEdit: (
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert severity={snackbarSeverity} variant='filled'>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        )
     };
 }
