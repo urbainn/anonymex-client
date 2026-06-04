@@ -10,7 +10,9 @@ export const ConvocationSchema = z.object({
     rang: z.number().int().positive().optional(),
     codeAnonymat: z.string(),
     noteQuart: z.number().int().positive().optional(),
-    codeSalle: z.string()
+    codeSalle: z.string(),
+    prenom: z.string().optional(),
+    nom: z.string().optional()
 });
 
 export const ListConvocationsSchema = z.object({
@@ -58,4 +60,8 @@ export const postConvocationPresents = (sessionId: number, epreuveCode: string, 
 
 export const postConvocationsTransfert = (sessionId: number, epreuveCode: string, data: { sallesDepart?: string[], codesAnonymats?: string[], salleTransfert: string }) => {
     return apiRequest<{ sallesDepart?: string[], codesAnonymats?: string[], salleTransfert: string }, APIBoolResponse>('POST', `/sessions/${sessionId}/epreuves/${epreuveCode}/convocations/transfert`, data);
+}
+
+export const postConvocation = (sessionId: number, epreuveCode: string, data: { numeroEtudiant: number, nom?: string, prenom?: string, codeSalle: string }) => {
+    return apiRequest<{ numeroEtudiant: number, nom?: string, prenom?: string, codeSalle: string }, { success: boolean, convocation: APIConvocation }>('POST', `/sessions/${sessionId}/epreuves/${epreuveCode}/convocations`, data);
 }
