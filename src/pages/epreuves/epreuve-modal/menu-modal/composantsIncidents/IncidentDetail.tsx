@@ -51,6 +51,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
     });
 
     useEffect(() => {
+        setEnvoiOK(formulaireEstValide(numero, noteQuart));// ICI
         console.log("Valeur note & numero, " + noteQuart + " & " + numero);
     }, [noteQuart, numero]);
 
