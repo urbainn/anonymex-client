@@ -4,13 +4,14 @@ import { green, grey } from "@mui/material/colors";
 import { useSnackbarGlobal } from "../../../../../contexts/SnackbarContext";
 import { DropZone } from "./DropZone";
 import BoutonStandard from "../BoutonStantard";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FileList } from "./FileList";
 
 import { type APIIncident } from "../../../../../contracts/incidents";
 import { URL_API_BASE } from "../../../../../utils/api";
 import IncidentListe from "../../menu-modal/composantsIncidents/IncidentListe";
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import IncidentDetails from "../../menu-modal/composantsIncidents/IncidentDetail";
 import { useEpreuvesCache } from "../../../../../contexts/EpreuvesCacheContext";
 
@@ -54,6 +55,7 @@ export function DepotLayout(props: DepotLayoutProps) {
 
     // Confirmation de fin
     const [afficherConfirmation, setAfficherConfirmation] = useState<boolean>(false);
+    const [redirectionEnCours, setRedirectionEnCours] = useState<boolean>(false);
 
     // State pour le Snackbar de succès / erreur lors de la correction d'un incident
     const [ouvertSucces, setOuvertSucces] = useState<boolean>(false);
@@ -62,6 +64,42 @@ export function DepotLayout(props: DepotLayoutProps) {
 
     // Contexte pour afficher les messages d'erreur
     const { afficherErreur,  } = useSnackbarGlobal();
+
+    // Réinitialiser le champ de fichier et l'état associé
+    const handleReset = useCallback(() => {
+        console.log("Reset du dépôt de copies");
+        props.handleTraitement(false);
+        setFichiers(null);
+        setNumFichier(0);
+        setPage([]);
+        setTotalPages([]);
+        setAfficherConfirmation(false);
+        setErreurs({});
+        setLoading(false);
+        setIncidents([]);
+        setAfficherConfirmation(false);
+
+        if (inputRef.current) {
+            inputRef.current.value = "";
+        }
+    }, [props.handleTraitement]);
+
+    useEffect(() => {
+        if (!afficherConfirmation) {
+            setRedirectionEnCours(false);
+            return;
+        }
+
+        setRedirectionEnCours(true);
+        const timer = window.setTimeout(() => {
+            setRedirectionEnCours(false);
+            handleReset();
+        }, 3000);
+
+        return () => {
+            window.clearTimeout(timer);
+        };
+    }, [afficherConfirmation, handleReset]);
 
     useEffect(() => {
         console.log("traitement", props.traitement);
@@ -78,25 +116,7 @@ export function DepotLayout(props: DepotLayoutProps) {
         console.log("Incident ouvert : 1", incidentOuvert);
     }, [incidentOuvert]);
 
-    // Réinitialiser le champ de fichier et l'état associé
-    const handleReset = () => {
-        console.log("Reset du dépôt de copies");
-        props.handleTraitement(false);
-        setFichiers(null);
-        setNumFichier(0);
-        setPage([]);
-        setTotalPages([]);
-        setAfficherConfirmation(false);
-        setErreurs({});
-        setLoading(false);
-        setIncidents([]);
-        setAfficherConfirmation(false);
-
-        if (inputRef.current) {
-            inputRef.current.value = "";
-        }
-    };
-
+    
 
 
     // Gestion de la suppression d'un fichier de la liste
@@ -383,7 +403,20 @@ export function DepotLayout(props: DepotLayoutProps) {
                             transition: "width 0.3s ease",
                         }}
                     >
-                        <Box p={2}>
+                        <Box sx={{ px: 1, py: 0 }}>
+                            <Stack direction="row" width="100%" justifyContent="center">
+                                {afficherConfirmation && redirectionEnCours && (
+                                    <Stack alignItems="center" spacing={0} width="100%" sx={{ py: 0, pt: 0.5 }}>
+                                        <AccessTimeIcon sx={{ fontSize: 48, color: grey[600], mt: 0 }} />
+                                        <Typography variant="h6" fontWeight={700} color={grey[800]} textAlign="center" sx={{ mt: 0.5, mb: 0.25 }}>
+                                            Vous allez être redirigé vers la page de dépôt de l'épreuve...
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 0 }}>
+                                            Redirection en cours, fermeture automatique dans 3 secondes.
+                                        </Typography>
+                                    </Stack>
+                                )}
+                            </Stack>
                             {fichiers && (
                                 <FileList
                                     fichiers={fichiers}
@@ -395,16 +428,6 @@ export function DepotLayout(props: DepotLayoutProps) {
                                     erreurs={erreurs}
                                 />
                             )}
-                            <Stack direction="row" width="100%" spacing={2} justifyContent="center">
-                                {afficherConfirmation && (
-                                    <BoutonStandard
-                                        color={grey[400]}
-                                        onClick={handleReset}
-                                        texte="NOUVEAU DÉPÔT"
-                                        width="80%"
-                                    />
-                                )}
-                            </Stack>
                         </Box>
                     </Collapse>
                 )}
