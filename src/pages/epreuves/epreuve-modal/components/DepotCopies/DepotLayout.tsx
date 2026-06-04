@@ -406,7 +406,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                         <Box sx={{ px: 1, py: 0 }}>
                             <Stack direction="row" width="100%" justifyContent="center">
                                 {afficherConfirmation && redirectionEnCours && (
-                                    <Stack alignItems="center" spacing={0} width="100%" sx={{ py: 0, pt: 0.5 }}>
+                                    <Stack alignItems="center" spacing={2} width="100%" sx={{ py: 0, pt: 0.5 }}>
                                         <AccessTimeIcon sx={{ fontSize: 48, color: grey[600], mt: 0 }} />
                                         <Typography variant="h6" fontWeight={700} color={grey[800]} textAlign="center" sx={{ mt: 0.5, mb: 0.25 }}>
                                             Vous allez être redirigé vers la page de dépôt de l'épreuve...
