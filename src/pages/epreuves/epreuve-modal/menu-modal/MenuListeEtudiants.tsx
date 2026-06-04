@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridFooterContainer, GridFooter } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { frFR } from '@mui/x-data-grid/locales';
 
 import { getColumns } from './composantsListe/colonnesListe';
-import { Snackbar, Stack } from '@mui/material';
+import { Snackbar, Stack, IconButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 import { useConfirmEdit } from './composantsListe/useConfirmEdit';
 import { useConfirmDelete } from './composantsListe/useConfirmDelete';
@@ -12,11 +13,11 @@ import { useConfirmTransfer } from './composantsListe/useConfirmTransfer';
 
 import { useGridApiRef } from '@mui/x-data-grid';
 import Header from './composantsListe/Header';
+import DialogAjouterEtudiant from './composantsListe/DialogAjouterEtudiant';
 
 import type { APIConvocation } from '../../../../contracts/convocations';
-import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert } from '../../../../contracts/convocations';
+import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert, postConvocation } from '../../../../contracts/convocations';
 import { URL_API_BASE } from '../../../../utils/api';
-
 
 declare module "@mui/x-data-grid" {
     interface ToolbarPropsOverrides {
@@ -55,6 +56,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
     const { confirmDelete, confirmModalDelete } = useConfirmDelete();
     const { confirmTransfer, confirmModalTransfer } = useConfirmTransfer();
 
+    const [openAddModal, setOpenAddModal] = useState(false);
 
 
     const [rows, setRows] = useState<APIConvocation[]>([]);
@@ -184,7 +186,41 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
         window.open(URL_API_BASE + `/documents/session/${props.idSession}/epreuve/${props.codeEpreuve}/convocations-scans.pdf?codes=${listeCodeAno.join(",")}`, "_blank");
     }
 
+    const handleAddEtudiant = async (data: { numeroEtudiant: number; nom: string; prenom: string; codeSalle: string }) => {
+        try {
+            setLoading(true);
+            const res = await postConvocation(props.idSession, props.codeEpreuve, data);
+            if (res.status === 200 && res.data?.success) {
+                const newConvoc = res.data.convocation;
+                setRows((prevRows) => [...prevRows, newConvoc]);
+                showSuccess("Étudiant ajouté avec succès à l'épreuve");
+            } else {
+                showError("Erreur lors de l'ajout de l'étudiant");
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'ajout de l'étudiant :", error);
+            showError("Erreur lors de l'ajout de l'étudiant");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+
+    const CustomFooter = () => {
+        return (
+            <GridFooterContainer sx={{ justifyContent: 'space-between', display: 'flex', px: 2 }}>
+                <IconButton 
+                    color="primary" 
+                    onClick={() => setOpenAddModal(true)} 
+                    title="Ajouter un étudiant"
+                    sx={{ color: props.menuColor }}
+                >
+                    <AddIcon />
+                </IconButton>
+                <GridFooter sx={{ border: 'none' }} />
+            </GridFooterContainer>
+        );
+    };
     return (
         <>
             {confirmModalDelete}
@@ -192,13 +228,19 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
             {confirmModalTransfer}
             {snackbarEdit}
 
+            {/* Dialogue d'ajout d'étudiant */}
+            <DialogAjouterEtudiant 
+                open={openAddModal} 
+                onClose={() => setOpenAddModal(false)} 
+                onAddEtudiant={handleAddEtudiant} 
+            />
 
             <Box sx={{ height: 570 }}>
 
                 <DataGrid
 
                     showToolbar
-                    slots={{ toolbar: Header }}
+                    slots={{ toolbar: Header, footer: CustomFooter }}
                     slotProps={{
                         toolbar:
                         {
