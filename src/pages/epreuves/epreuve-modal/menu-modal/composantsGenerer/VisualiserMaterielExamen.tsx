@@ -68,7 +68,6 @@ export default function VisualiserMaterielExamen(props: PDFPageProps) {
 
     const handleDowload = () => {
         window.open(documentUrl, "_blank");
-
         const newDocumentTelecharge = [...props.documentTelecharge];
         newDocumentTelecharge[props.documentSelectionne] = true;
         props.setDocumentTelecharge(newDocumentTelecharge);
