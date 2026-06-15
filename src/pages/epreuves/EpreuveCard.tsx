@@ -68,7 +68,7 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
                     <Stack flexGrow={1} />
                     <Stack direction="column" spacing={1} padding={2} alignItems="flex-end" >
                         {incidents > 0 &&
-                            <Chip label={`${incidents} incident${incidents > 1 ? 's' : ''}`} size="small" color="warning" />
+                            <Chip label={`${incidents} incident${incidents > 1 ? 's' : ''}`} size="small" color="error" />
                         }
                         <Chip label={statusData.label} size="small" sx={{ bgcolor: alpha(statusData.color, 0.56) }} />
                     </Stack>
