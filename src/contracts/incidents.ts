@@ -50,3 +50,8 @@ export const deleteIncident = (sessionId: number, epreuveCode: string, idInciden
     return apiRequest<null, APIReponseCorrectionIncident>
         ('DELETE', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/${idIncident}`);
 }
+
+export const deleteIncidents = (sessionId: number, epreuveCode: string) => {
+    return apiRequest<null, { success: boolean }>
+        ('DELETE', `/sessions/${sessionId}/epreuves/${epreuveCode}/incidents/`);
+}

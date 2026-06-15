@@ -1,5 +1,6 @@
 import IncidentCard from './IncidentCard';
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, IconButton, Tooltip } from '@mui/material';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import type { APIIncident } from '../../../../../contracts/incidents';
 import { grey } from '@mui/material/colors';
 
@@ -11,22 +12,32 @@ interface IncidentListeProps {
     liste: APIIncident[];
     onClick: (incident: APIIncident) => void;
     onDeleteIncident?: (incident: APIIncident) => void; // Ajout
+    onDeleteAllIncidents?: () => void;
     selectedIncidentId: number | null;
 }
 
-export default function IncidentListe({ liste, onClick, onDeleteIncident,selectedIncidentId }: IncidentListeProps) {
+export default function IncidentListe({ liste, onClick, onDeleteIncident, onDeleteAllIncidents, selectedIncidentId }: IncidentListeProps) {
 
     const nbIncidents = liste.length;
 
     return (
         <Stack spacing={2}>
-            <Stack>
-                <Typography variant='h6' color={grey[800]} >
-                    Liste des incidents
-                </Typography>
-                <Typography variant='body2' color={grey[600]} >
-                    {nbIncidents} incident{nbIncidents > 1 ? 's' : ''} enregistré{nbIncidents > 1 ? 's' : ''}
-                </Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack>
+                    <Typography variant='h6' color={grey[800]} >
+                        Liste des incidents
+                    </Typography>
+                    <Typography variant='body2' color={grey[600]} >
+                        {nbIncidents} incident{nbIncidents > 1 ? 's' : ''} enregistré{nbIncidents > 1 ? 's' : ''}
+                    </Typography>
+                </Stack>
+                {nbIncidents > 0 && onDeleteAllIncidents && (
+                    <Tooltip title="Supprimer tous les incidents">
+                        <IconButton size="small" onClick={onDeleteAllIncidents} sx={{ color: grey[500], '&:hover': { color: '#f44336' } }}>
+                            <DeleteSweepIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </Stack>
             <Stack spacing={2} height={450} overflow="scroll" sx={{ borderBottom: `2px solid ${grey[400]}`, pr: 2 }} >
                 {liste.map((incident) => (

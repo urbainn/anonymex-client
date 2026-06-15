@@ -4,7 +4,7 @@ import IncidentDetail from "./IncidentDetail";
 import { useState, useEffect } from "react";
 
 import type { APIIncident } from '../../../../../contracts/incidents';
-import { getIncidents, deleteIncident } from "../../../../../contracts/incidents";
+import { getIncidents, deleteIncident, deleteIncidents } from "../../../../../contracts/incidents";
 
 interface IncidentsCompletsProps {
     idSession: number;
@@ -23,6 +23,7 @@ export function IncidentsComplets({ idSession, epreuveCode, onIncidentCreated, o
     const [ouvertEchec, setOuvertEchec] = useState(false);
     const [messageSnackbar, setMessageSnackbar] = useState("");
     const [incidentASupprimer, setIncidentASupprimer] = useState<APIIncident | null>(null);
+    const [ouvertDeleteAllConfirmation, setOuvertDeleteAllConfirmation] = useState(false);
 
     useEffect(() => {
         const getAllIncidents = async () => {
@@ -104,6 +105,32 @@ export function IncidentsComplets({ idSession, epreuveCode, onIncidentCreated, o
         }
     };
 
+    const handleConfirmDeleteAll = async () => {
+        setOuvertDeleteAllConfirmation(false);
+        try {
+            const response = await deleteIncidents(idSession, epreuveCode);
+            if (response.data?.success) {
+                const previousLength = allIncidents.length;
+                setAllIncidents([]);
+                setSelectedIncident(null);
+                setSelectedIncidentId(null);
+                for(let i=0; i<previousLength; i++) {
+                    onIncidentResolved?.();
+                }
+                
+                setMessageSnackbar("Tous les incidents ont été supprimés !");
+                setOuvertSucces(true);
+            } else {
+                setMessageSnackbar("Erreur lors de la suppression des incidents.");
+                setOuvertEchec(true);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la suppression de tous les incidents :", error);
+            setMessageSnackbar("Erreur lors de la communication avec le serveur.");
+            setOuvertEchec(true);
+        }
+    };
+
     return (
         <Stack direction="row" spacing={2} height="100%" justifyContent={"center"}>
 
@@ -118,6 +145,7 @@ export function IncidentsComplets({ idSession, epreuveCode, onIncidentCreated, o
                     liste={allIncidents} 
                     onClick={handleClickIncident} 
                     onDeleteIncident={handleOuvrirConfirmation} 
+                    onDeleteAllIncidents={() => setOuvertDeleteAllConfirmation(true)}
                     selectedIncidentId={selectedIncidentId} 
                 />
             </Stack>
@@ -187,6 +215,32 @@ export function IncidentsComplets({ idSession, epreuveCode, onIncidentCreated, o
                     </Button>
                     <Button onClick={handleConfirmDelete} variant="contained" color="error" sx={{ fontWeight: 600, borderRadius: 2 }}>
                         Supprimer
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal de confirmation de suppression de tous les incidents */}
+            <Dialog
+                open={ouvertDeleteAllConfirmation}
+                onClose={() => setOuvertDeleteAllConfirmation(false)}
+                PaperProps={{
+                    sx: { borderRadius: 3, p: 1, maxWidth: 440 }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>
+                    Confirmer la suppression
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ color: "text.primary" }}>
+                        Voulez-vous vraiment supprimer <strong>tous les incidents</strong> ? Cette action nettoiera la base de données et supprimera les fichiers associés, elle est irréversible.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button onClick={() => setOuvertDeleteAllConfirmation(false)} color="inherit" sx={{ fontWeight: 600 }}>
+                        Annuler
+                    </Button>
+                    <Button onClick={handleConfirmDeleteAll} variant="contained" color="error" sx={{ fontWeight: 600, borderRadius: 2 }}>
+                        Supprimer tout
                     </Button>
                 </DialogActions>
             </Dialog>
