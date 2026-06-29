@@ -1,7 +1,7 @@
 
 
 import { Stack } from "@mui/material";
-import { useEffect, type JSX } from "react";
+import { useEffect, type JSX, type ReactNode } from "react";
 import { TypoSousTitre } from "../../TypoSousTitre";
 import { TypoTitre } from "../../TypoTitre";
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,10 +13,11 @@ interface EpreuveCaracteristiqueProps {
     modif: boolean;
     AdaptedTextField?: () => JSX.Element;
     color?: string;
+    extraNode?: ReactNode;
 }
 
 
-export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField, color }: EpreuveCaracteristiqueProps) => {
+export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif, AdaptedTextField, color, extraNode }: EpreuveCaracteristiqueProps) => {
 
 
     useEffect(() => {
@@ -31,13 +32,16 @@ export const EpreuveCaracteristique = ({ titre, sousTitre, fonctionModif, modif,
             <Stack direction="row" spacing={1} alignItems="center" justifyContent={"space-between"} width={"100%"} height={35}>
                 {modif == false && (
                     <>
-                        {sousTitre ? (
-                            <TypoSousTitre>{sousTitre}</TypoSousTitre>
-                        ) : (
-                            <TypoSousTitre sx={{ color: "red" }}>
-                                Pas de données
-                            </TypoSousTitre>
-                        )}
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                            {sousTitre ? (
+                                <TypoSousTitre>{sousTitre}</TypoSousTitre>
+                            ) : (
+                                <TypoSousTitre sx={{ color: "red" }}>
+                                    Pas de données
+                                </TypoSousTitre>
+                            )}
+                            {extraNode}
+                        </Stack>
 
                         {/* Si le composant ne reçoit pas de TextField alors pas de modifs possible*/}
 

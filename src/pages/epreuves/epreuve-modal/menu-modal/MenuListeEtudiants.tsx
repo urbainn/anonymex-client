@@ -18,6 +18,7 @@ import DialogAjouterEtudiant from './composantsListe/DialogAjouterEtudiant';
 import type { APIConvocation } from '../../../../contracts/convocations';
 import { getConvocations, deleteConvocations, patchConvocation, postConvocationsTransfert, postConvocation } from '../../../../contracts/convocations';
 import { URL_API_BASE } from '../../../../utils/api';
+import { useEpreuvesCache } from '../../../../contexts/EpreuvesCacheContext';
 
 declare module "@mui/x-data-grid" {
     interface ToolbarPropsOverrides {
@@ -42,6 +43,8 @@ interface MenuListeEtudiantsProps {
 
 
 function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
+
+    const { chargerEpreuves } = useEpreuvesCache();
 
     const [loading, setLoading] = useState(false);
     const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -131,6 +134,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
             setRows((rows) => rows.map((row) => (row.numeroEtudiant === result.numeroEtudiant ? result : row)));
             console.log("Convocation/note mise à jour avec succès :", res);
             showSuccess("Convocation/note modifiée avec succès");
+            void chargerEpreuves(true);
             return result;
         } else {
             console.error("Erreur lors de la mise à jour de la convocation/note :", res);
@@ -154,6 +158,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
         if (res.data?.success) {
             console.log("Convocations supprimées avec succès");
             setRows((prevRows) => prevRows.filter((row) => !result.includes(row.codeAnonymat)));
+            void chargerEpreuves(true);
         } else {
             console.error("Erreur lors de la suppression des convocations" + res);
         }
@@ -174,6 +179,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
                         ? { ...row, codeSalle: salle }
                         : row
                 ));
+                void chargerEpreuves(true);
             }
 
         }
@@ -194,6 +200,7 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
                 const newConvoc = res.data.convocation;
                 setRows((prevRows) => [...prevRows, newConvoc]);
                 showSuccess("Étudiant ajouté avec succès à l'épreuve");
+                void chargerEpreuves(true);
             } else {
                 showError("Erreur lors de l'ajout de l'étudiant");
             }
@@ -250,7 +257,8 @@ function MenuListeEtudiants(props: MenuListeEtudiantsProps) {
                             handleConvocations,
                             setSalleFilter,
                             salleFilter,
-                            sallesUniques
+                            sallesUniques,
+                            statut: props.statut
                         }
                     }}
                     apiRef={apiRef}

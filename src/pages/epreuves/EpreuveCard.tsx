@@ -70,6 +70,9 @@ export const EpreuveCard = function EpreuveCard(props: EpreuveCardProps): JSX.El
                         {incidents > 0 &&
                             <Chip label={`${incidents} incident${incidents > 1 ? 's' : ''}`} size="small" color="error" />
                         }
+                        {epreuve.zAnonymatSansEtudiant !== undefined && epreuve.zAnonymatSansEtudiant > 0 &&
+                            <Chip label={`${epreuve.zAnonymatSansEtudiant} anonymat${epreuve.zAnonymatSansEtudiant > 1 ? 's' : ''} Z sans étudiant`} size="small" color="warning" />
+                        }
                         <Chip label={statusData.label} size="small" sx={{ bgcolor: alpha(statusData.color, 0.56) }} />
                     </Stack>
 

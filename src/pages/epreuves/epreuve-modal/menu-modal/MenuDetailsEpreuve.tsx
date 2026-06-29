@@ -1,6 +1,6 @@
 import type { APIEpreuve } from "../../../../contracts/epreuves";
 import React, { useEffect } from "react";
-import { Button, Divider, Dialog, DialogActions, DialogContent, DialogTitle, Stack, colors, Typography, TextField } from "@mui/material";
+import { Button, Divider, Dialog, DialogActions, DialogContent, DialogTitle, Stack, colors, Typography, TextField, Chip } from "@mui/material";
 import { EpreuveCaracteristique } from "./composantsEpreuves/EpreuveCaracteristique";
 import DateTextField from "./textfields/DateTextField";
 import HorairesTextField from "./textfields/HorairesTextField";
@@ -292,7 +292,18 @@ function DetailsEpreuve({ epreuve, setNumeroOnglet, setSalleDefault, statut }: D
                     ) : (
                         <>
                             <EpreuveCaracteristique titre="Date" sousTitre={formatDate(dateEpreuve) + ', ' + calcHoraires(dateEpreuve, dureeMinutes)} color={couleurStatusEpreuve} modif={false} fonctionModif={() => {}} />
-                            <EpreuveCaracteristique titre="Notes saisies" sousTitre={epreuve.copies + ' / ' + (epreuve.nbPresents ?? epreuve.copiesTotal ?? '?')} fonctionModif={handleModifNbInscrits} modif={modifNbInscrits} color={couleurStatusEpreuve} />
+                            <EpreuveCaracteristique
+                                titre="Notes saisies"
+                                sousTitre={epreuve.copies + ' / ' + (epreuve.nbPresents ?? epreuve.copiesTotal ?? '?')}
+                                fonctionModif={handleModifNbInscrits}
+                                modif={modifNbInscrits}
+                                color={couleurStatusEpreuve}
+                                extraNode={
+                                    epreuve.zAnonymatSansEtudiant !== undefined && epreuve.zAnonymatSansEtudiant > 0 ? (
+                                        <Chip label={`${epreuve.zAnonymatSansEtudiant} anonymat${epreuve.zAnonymatSansEtudiant > 1 ? 's' : ''} Z sans étudiant`} size="small" color="warning" />
+                                    ) : undefined
+                                }
+                            />
                         </>
                     )}
 

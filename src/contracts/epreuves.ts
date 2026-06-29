@@ -25,6 +25,7 @@ export const EpreuveSchema = z.object({
     copies: z.number().int().nonnegative().optional(), // nombre de copies déposées
     copiesTotal: z.number().int().positive().optional(), // nombre total de copies attendues
     incidents: z.number().int().nonnegative().optional(), // nombre d'incidents de lecture
+    zAnonymatSansEtudiant: z.number().int().nonnegative().optional(), // nombre d'anonymats Z avec note sans étudiant
     nbPresents: z.number().int().nonnegative().optional() // nombre de présents, si saisi
 });
 

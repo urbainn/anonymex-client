@@ -30,6 +30,7 @@ export interface HeaderProps {
     setSalleFilter: (salle: string) => void;
     salleFilter: string;
     sallesUniques: string[];
+    statut: number;
 }
 
 type Props = GridToolbarProps & HeaderProps;
@@ -101,16 +102,19 @@ export default function Header(props: Props) {
 
 
 
-            <Tooltip title="Supprimer les étudiants sélectionnés">
-                <Button
-                    disabled={props.selectedRows.length === 0}
-                    onClick={() => props.handleDelete(props.selectedRows.map(row => row.codeAnonymat!))}
-                    sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
-                    <Delete />
-
-                </Button>
-            </Tooltip>
-            <GridToolbarDivider />
+            {props.statut <= 2 && (
+                <>
+                    <Tooltip title="Supprimer les étudiants sélectionnés">
+                        <Button
+                            disabled={props.selectedRows.length === 0}
+                            onClick={() => props.handleDelete(props.selectedRows.map(row => row.codeAnonymat!))}
+                            sx={{ height: 32, color: grey[700], borderColor: grey[400], ':hover': { backgroundColor: grey[300], borderColor: grey[400] } }}>
+                            <Delete />
+                        </Button>
+                    </Tooltip>
+                    <GridToolbarDivider />
+                </>
+            )}
 
             <Select
                 id="transfer-salle-select"

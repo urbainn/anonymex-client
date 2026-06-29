@@ -12,7 +12,7 @@ type MenuPresenceProps = {
 }
 
 export default function MenuPresence({ epreuve, salleDefaultNumb }: MenuPresenceProps) {
-    const { patchEpreuve } = useEpreuvesCache();
+    const { patchEpreuve, chargerEpreuves } = useEpreuvesCache();
 
     // Initialisation des convocations supplémentaires pour l'épreuve
     const [listeConvoc, setListeConvoc] = React.useState<APIConvocationsSupplementairesMap>({});
@@ -148,6 +148,15 @@ export default function MenuPresence({ epreuve, salleDefaultNumb }: MenuPresence
         }
 
         setAnonymatErrors(null);
+        void chargerEpreuves(true);
+        try {
+            const res = await getConvocationsSupplementaires(epreuve.session, epreuve.code);
+            if (res.status === 200 && res.data) {
+                setListeConvoc(res.data);
+            }
+        } catch (error) {
+            console.error("Erreur lors du rechargement des convocations supplémentaires:", error);
+        }
     }
 
     return (

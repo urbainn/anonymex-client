@@ -32,7 +32,7 @@ interface IncidentDetailProps {
 
 export default function IncidentDetail(props: IncidentDetailProps) {
 
-    const { patchEpreuve } = useEpreuvesCache();
+    const { patchEpreuve, chargerEpreuves } = useEpreuvesCache();
 
     const [numero, setNumero] = React.useState<string | undefined>(props.incident.codeAnonymat);
     const [noteQuart, setNoteQuart] = React.useState<number | undefined>(props.incident.noteQuart);
@@ -123,6 +123,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                 props.ajouterIncident(incident);
             });
             props.setMessageSnackbar("Nouvel incident créé suite à la correction (duplication).");
+            void chargerEpreuves(true);
         }
         
         if (res.data?.success === true) {
@@ -135,6 +136,7 @@ export default function IncidentDetail(props: IncidentDetailProps) {
                 // Mettre à jour l'épreuve dans le cache
                 patchEpreuve(props.incident.codeEpreuve, { statut: 4 });
             }
+            void chargerEpreuves(true);
         }
         else {
             if (res.data?.incidents === undefined) {

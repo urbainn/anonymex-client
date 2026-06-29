@@ -30,7 +30,7 @@ interface DepotLayoutProps {
 
 export function DepotLayout(props: DepotLayoutProps) {
 
-    const { patchEpreuve } = useEpreuvesCache();
+    const { patchEpreuve, chargerEpreuves } = useEpreuvesCache();
 
     // Reference pour le champ de fichier (input)
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -268,6 +268,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                     // Mettre à jour le nombre de dépôts traités
                     patchEpreuve(codeUE, { copies: info.nbDepots });
                 }
+                void chargerEpreuves(true);
                 evtSource.close();
 
                 resolve(true);
@@ -278,6 +279,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                 console.log(`Dépôt ${depotID} complet :`, event.data);
                 // Mettre à jour l'épreuve dans le cache
                 patchEpreuve(codeUE, { statut: 4 });                
+                void chargerEpreuves(true);
             });
 
             evtSource.addEventListener("incident", function (event) {
@@ -291,6 +293,7 @@ export function DepotLayout(props: DepotLayoutProps) {
                     props.onIncidentCreated?.();
                     return [...prev, info];
                 });
+                void chargerEpreuves(true);
             })
 
             // En cas d'erreur lors du traitement du dépôt, on affiche un message d'erreur et on ferme la connexion SSE
